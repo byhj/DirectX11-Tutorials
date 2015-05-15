@@ -66,7 +66,7 @@ bool GraphicsClass::Frame()
 
 bool GraphicsClass::Render()
 {
-	pD3D->BeginScene(0.5f, 0.5f, 0.5f, 1.0f);
+	pD3D->BeginScene(0.5f, 0.0f, 0.5f, 1.0f);
 	pD3D->EndScene();
 	return true;
 }

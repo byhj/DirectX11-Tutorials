@@ -28,7 +28,7 @@ void InputClass::KeyUp(unsigned int input)
 	keys[input] = false;
 }
 
-//Return what state the keys if down
+//Return what state the keys is in
 
 bool InputClass::IsKeyDown(unsigned int key)
 {
