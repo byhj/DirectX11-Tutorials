@@ -203,11 +203,11 @@ void SystemClass::InitWindow(int& screenWidth, int& screenHeight)
 		posY = (GetSystemMetrics(SM_CYSCREEN) - screenHeight) / 2;
 	}
 
-		hWnd = CreateWindowEx(	
+	hWnd = CreateWindowEx(	
 		NULL,	           
-        AppName, AppName,
+		AppName, AppName,
 		WS_OVERLAPPEDWINDOW,	
-        posX, posY, 
+		posX, posY, 
 		screenWidth, screenHeight,
 		NULL,
 		NULL,
@@ -226,6 +226,7 @@ void SystemClass::InitWindow(int& screenWidth, int& screenHeight)
 
 	return;
 }
+
 
 
 void SystemClass::ShutdownWindows()

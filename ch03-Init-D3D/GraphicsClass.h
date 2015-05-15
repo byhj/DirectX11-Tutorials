@@ -2,12 +2,13 @@
 #define GRAPHICSCLASS_H
 
 #include <windows.h>
+#include "D3DClass.h"
 
 //Global
-const bool FULL_SCREEN   = false;
-const bool VSYNC_ENABLED = true;
+const bool FULL_SCREEN = false;
+const bool VSYNC_ENABLED = false;
 const float SCREEN_DEPTH = 1000.0f;
-const float SCREEN_NEAR  = 0.1f;
+const float SCREEN_NEAR = 0.1f;
 
 class GraphicsClass
 {
@@ -23,5 +24,6 @@ public:
 private:
 	bool Render();
 
+	D3DClass *pD3D;
 };
 #endif //GraphicsClass
