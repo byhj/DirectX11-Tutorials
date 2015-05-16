@@ -6,6 +6,7 @@ ShaderClass::ShaderClass()
 	 pInputLayout(0),
 	 pMatrixBuffer(0),
 	 pLightBuffer(0),
+	 pCameraBuffer(0),
 	 pSampleState(0)
 {
 
@@ -43,10 +44,12 @@ void ShaderClass::Shutdown()
 bool ShaderClass::Render(ID3D11DeviceContext *pD3D11DeviceContext, int IndexCount
 						 ,D3DXMATRIX World, D3DXMATRIX View, D3DXMATRIX Proj, 
 						 ID3D11ShaderResourceView* pTexture,
-						 D3DXVECTOR3 lightDirection, D3DXVECTOR4 diffuseColor, D3DXVECTOR4 ambientColor)
+						 D3DXVECTOR3 lightDirection, D3DXVECTOR4 ambientColor, D3DXVECTOR4 diffuseColor,
+						 D3DXVECTOR3 cameraPosition, D3DXVECTOR4 specularColor, float specularPower)
 {
 	bool result;
-	result = SetShaderParameters(pD3D11DeviceContext, World, View, Proj, pTexture, lightDirection, diffuseColor, ambientColor);
+	result = SetShaderParameters(pD3D11DeviceContext, World, View, Proj, pTexture, lightDirection,
+		                         ambientColor, diffuseColor, cameraPosition, specularColor, specularPower);
 	if(!result)
 	{
 		return false;
@@ -205,6 +208,19 @@ bool ShaderClass::InitShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename,
 	{
 		return false;
 	}
+	D3D11_BUFFER_DESC cameraBufferDesc;
+	cameraBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cameraBufferDesc.ByteWidth = sizeof(CameraBuffer);
+	cameraBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cameraBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cameraBufferDesc.MiscFlags = 0;
+	cameraBufferDesc.StructureByteStride = 0;
+	result = device->CreateBuffer(&cameraBufferDesc, NULL, &pCameraBuffer);
+	if (FAILED(result) )
+	{
+		return false;
+	}
+
 
 	D3D11_BUFFER_DESC lightBufferDesc;
 	// Note that ByteWidth always needs to be a multiple of 16 if using D3D11_BIND_CONSTANT_BUFFER or CreateBuffer will fail.
@@ -234,6 +250,13 @@ void ShaderClass::ShutdownShader()
 		pLightBuffer->Release();
 		pLightBuffer = 0;
 	}
+
+	if (pCameraBuffer)
+	{
+		pCameraBuffer->Release();
+		pCameraBuffer = 0;
+	}
+
 	// Release the sampler state.
 	if(pSampleState)
 	{
@@ -293,7 +316,8 @@ void ShaderClass::OutputShaderErrorMessage(ID3D10Blob *pErrorMessage, HWND hwnd,
 
 bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* pD3D11DeviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
 									  D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView *pTexture,
-									  D3DXVECTOR3 lightDirection, D3DXVECTOR4 diffuseColor, D3DXVECTOR4 ambientColor)
+									  D3DXVECTOR3 lightDirection,  D3DXVECTOR4 ambientColor, D3DXVECTOR4 diffuseColor,
+									  D3DXVECTOR3 cameraPosition, D3DXVECTOR4 specularColor, float specularPower)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -342,11 +366,27 @@ bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* pD3D11DeviceContext, 
 	dataPtr2->ambientColor = ambientColor;
 	dataPtr2->diffuseColor = diffuseColor;
 	dataPtr2->lightDirection = lightDirection;
-	dataPtr2->padding = 0.0f;
+	dataPtr2->specularPower = specularPower;
+	dataPtr2->specularColor = specularColor;
 
 	pD3D11DeviceContext->Unmap(pLightBuffer, 0);
 	bufferNumber = 0;
 	pD3D11DeviceContext->PSSetConstantBuffers(bufferNumber, 1, &pLightBuffer);
+
+	/////////////////////////////////////////////
+	result = pD3D11DeviceContext->Map(pCameraBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	if (FAILED(result) )
+	{
+		return false;
+	}
+
+	CameraBuffer *dataPtr3;
+	dataPtr3 = (CameraBuffer *)mappedResource.pData;
+	dataPtr3->cameraPos = cameraPosition;
+	dataPtr3->padding = 0.0f;
+	pD3D11DeviceContext->Unmap(pCameraBuffer, 0);
+	bufferNumber = 1;  //index
+	pD3D11DeviceContext->VSSetConstantBuffers(bufferNumber, 1, &pCameraBuffer);
 
 
 	return true;

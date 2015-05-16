@@ -46,7 +46,7 @@ bool GraphicsClass::Init(int screenWidth, int screenHeight, HWND hWnd)
 	{
 		return false;
 	}
-	pCamera->SetPosition(0.0f, 0.0f, -5.0f);
+	pCamera->SetPosition(0.0f, 0.0f, -3.0f);
 
 	//////////////////////// Model Class ////////////////////////////
 	pModel = new ModelClass;
@@ -84,8 +84,10 @@ bool GraphicsClass::Init(int screenWidth, int screenHeight, HWND hWnd)
 		return false;
 	}
 	pLight->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	pLight->SetDirection(1.0, 0.0, 0.0f);
 	pLight->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
+	pLight->SetDirection(0.0f, 0.0f, 1.0f);
+	pLight->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
+	pLight->SetSpecularPower(32.0f);
 
 	return true;
 }
@@ -171,7 +173,8 @@ bool GraphicsClass::RenderGraphics(float rot)
 
 	//Render the Model Using Shader
 	result = pShader->Render(pD3D->GetDeviceContext(), pModel->GetIndexCount(), World, View, Proj, 
-		                     pModel->GetTexture(), pLight->GetDirection(), pLight->GetDiffuseColor(), pLight->GetAmbientColor() );
+		                     pModel->GetTexture(),  pLight->GetDirection(), pLight->GetAmbientColor(),pLight->GetDiffuseColor(), 
+							 pCamera->GetPosition(), pLight->GetSpecularColor(), pLight->GetSpecularPower());
     if (!result)
 	{
 		return false;

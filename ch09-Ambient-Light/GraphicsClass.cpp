@@ -171,7 +171,7 @@ bool GraphicsClass::RenderGraphics(float rot)
 
 	//Render the Model Using Shader
 	result = pShader->Render(pD3D->GetDeviceContext(), pModel->GetIndexCount(), World, View, Proj, 
-		                     pModel->GetTexture(), pLight->GetDirection(), pLight->GetDiffuseColor(), pLight->GetAmbientColor() );
+		                     pModel->GetTexture(), pLight->GetDirection(), pLight->GetAmbientColor(), pLight->GetDiffuseColor());
     if (!result)
 	{
 		return false;
