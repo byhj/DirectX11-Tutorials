@@ -70,6 +70,7 @@
     <ClInclude Include="ModelClass.h" />
     <ClInclude Include="ShaderClass.h" />
     <ClInclude Include="SystemClass.h" />
+    <ClInclude Include="TextureClass.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CameraClass.cpp" />
@@ -80,6 +81,7 @@
     <ClCompile Include="ModelClass.cpp" />
     <ClCompile Include="ShaderClass.cpp" />
     <ClCompile Include="SystemClass.cpp" />
+    <ClCompile Include="TextureClass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="texture-fs.hlsl">

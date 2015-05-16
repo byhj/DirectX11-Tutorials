@@ -158,7 +158,7 @@ void SystemClass::InitWindow(int &screenWidth, int &screenHeight)
 
 	hInstance = GetModuleHandle(NULL);
 	AppName = L"DirectX11.0-Toturial";
-
+ 
 	//Notice !!!!!, Call this object message handler
 	AppHandle = this;
 

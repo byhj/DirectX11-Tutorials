@@ -8,10 +8,10 @@
 #include "ShaderClass.h"
 
 //Global
-const bool FULL_SCREEN = false;
+const bool FULL_SCREEN   = false;
 const bool VSYNC_ENABLED = false;
 const float SCREEN_DEPTH = 1000.0f;
-const float SCREEN_NEAR = 0.1f;
+const float SCREEN_NEAR  = 0.1f;
 
 class GraphicsClass
 {
@@ -22,10 +22,10 @@ public:
 
 	bool Init(int, int, HWND);
 	void Shutdown();
-	bool Frame();
+	bool Render();
 
 private:
-	bool Render();
+	bool RenderGraphics();
 
 	D3DClass    *pD3D;
 	CameraClass *pCamera;

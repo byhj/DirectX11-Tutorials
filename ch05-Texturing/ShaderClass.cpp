@@ -4,7 +4,8 @@ ShaderClass::ShaderClass()
 	:pVS_Shader(0),
 	 pPS_Shader(0),
 	 pInputLayout(0),
-	 pMatrixBuffer(0)
+	 pMatrixBuffer(0),
+	 pSampleState(0)
 {
 
 }
@@ -22,7 +23,7 @@ ShaderClass::~ShaderClass()
 bool ShaderClass::Init(ID3D11Device *pD3D11Device, HWND hwnd)
 {
 	bool result;
-	result = InitShader(pD3D11Device, hwnd, L"color-vs.hlsl", L"color-fs.hlsl");
+	result = InitShader(pD3D11Device, hwnd, L"texture-vs.hlsl", L"texture-fs.hlsl");
 
 	if (!result)
 	{
@@ -39,10 +40,11 @@ void ShaderClass::Shutdown()
 }
 
 bool ShaderClass::Render(ID3D11DeviceContext *pD3D11DeviceContext, int IndexCount
-						 ,D3DXMATRIX World, D3DXMATRIX View, D3DXMATRIX Proj)
+						 ,D3DXMATRIX World, D3DXMATRIX View, D3DXMATRIX Proj, 
+						 ID3D11ShaderResourceView* pTexture)
 {
 	bool result;
-	result = SetShaderParameters(pD3D11DeviceContext, World, View, Proj);
+	result = SetShaderParameters(pD3D11DeviceContext, World, View, Proj, pTexture);
 	if(!result)
 	{
 		return false;
@@ -130,9 +132,9 @@ bool ShaderClass::InitShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename,
 	polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[0].InstanceDataStepRate = 0;
 
-	polygonLayout[1].SemanticName = "COLOR";
+	polygonLayout[1].SemanticName = "TEXCOORD";
 	polygonLayout[1].SemanticIndex = 0;
-	polygonLayout[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	polygonLayout[1].Format = DXGI_FORMAT_R32G32_FLOAT;
 	polygonLayout[1].InputSlot = 0;
 	polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 	polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
@@ -171,6 +173,29 @@ bool ShaderClass::InitShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename,
 		return false;
 	}
 
+	D3D11_SAMPLER_DESC samplerDesc;
+	// Create a texture sampler state description.
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.MipLODBias = 0.0f;
+	samplerDesc.MaxAnisotropy = 1;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	samplerDesc.BorderColor[0] = 0;
+	samplerDesc.BorderColor[1] = 0;
+	samplerDesc.BorderColor[2] = 0;
+	samplerDesc.BorderColor[3] = 0;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	// Create the texture sampler state.
+	result = device->CreateSamplerState(&samplerDesc, &pSampleState);
+	if(FAILED(result))
+	{
+		return false;
+	}
+
 	return true;
 }
 
@@ -178,6 +203,14 @@ bool ShaderClass::InitShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename,
 
 void ShaderClass::ShutdownShader()
 {
+
+	// Release the sampler state.
+	if(pSampleState)
+	{
+		pSampleState->Release();
+		pSampleState = 0;
+	}
+
 	if (pMatrixBuffer)
 	{
 		pMatrixBuffer->Release();
@@ -228,18 +261,18 @@ void ShaderClass::OutputShaderErrorMessage(ID3D10Blob *pErrorMessage, HWND hwnd,
 
 }
 
-bool ShaderClass::SetShaderParameters(ID3D11DeviceContext *pD3D11DeviceContext, D3DXMATRIX Model, D3DXMATRIX View, D3DXMATRIX Proj)
+bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* pD3D11DeviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+										   D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView *pTexture)
 {
-
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	MatrixBuffer* dataPtr;
 	unsigned int bufferNumber;
 
 	// Transpose the matrices to prepare them for the shader.
-	D3DXMatrixTranspose(&Model, &Model);
-	D3DXMatrixTranspose(&View, &View);
-	D3DXMatrixTranspose(&Proj, &Proj);
+	D3DXMatrixTranspose(&worldMatrix, &worldMatrix);
+	D3DXMatrixTranspose(&viewMatrix, &viewMatrix);
+	D3DXMatrixTranspose(&projectionMatrix, &projectionMatrix);
 
 		// Lock the constant buffer so it can be written to.
 	result = pD3D11DeviceContext->Map(pMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -252,9 +285,9 @@ bool ShaderClass::SetShaderParameters(ID3D11DeviceContext *pD3D11DeviceContext, 
 	dataPtr = (MatrixBuffer*)mappedResource.pData;
 
 	// Copy the matrices into the constant buffer.
-	dataPtr->Model = Model;
-	dataPtr->View = View;
-	dataPtr->Proj = Proj;
+	dataPtr->World = worldMatrix;
+	dataPtr->View = viewMatrix;
+	dataPtr->Proj = projectionMatrix;
 
 	// Unlock the constant buffer.
 	pD3D11DeviceContext->Unmap(pMatrixBuffer, 0);
@@ -262,6 +295,8 @@ bool ShaderClass::SetShaderParameters(ID3D11DeviceContext *pD3D11DeviceContext, 
 
 	// Finanly set the constant buffer in the vertex shader with the updated values.
 	pD3D11DeviceContext->VSSetConstantBuffers(bufferNumber, 1, &pMatrixBuffer);
+	// Set shader texture resource in the pixel shader.
+	pD3D11DeviceContext->PSSetShaderResources(0, 1, &pTexture);
 
 	return true;
 }
@@ -272,5 +307,9 @@ void ShaderClass::RenderShader(ID3D11DeviceContext *pD3D11DeviceContext, int Ind
 	pD3D11DeviceContext->IASetInputLayout(pInputLayout);
 	pD3D11DeviceContext->VSSetShader(pVS_Shader, NULL, 0);
 	pD3D11DeviceContext->PSSetShader(pPS_Shader, NULL, 0);
+
+	// Set the sampler state in the pixel shader.
+	pD3D11DeviceContext->PSSetSamplers(0, 1, &pSampleState);
+
 	pD3D11DeviceContext->DrawIndexed(IndexCount, 0, 0);
 }

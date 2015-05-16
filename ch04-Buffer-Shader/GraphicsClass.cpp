@@ -45,7 +45,7 @@ bool GraphicsClass::Init(int screenWidth, int screenHeight, HWND hWnd)
 	{
 		return false;
 	}
-	pCamera->SetPosition(0.0f, 0.0f, -10.0f);
+	pCamera->SetPosition(0.0f, 0.0f, -3.0f);
 
 	//////////////////////// Model Class ////////////////////////////
 	pModel = new ModelClass;
@@ -133,19 +133,19 @@ bool GraphicsClass::Render()
 
 bool GraphicsClass::RenderGraphics()
 {
-	D3DXMATRIX View, Proj, Model;
+	D3DXMATRIX View, Proj, World;
 	bool result;
 
-	pD3D->BeginScene(0.5f, 0.5f, 0.5f, 1.0f);
+	pD3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
     pCamera->Render();
 
 	pCamera->GetViewMatrix(View);
-	pD3D->GetWorld(Model);
+	pD3D->GetWorld(World);
 	pD3D->GetProj(Proj);
 	pModel->Render( pD3D->GetDeviceContext() );
 
 	//Render the Model Using Shader
-	result = pShader->Render(pD3D->GetDeviceContext(), pModel->GetIndexCount(), Model, View, Proj);
+	result = pShader->Render(pD3D->GetDeviceContext(), pModel->GetIndexCount(), World, View, Proj);
     if (!result)
 	{
 		return false;

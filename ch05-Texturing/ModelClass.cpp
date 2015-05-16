@@ -1,7 +1,9 @@
 #include "ModelClass.h"
 
 ModelClass::ModelClass()
-	:VertexCount(0), IndexCount(0)
+	:VertexCount(0), 
+	 IndexCount(0),
+	 pTexture(0)
 {
 }
 
@@ -14,10 +16,17 @@ ModelClass::~ModelClass()
 {
 }
 
-bool ModelClass::Init(ID3D11Device *pD3D11Device)
+bool ModelClass::Init(ID3D11Device *pD3D11Device, WCHAR *textureFile)
 {
 	bool result;
     result = InitBuffer(pD3D11Device);
+	if (!result)
+	{
+		return false;
+	}
+
+	//Load Texture file
+	result = LoadTexture(pD3D11Device, textureFile);
 	if (!result)
 	{
 		return false;
@@ -28,6 +37,8 @@ bool ModelClass::Init(ID3D11Device *pD3D11Device)
 
 void ModelClass::Shutdown()
 {
+
+	ShutdownTexture();
 	//Release the Vertex and Index Buffers
 	ShutdownBuffer();
 
@@ -43,6 +54,11 @@ void ModelClass::Render(ID3D11DeviceContext *pD3D11DeviceContext)
 int ModelClass::GetIndexCount()
 {
 	return IndexCount;
+}
+
+ID3D11ShaderResourceView *ModelClass::GetTexture()
+{
+	return pTexture->GetTexture();
 }
 
 bool ModelClass::InitBuffer(ID3D11Device *pD3D11Device)
@@ -67,11 +83,11 @@ bool ModelClass::InitBuffer(ID3D11Device *pD3D11Device)
 
 	// Load the vertex array with data.
 	VertexData[0].Position = D3DXVECTOR3(-1.0f, -1.0f, 0.0f);  // Bottom left.
-	VertexData[0].Color    = D3DXVECTOR4(1.0f, 0.0f, 0.0f, 1.0f);
+	VertexData[0].Tex      = D3DXVECTOR2(0.0f, 1.0f);
 	VertexData[1].Position = D3DXVECTOR3(0.0f, 1.0f, 0.0f);  // Top middle.
-	VertexData[1].Color    = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
+	VertexData[1].Tex      = D3DXVECTOR2(0.5f, 0.0f);
 	VertexData[2].Position = D3DXVECTOR3(1.0f, -1.0f, 0.0f);  // Bottom right.
-	VertexData[2].Color    = D3DXVECTOR4(0.0f, 0.0f, 1.0f, 1.0f);
+	VertexData[2].Tex      = D3DXVECTOR2(1.0f, 1.0f);
 
 	IndexData[0] = 0;
 	IndexData[1] = 1;
@@ -122,6 +138,37 @@ bool ModelClass::InitBuffer(ID3D11Device *pD3D11Device)
 	IndexData = nullptr;
 
 	return true;
+}
+
+bool ModelClass::LoadTexture(ID3D11Device*pD3D11Device, WCHAR *textureFile)
+{
+	bool result;
+	pTexture = new TextureClass;
+	if (!pTexture)
+	{
+		return false;
+	}
+
+	//Init the texture object
+	result = pTexture->Init(pD3D11Device, textureFile);
+	if (!result)
+	{
+		return false;
+	}
+
+	return true;
+
+}
+
+void ModelClass::ShutdownTexture()
+{
+	if (pTexture)
+	{
+		pTexture->Shutdown();
+		delete pTexture;
+		pTexture = 0;
+	}
+	return ;
 }
 
 void ModelClass::ShutdownBuffer()
