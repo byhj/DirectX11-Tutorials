@@ -1,7 +1,7 @@
 #ifndef SYSTEMCLASS_H
 #define SYSTEMCLASS_H
 
-//Speed Up Build Process
+//Speed up the build process
 #define WIN32_LEAN_AND_MEAN
 
 #include <windows.h>
@@ -13,10 +13,10 @@ class SystemClass
 {
 public:
 	SystemClass();
-	SystemClass(const SystemClass &);
+	SystemClass(const SystemClass &rhs);
 	~SystemClass();
 
-	//Member function
+	//member function
 	bool Init();
 	void Shutdown();
 	void Run();
@@ -24,8 +24,8 @@ public:
 	LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);
 
 private:
-	//Call by member function
-	bool Render();
+	//call by member function
+	void Render();
 	void InitWindow(int &, int &);
 	void ShutdownWindow();
 
@@ -38,8 +38,8 @@ private:
 	GraphicsClass *pGraphics;
 };
 
-//re-direct the windows system messaging into our MessageHandler function 
+//re-direct the windows system messaging into our MessageHandler function
 static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 static SystemClass *AppHandle = 0;
 
-#endif  //SystemClass
+#endif   //system class

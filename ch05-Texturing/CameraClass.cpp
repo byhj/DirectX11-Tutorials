@@ -1,12 +1,6 @@
 #include "CameraClass.h"
 
 CameraClass::CameraClass()
-	:PosX(0),
-	 PosY(0),
-	 PosZ(0),
-	 RotX(0),
-	 RotY(0),
-	 RotZ(0)
 {
 
 }

@@ -19,27 +19,25 @@ GraphicsClass::~GraphicsClass()
 }
 
 
-bool GraphicsClass::Init(int screenWidth, int screenHeight, HWND hWnd)
+bool GraphicsClass::Init(int screenWidth, int screenHeight, HWND hwnd)
 {
 	bool result;
 
-	/////////////////////// D3DClass /////////////////////////////////////
-
+	////////    D3DClass   //////////////////////////////////////
 	pD3D = new D3DClass;
 	if(!pD3D)
 	{
 		return false;
 	}
 
-	result = pD3D->Init(screenWidth, screenHeight, VSYNC_ENABLED, hWnd, FULL_SCREEN, SCREEN_DEPTH, SCREEN_NEAR);
+	result = pD3D->Init(screenWidth, screenHeight, VSYNC_ENABLED, hwnd, FULL_SCREEN, SCREEN_DEPTH, SCREEN_NEAR);
 	if(!result)
 	{
-		MessageBox(hWnd, L"Could not initialize Direct3D", L"Error", MB_OK);
+		MessageBox(hwnd, L"Could not initialize Direct3D", L"Error", MB_OK);
 		return false;
 	}
 
-	////////////////////////Camera  Class///////////////////////////
-
+	////////  Camera  Class///////////////////////////////////
 	pCamera = new CameraClass;
 	if (!pCamera)
 	{
@@ -47,35 +45,32 @@ bool GraphicsClass::Init(int screenWidth, int screenHeight, HWND hWnd)
 	}
 	pCamera->SetPosition(0.0f, 0.0f, -10.0f);
 
-	//////////////////////// Model Class ////////////////////////////
+	///////////  Model Class //////////////////////////////////
 	pModel = new ModelClass;
 	if (!pModel)
 	{
 		return false;
 	}
-
 	result = pModel->Init( pD3D->GetDevice() );
 	if(!result)
 	{
-		MessageBox(hWnd, L"Could not initialize the model object.", L"Error", MB_OK);
+		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
 		return false;
 	}
 
-	///////////////////////Shader Class ////////////////////////////
+	////////// Shader Class /////////////////////////////////////////
 	pShader = new ShaderClass;
 	if (!pShader)
 	{
        return false;
 	}
-
-	result = pShader->Init(pD3D->GetDevice(), hWnd);
+	result = pShader->Init(pD3D->GetDevice(), hwnd);
 	if(!result)
 	{
-		MessageBox(hWnd, L"Could not initialize the color shader object.", L"Error", MB_OK);
+		MessageBox(hwnd, L"Could not initialize the color shader object.", L"Error", MB_OK);
 		return false;
 	}
 	///////////////////////////////////////////////////////////////////
-
 	return true;
 }
 
@@ -106,7 +101,6 @@ void GraphicsClass::Shutdown()
 		pCamera = 0;
 	}
 
-	//Release d3d object
 	if(pD3D)
 	{
 		pD3D->Shutdown();
@@ -117,11 +111,12 @@ void GraphicsClass::Shutdown()
 }
 
 
-bool GraphicsClass::Render()
+bool GraphicsClass::Frame()
 {
 	bool result;
-	result = RenderGraphics();
 
+	// Render the graphics scene.
+	result = Render();
 	if(!result)
 	{
 		return false;
@@ -131,14 +126,13 @@ bool GraphicsClass::Render()
 }
 
 
-bool GraphicsClass::RenderGraphics()
+bool GraphicsClass::Render()
 {
 	D3DXMATRIX View, Proj, Model;
 	bool result;
 
 	pD3D->BeginScene(0.5f, 0.5f, 0.5f, 1.0f);
     pCamera->Render();
-
 	pCamera->GetViewMatrix(View);
 	pD3D->GetWorld(Model);
 	pD3D->GetProj(Proj);

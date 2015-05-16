@@ -27,7 +27,7 @@ private:
 
 	struct MatrixBuffer
 	{
-		D3DXMATRIX World;
+		D3DXMATRIX Model;
 		D3DXMATRIX View;
 		D3DXMATRIX Proj;
 	};
