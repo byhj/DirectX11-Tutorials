@@ -80,10 +80,10 @@
     <ClCompile Include="TextureClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ch10-Specular-Light.cpp">
+    <ClCompile Include="BitmapShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BitmapShader.cpp">
+    <ClCompile Include="ch11-2D-Rendering.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
