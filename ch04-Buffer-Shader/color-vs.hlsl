@@ -22,7 +22,11 @@ struct VS_OUT
 VS_OUT VS(VS_IN vs_in)
 {
 	VS_OUT vs_out;
-	vs_out.Position = vs_in.Position;
+	vs_out.Position.w = 1.0f;
+	vs_out.Position = mul(vs_in.Position, World);
+	vs_out.Position = mul(vs_out.Position, View);
+	vs_out.Position = mul(vs_out.Position, Proj);
+
 	vs_out.Color =  vs_in.Color;
 
 	return vs_out;
