@@ -228,18 +228,18 @@ void ShaderClass::OutputShaderErrorMessage(ID3D10Blob *pErrorMessage, HWND hwnd,
 
 }
 
-bool ShaderClass::SetShaderParameters(ID3D11DeviceContext *pD3D11DeviceContext, D3DXMATRIX Model, D3DXMATRIX View, D3DXMATRIX Proj)
+bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* pD3D11DeviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+										   D3DXMATRIX projectionMatrix)
 {
-
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	MatrixBuffer* dataPtr;
 	unsigned int bufferNumber;
 
 	// Transpose the matrices to prepare them for the shader.
-	D3DXMatrixTranspose(&Model, &Model);
-	D3DXMatrixTranspose(&View, &View);
-	D3DXMatrixTranspose(&Proj, &Proj);
+	D3DXMatrixTranspose(&worldMatrix, &worldMatrix);
+	D3DXMatrixTranspose(&viewMatrix, &viewMatrix);
+	D3DXMatrixTranspose(&projectionMatrix, &projectionMatrix);
 
 		// Lock the constant buffer so it can be written to.
 	result = pD3D11DeviceContext->Map(pMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -252,9 +252,9 @@ bool ShaderClass::SetShaderParameters(ID3D11DeviceContext *pD3D11DeviceContext, 
 	dataPtr = (MatrixBuffer*)mappedResource.pData;
 
 	// Copy the matrices into the constant buffer.
-	dataPtr->Model = Model;
-	dataPtr->View = View;
-	dataPtr->Proj = Proj;
+	dataPtr->World = worldMatrix;
+	dataPtr->View = viewMatrix;
+	dataPtr->Proj = projectionMatrix;
 
 	// Unlock the constant buffer.
 	pD3D11DeviceContext->Unmap(pMatrixBuffer, 0);
@@ -272,5 +272,6 @@ void ShaderClass::RenderShader(ID3D11DeviceContext *pD3D11DeviceContext, int Ind
 	pD3D11DeviceContext->IASetInputLayout(pInputLayout);
 	pD3D11DeviceContext->VSSetShader(pVS_Shader, NULL, 0);
 	pD3D11DeviceContext->PSSetShader(pPS_Shader, NULL, 0);
+
 	pD3D11DeviceContext->DrawIndexed(IndexCount, 0, 0);
 }
