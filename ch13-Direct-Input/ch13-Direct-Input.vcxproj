@@ -64,7 +64,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CameraClass.cpp" />
-    <ClCompile Include="ch12-Font-Engine.cpp" />
+    <ClCompile Include="ch13-Direct-Input" />
     <ClCompile Include="D3DClass.cpp" />
     <ClCompile Include="FontClass.cpp" />
     <ClCompile Include="FontShader.cpp" />

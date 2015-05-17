@@ -45,13 +45,13 @@
     <ClCompile Include="CameraClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ch12-Font-Engine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="D3DClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FontClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ch13-Direct-Input">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
