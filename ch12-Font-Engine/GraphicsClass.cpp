@@ -100,9 +100,11 @@ bool GraphicsClass::Init(int screenWidth, int screenHeight, HWND hWnd)
 	}
 
 	D3DXMATRIX baseViewMatrix;
+	pCamera->Render();
 	pCamera->GetViewMatrix(baseViewMatrix);
+
 	// Initialize the text object.
-	result = pText->Init(pD3D->GetDevice(), pD3D->GetDeviceContext(), hWnd, screenWidth, screenHeight, baseViewMatrix);
+	 result = pText->Init(pD3D->GetDevice(), pD3D->GetDeviceContext(), hWnd, screenWidth, screenHeight, baseViewMatrix);
 	if(!result)
 	{
 		MessageBox(hWnd, L"Could not initialize the text object.", L"Error", MB_OK);
@@ -212,16 +214,15 @@ bool GraphicsClass::RenderGraphics(float rot)
 
     pD3D->TurnZBufferOff();
     pD3D->TurnOnAlphaBlending();
+
     // Render the text strings.
     result = pText->Render(pD3D->GetDeviceContext(), World, Ortho);
     if(!result)
     {
     	return false;
     }
-    // Turn off alpha blending after rendering the text.
+
     pD3D->TurnOffAlphaBlending();
-    
-    // Turn the Z buffer back on now that all 2D rendering has completed.
     pD3D->TurnZBufferOn();
 /////////////////////////////////////////////////////////////////////////////////
 

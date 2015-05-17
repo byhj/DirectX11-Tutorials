@@ -58,7 +58,7 @@ bool TextClass::Init(ID3D11Device* pD3D11Device, ID3D11DeviceContext* pD3D11Devi
 	}
 
 	// Now update the sentence vertex buffer with the new string information.
-	result = UpdateBuffer(pSentence1, "Hello", 100, 100, 1.0f, 1.0f, 1.0f, pD3D11DeviceContext);
+	result = UpdateBuffer(pSentence1, "Hello", 100, 100, 1.0f, 0.0f, 0.0f, pD3D11DeviceContext);
 	if(!result)
 	{
 		return false;
