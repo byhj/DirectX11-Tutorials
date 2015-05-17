@@ -11,15 +11,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{378BA311-C4E4-4CF7-98E6-CB58E664CCEE}</ProjectGuid>
-    <RootNamespace>ch12FontEngine</RootNamespace>
+    <ProjectGuid>{EF901BC1-0469-4BA0-B228-4F7679196640}</ProjectGuid>
+    <RootNamespace>ch14DirectSound</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -33,7 +33,6 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\DirectX11-Tutorials.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -63,50 +62,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="FontClass.cpp" />
-    <ClCompile Include="FontShader.cpp" />
-    <ClCompile Include="CameraClass.cpp" />
-    <ClCompile Include="ch12-Font-Engine.cpp" />
-    <ClCompile Include="D3DClass.cpp" />
-    <ClCompile Include="GraphicsClass.cpp" />
-    <ClCompile Include="InputClass.cpp" />
-    <ClCompile Include="LightClass.cpp" />
-    <ClCompile Include="ModelClass.cpp" />
-    <ClCompile Include="ShaderClass.cpp" />
-    <ClCompile Include="SystemClass.cpp" />
-    <ClCompile Include="TextClass.cpp" />
-    <ClCompile Include="TextureClass.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="FontClass.h" />
-    <ClInclude Include="FontShader.h" />
-    <ClInclude Include="CameraClass.h" />
-    <ClInclude Include="D3DClass.h" />
-    <ClInclude Include="GraphicsClass.h" />
-    <ClInclude Include="InputClass.h" />
-    <ClInclude Include="LightClass.h" />
-    <ClInclude Include="ModelClass.h" />
-    <ClInclude Include="ShaderClass.h" />
-    <ClInclude Include="SystemClass.h" />
-    <ClInclude Include="TextClass.h" />
-    <ClInclude Include="TextureClass.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="font-fs.hlsl">
-      <FileType>Document</FileType>
-    </Text>
-    <Text Include="font-vs.hlsl">
-      <FileType>Document</FileType>
-    </Text>
-    <Text Include="light-fs.hlsl">
-      <FileType>Document</FileType>
-    </Text>
-    <Text Include="light-vs.hlsl">
-      <FileType>Document</FileType>
-    </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="shader-error.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

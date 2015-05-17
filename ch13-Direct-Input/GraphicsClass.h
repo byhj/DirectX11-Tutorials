@@ -28,10 +28,10 @@ public:
 
 	bool Init(int, int, HWND);
 	void Shutdown();
-	bool Render();
+	bool Render(int, int );
 
 private:
-	bool RenderGraphics(float);
+	bool RenderGraphics(float );
 
 	D3DClass     *pD3D;
 	CameraClass  *pCamera;

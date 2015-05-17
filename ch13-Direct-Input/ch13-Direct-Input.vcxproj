@@ -11,8 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{378BA311-C4E4-4CF7-98E6-CB58E664CCEE}</ProjectGuid>
-    <RootNamespace>ch12FontEngine</RootNamespace>
+    <ProjectGuid>{B734948C-FB4B-4B91-A138-457BC3ED320E}</ProjectGuid>
+    <RootNamespace>ch13DirectInput</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -63,11 +63,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="FontClass.cpp" />
-    <ClCompile Include="FontShader.cpp" />
     <ClCompile Include="CameraClass.cpp" />
     <ClCompile Include="ch12-Font-Engine.cpp" />
     <ClCompile Include="D3DClass.cpp" />
+    <ClCompile Include="FontClass.cpp" />
+    <ClCompile Include="FontShader.cpp" />
     <ClCompile Include="GraphicsClass.cpp" />
     <ClCompile Include="InputClass.cpp" />
     <ClCompile Include="LightClass.cpp" />
@@ -78,10 +78,10 @@
     <ClCompile Include="TextureClass.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FontClass.h" />
-    <ClInclude Include="FontShader.h" />
     <ClInclude Include="CameraClass.h" />
     <ClInclude Include="D3DClass.h" />
+    <ClInclude Include="FontClass.h" />
+    <ClInclude Include="FontShader.h" />
     <ClInclude Include="GraphicsClass.h" />
     <ClInclude Include="InputClass.h" />
     <ClInclude Include="LightClass.h" />
@@ -106,7 +106,11 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
+    <Text Include="fontdata.txt" />
     <Text Include="shader-error.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="font.dds" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
