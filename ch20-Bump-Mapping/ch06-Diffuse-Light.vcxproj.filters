@@ -68,7 +68,7 @@
     <ClCompile Include="CameraClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ch20-Bump-Mapping.cpp">
+    <ClCompile Include="ch06-Diffuse-Light.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="LightClass.cpp">
@@ -79,10 +79,10 @@
     <Text Include="shader-error.txt">
       <Filter>Resource Files</Filter>
     </Text>
-    <Text Include="texture-vs.hlsl">
+    <Text Include="light-fs.hlsl">
       <Filter>Resource Files</Filter>
     </Text>
-    <Text Include="texture-fs.hlsl">
+    <Text Include="light-vs.hlsl">
       <Filter>Resource Files</Filter>
     </Text>
   </ItemGroup>
