@@ -80,7 +80,6 @@ bool ModelClass::InitBuffer(ID3D11Device *pD3D11Device)
 	{
 		return false;
 	}
-	//CW , tex(0, 0) on the left top
 
 	// Load the vertex array with data.
 	VertexData[0].Position = D3DXVECTOR3(-1.0f, -1.0f, 0.0f);  // Bottom left.
@@ -95,9 +94,9 @@ bool ModelClass::InitBuffer(ID3D11Device *pD3D11Device)
 	VertexData[2].Tex      = D3DXVECTOR2(1.0f, 1.0f);
 	VertexData[2].Normal   = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 
-	IndexData[0] = 1;
-	IndexData[1] = 2;
-	IndexData[2] = 3;
+	IndexData[0] = 0;
+	IndexData[1] = 1;
+	IndexData[2] = 2;
 
    // Set up the description of the static vertex buffer.
 	D3D11_BUFFER_DESC VertexBufferDesc;

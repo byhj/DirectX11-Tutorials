@@ -76,8 +76,8 @@ bool ModelClass::InitBuffer(ID3D11Device *pD3D11Device)
 	Vertex *VertexData;
 	unsigned long *IndexData;
 	HRESULT result;
-	VertexCount = 36;
-	IndexCount = 36;
+	VertexCount = 6;
+	IndexCount = 6;
 
 	VertexData = new Vertex[VertexCount];
 	if (!VertexData)

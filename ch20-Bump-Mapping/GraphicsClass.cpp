@@ -46,7 +46,7 @@ bool GraphicsClass::Init(int screenWidth, int screenHeight, HWND hWnd)
 	{
 		return false;
 	}
-	pCamera->SetPosition(0.0f, 0.0f, -3.0f);
+	pCamera->SetPosition(0.0f, 0.0f, -5.0f);
 
 	//////////////////////// Model Class ////////////////////////////
 	pModel = new ModelClass;
@@ -84,7 +84,7 @@ bool GraphicsClass::Init(int screenWidth, int screenHeight, HWND hWnd)
 	{
 		return false;
 	}
-	pLight->SetDiffuseColor(1.0f, 0.0f, 0.0f, 1.0f);
+	pLight->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
 	pLight->SetDirection(0.0, 0.0, 1.0f);
 
 	return true;
@@ -167,7 +167,9 @@ bool GraphicsClass::RenderGraphics(float rot)
 	pD3D->GetProj(Proj);
 	pModel->Render( pD3D->GetDeviceContext() );
 
-	D3DXMatrixRotationZ(&World, rot);
+	//D3DXMatrixRotationX(&World, rot);
+	D3DXMatrixRotationY(&World, rot);
+	//D3DXMatrixRotationZ(&World, rot);
 
 	//Render the Model Using Shader
 	result = pShader->Render(pD3D->GetDeviceContext(), pModel->GetIndexCount(), World, View, Proj, 

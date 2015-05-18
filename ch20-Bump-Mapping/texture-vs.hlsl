@@ -18,7 +18,7 @@ struct VS_IN
 
 struct VS_OUT
 {
-	 float4 Position  :POSITION;
+	 float4 Position  :SV_POSITION;
 	 float2 Tex       :TEXCOORD0;
 	 float3 normal    :NORMAL;
 	 float3 tangent   :TANGENT;
