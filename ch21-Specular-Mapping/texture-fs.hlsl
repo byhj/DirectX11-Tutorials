@@ -6,15 +6,18 @@ struct VS_OUT
 	 float3 normal    :NORMAL;
 	 float3 tangent   :TANGENT;
 	 float3 binormal  :BINORMAL;
+	 float3 viewDirection :TEXCOORD1;
 };
 
 cbuffer LightBuffer
 {
 	float4 diffuseColor;
+	float4 specularColor;
+	float specularPower;
 	float3 lightDirection;
 };
 
-Texture2D shaderTextures[2];
+Texture2D shaderTextures[3];
 SamplerState SampleType;
 
 float4 PS(VS_OUT vs_out): SV_TARGET
@@ -25,6 +28,9 @@ float4 PS(VS_OUT vs_out): SV_TARGET
     float3 lightDir;
     float  lightIntensity;
     float4 color;
+    float4 specularIntensity;
+    float3 reflection;
+    float4 specular;
 
     textureColor = shaderTextures[0].Sample(SampleType, vs_out.Tex);
     bumpMap = shaderTextures[1].Sample(SampleType, vs_out.Tex);
@@ -49,5 +55,21 @@ float4 PS(VS_OUT vs_out): SV_TARGET
 
     // Combine the final bump light color with the texture color.
     color = color * textureColor;
+
+	if(lightIntensity > 0.0f)
+    {        // Sample the pixel from the specular map texture.
+        specularIntensity = shaderTextures[2].Sample(SampleType, vs_out.Tex);
+	        // Calculate the reflection vector based on the light intensity, normal vector, and light direction.
+        reflection = normalize(2 * lightIntensity * bumpNormal - lightDir); 
+
+        // Determine the amount of specular light based on the reflection vector, viewing direction, and specular power.
+        specular = pow(saturate( dot(reflection, vs_out.viewDirection) ), specularPower);
+		        // Use the specular map to determine the intensity of specular light at this pixel.
+        specular = specular * specularIntensity;
+		
+        // Add the specular component last to the output color.
+        color = saturate(color + specular);
+    }
+		
 	return color;
 }
