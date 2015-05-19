@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="InputClass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="LightClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -36,20 +33,29 @@
     <ClCompile Include="CameraClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ch20-Bump-Mapping.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="D3DClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ch21-Specular-Mapping.cpp">
+    <ClCompile Include="InputClass.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderTextureClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugWindowClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BitmapShader.cpp">
+      <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="InputClass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="LightClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -74,18 +80,33 @@
     <ClInclude Include="GraphicsClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="InputClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTextureClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugWindowClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BitmapShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="shader-error.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
-    <Text Include="cube.txt">
       <Filter>Resource Files</Filter>
     </Text>
     <Text Include="texture-vs.hlsl">
       <Filter>Resource Files</Filter>
     </Text>
     <Text Include="texture-fs.hlsl">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="bitmap-vs.hlsl">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="bitmap-fs.hlsl">
       <Filter>Resource Files</Filter>
     </Text>
   </ItemGroup>
