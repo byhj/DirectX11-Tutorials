@@ -64,7 +64,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CameraClass.cpp" />
-    <ClCompile Include="ch21-Specular-Mapping.cpp" />
+    <ClCompile Include="ch24-Clipping-Plane.cpp" />
     <ClCompile Include="D3DClass.cpp" />
     <ClCompile Include="GraphicsClass.cpp" />
     <ClCompile Include="InputClass.cpp" />

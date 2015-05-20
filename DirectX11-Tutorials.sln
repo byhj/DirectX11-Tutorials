@@ -57,6 +57,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ch27-Reflection", "ch27-Ref
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ch28-Screen-Fades", "ch28-Screen-Fades\ch28-Screen-Fades.vcxproj", "{CA42D8ED-3645-4F40-803D-4E4BEEBE4239}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ch29-Water", "ch29-Water\ch29-Water.vcxproj", "{A7FCD5BC-F4EF-43C6-8AD8-D378CE38E41F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ch30-Multi-Point-Light", "ch30-Multi-Point-Light\ch30-Multi-Point-Light.vcxproj", "{75747FCE-0B50-4A8B-BCC0-FDFC8F93B14C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -175,6 +179,14 @@ Global
 		{CA42D8ED-3645-4F40-803D-4E4BEEBE4239}.Debug|Win32.Build.0 = Debug|Win32
 		{CA42D8ED-3645-4F40-803D-4E4BEEBE4239}.Release|Win32.ActiveCfg = Release|Win32
 		{CA42D8ED-3645-4F40-803D-4E4BEEBE4239}.Release|Win32.Build.0 = Release|Win32
+		{A7FCD5BC-F4EF-43C6-8AD8-D378CE38E41F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A7FCD5BC-F4EF-43C6-8AD8-D378CE38E41F}.Debug|Win32.Build.0 = Debug|Win32
+		{A7FCD5BC-F4EF-43C6-8AD8-D378CE38E41F}.Release|Win32.ActiveCfg = Release|Win32
+		{A7FCD5BC-F4EF-43C6-8AD8-D378CE38E41F}.Release|Win32.Build.0 = Release|Win32
+		{75747FCE-0B50-4A8B-BCC0-FDFC8F93B14C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{75747FCE-0B50-4A8B-BCC0-FDFC8F93B14C}.Debug|Win32.Build.0 = Debug|Win32
+		{75747FCE-0B50-4A8B-BCC0-FDFC8F93B14C}.Release|Win32.ActiveCfg = Release|Win32
+		{75747FCE-0B50-4A8B-BCC0-FDFC8F93B14C}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

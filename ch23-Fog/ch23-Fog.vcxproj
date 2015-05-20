@@ -75,7 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CameraClass.cpp" />
-    <ClCompile Include="ch21-Specular-Mapping.cpp" />
+    <ClCompile Include="ch23-Fog.cpp" />
     <ClCompile Include="D3DClass.cpp" />
     <ClCompile Include="GraphicsClass.cpp" />
     <ClCompile Include="InputClass.cpp" />
