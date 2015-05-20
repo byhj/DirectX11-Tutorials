@@ -61,6 +61,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ch29-Water", "ch29-Water\ch
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ch30-Multi-Point-Light", "ch30-Multi-Point-Light\ch30-Multi-Point-Light.vcxproj", "{75747FCE-0B50-4A8B-BCC0-FDFC8F93B14C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ch31-3D-Sound", "ch31-3D-Sound\ch31-3D-Sound.vcxproj", "{EFC82F0C-3CC1-4686-BBCA-CB7B7D93B0E5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -187,6 +189,10 @@ Global
 		{75747FCE-0B50-4A8B-BCC0-FDFC8F93B14C}.Debug|Win32.Build.0 = Debug|Win32
 		{75747FCE-0B50-4A8B-BCC0-FDFC8F93B14C}.Release|Win32.ActiveCfg = Release|Win32
 		{75747FCE-0B50-4A8B-BCC0-FDFC8F93B14C}.Release|Win32.Build.0 = Release|Win32
+		{EFC82F0C-3CC1-4686-BBCA-CB7B7D93B0E5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EFC82F0C-3CC1-4686-BBCA-CB7B7D93B0E5}.Debug|Win32.Build.0 = Debug|Win32
+		{EFC82F0C-3CC1-4686-BBCA-CB7B7D93B0E5}.Release|Win32.ActiveCfg = Release|Win32
+		{EFC82F0C-3CC1-4686-BBCA-CB7B7D93B0E5}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

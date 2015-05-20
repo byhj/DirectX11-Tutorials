@@ -11,8 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{75747FCE-0B50-4A8B-BCC0-FDFC8F93B14C}</ProjectGuid>
-    <RootNamespace>ch30MultiPointLight</RootNamespace>
+    <ProjectGuid>{EFC82F0C-3CC1-4686-BBCA-CB7B7D93B0E5}</ProjectGuid>
+    <RootNamespace>ch313DSound</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -65,36 +65,54 @@
   <ItemGroup>
     <ClInclude Include="CameraClass.h" />
     <ClInclude Include="D3DClass.h" />
+    <ClInclude Include="FontClass.h" />
+    <ClInclude Include="FontShader.h" />
     <ClInclude Include="GraphicsClass.h" />
     <ClInclude Include="InputClass.h" />
     <ClInclude Include="LightClass.h" />
     <ClInclude Include="ModelClass.h" />
     <ClInclude Include="ShaderClass.h" />
+    <ClInclude Include="SoundClass.h" />
     <ClInclude Include="SystemClass.h" />
+    <ClInclude Include="TextClass.h" />
     <ClInclude Include="TextureClass.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CameraClass.cpp" />
-    <ClCompile Include="ch30-Multi-Point-Light.cpp" />
+    <ClCompile Include="ch31-3D-Sound.cpp" />
     <ClCompile Include="D3DClass.cpp" />
+    <ClCompile Include="FontClass.cpp" />
+    <ClCompile Include="FontShader.cpp" />
     <ClCompile Include="GraphicsClass.cpp" />
     <ClCompile Include="InputClass.cpp" />
     <ClCompile Include="LightClass.cpp" />
     <ClCompile Include="ModelClass.cpp" />
     <ClCompile Include="ShaderClass.cpp" />
+    <ClCompile Include="SoundClass.cpp" />
     <ClCompile Include="SystemClass.cpp" />
+    <ClCompile Include="TextClass.cpp" />
     <ClCompile Include="TextureClass.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="font.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="fontdata.txt" />
+    <Text Include="shader-error.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="font-fs.hlsl">
+      <FileType>Document</FileType>
+    </Text>
+    <Text Include="font-vs.hlsl">
+      <FileType>Document</FileType>
+    </Text>
     <Text Include="light-fs.hlsl">
       <FileType>Document</FileType>
     </Text>
     <Text Include="light-vs.hlsl">
       <FileType>Document</FileType>
     </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="shader-error.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
