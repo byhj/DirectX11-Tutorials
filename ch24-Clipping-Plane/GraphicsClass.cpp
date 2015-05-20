@@ -163,7 +163,7 @@ bool GraphicsClass::RenderGraphics(float rot)
 	bool result;
 
 	D3DXVECTOR4 clipPlane;
-	clipPlane = D3DXVECTOR4(0.0f, 0.5f, 0.5f, 0.0f);
+	clipPlane = D3DXVECTOR4(0.0f, -1.0f, 0.0f, 0.0f);
 
 	pD3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
     pCamera->Render();

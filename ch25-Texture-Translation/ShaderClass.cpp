@@ -461,7 +461,7 @@ bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* pD3D11DeviceContext, 
 	bufferNumber = 1;
 
 	// Now set the clip plane constant buffer in the vertex shader with the updated values.
-	pD3D11DeviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_translateBuffer);
+	pD3D11DeviceContext->PSSetConstantBuffers(bufferNumber, 1, &m_translateBuffer);
 	return true;
 }
 

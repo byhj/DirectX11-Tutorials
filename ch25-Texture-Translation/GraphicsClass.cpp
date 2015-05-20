@@ -141,7 +141,7 @@ bool GraphicsClass::Render()
 	bool result;
 
 	static float rot = 0.0f;
-	rot += (float)D3DX_PI * 0.00005f;
+	rot += (float)D3DX_PI * 0.00001f;
 	if (rot > 360.0f)
 	{
 		rot = 0.0f;
@@ -163,7 +163,7 @@ bool GraphicsClass::RenderGraphics(float rot)
 	bool result;
 
 	static float textureTranslation = 0.0f;
-	textureTranslation += 0.01f;
+	textureTranslation += 0.0001f;
 	if(textureTranslation > 1.0f)
 	{
 		textureTranslation -= 1.0f;

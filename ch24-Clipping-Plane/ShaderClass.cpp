@@ -460,7 +460,7 @@ bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* pD3D11DeviceContext, 
 	pD3D11DeviceContext->Unmap(m_clipPlaneBuffer, 0);
 
 	// Set the position of the clip plane constant buffer in the vertex shader.
-	bufferNumber = 1;
+	bufferNumber = 2;
 
 	// Now set the clip plane constant buffer in the vertex shader with the updated values.
 	pD3D11DeviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_clipPlaneBuffer);
