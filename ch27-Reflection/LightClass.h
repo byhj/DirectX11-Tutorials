@@ -1,0 +1,29 @@
+#ifndef LIGHTCLASS_H
+#define LIGHTCLASS_H
+
+#include <D3DX10math.h>
+
+class LightClass
+{
+public:
+	LightClass();
+	LightClass(const LightClass &);
+	~LightClass();
+
+	void SetDiffuseColor(float, float, float, float);
+	void SetDirection(float, float, float);
+	void SetSpecularColor(float, float, float, float);
+	void SetSpecularPower(float);
+
+	D3DXVECTOR4 GetDiffuseColor();
+	D3DXVECTOR3 GetDirection();
+	D3DXVECTOR4 GetSpecularColor();
+	float GetSpecularPower();
+
+private:
+	D3DXVECTOR4 diffuseColor;
+	D3DXVECTOR3 direction;
+	D3DXVECTOR4 specularColor;
+	float specularPower;
+};
+#endif
