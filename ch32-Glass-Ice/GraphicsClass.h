@@ -7,13 +7,15 @@
 #include "CameraClass.h"
 #include "ModelClass.h"
 #include "ShaderClass.h"
+#include "ReflectioShaderClass.h"
 #include "LightClass.h"
+#include "rendertextureclass.h"
 
 //Global
 const bool FULL_SCREEN   = false;
 const bool VSYNC_ENABLED = false;
-const float SCREEN_DEPTH = 100.0f;
-const float SCREEN_NEAR  = 1.0f;
+const float SCREEN_DEPTH = 1000.0f;
+const float SCREEN_NEAR  = 0.1f;
 
 class GraphicsClass
 {
@@ -25,6 +27,8 @@ public:
 	bool Init(int, int, HWND);
 	void Shutdown();
 	bool Render();
+	bool RenderToTexture();
+	bool RenderScene();
 
 private:
 	bool RenderGraphics(float);
@@ -32,7 +36,10 @@ private:
 	D3DClass    *pD3D;
 	CameraClass *pCamera;
 	ModelClass  *pModel;
+	ModelClass  *pModelFloor;
 	ShaderClass *pShader;
+	ReflectioShaderClass *pReflectionShader;
+	RenderTextureClass   *pRenderTexture;
 	LightClass  *pLight;
 };
 #endif //GraphicsClass
