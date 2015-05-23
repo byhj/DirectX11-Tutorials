@@ -24,10 +24,7 @@ VS_OUT VS(VS_IN vs_in)
 {
 	VS_OUT vs_out;
 	vs_out.Position.w = 1.0f;
-<<<<<<< HEAD
-=======
 
->>>>>>> origin
 	vs_out.Position = mul(vs_in.Position, World);
 	vs_out.Position = mul(vs_out.Position, View);
 	vs_out.Position = mul(vs_out.Position, Proj);

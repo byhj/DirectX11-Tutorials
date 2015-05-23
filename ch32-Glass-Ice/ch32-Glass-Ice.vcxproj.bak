@@ -11,15 +11,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{30183084-48B4-498C-A903-C1C771F2647E}</ProjectGuid>
-    <RootNamespace>ch38HardwareTessellation</RootNamespace>
+    <ProjectGuid>{71A2C8E1-0913-4974-BC0B-3FF2D53178E0}</ProjectGuid>
+    <RootNamespace>ch32GlassIce</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -64,41 +64,40 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CameraClass.cpp" />
-    <ClCompile Include="ch38-Hardware-Tessellation.cpp" />
+    <ClCompile Include="ch27-Reflection.cpp" />
     <ClCompile Include="D3DClass.cpp" />
     <ClCompile Include="GraphicsClass.cpp" />
     <ClCompile Include="InputClass.cpp" />
+    <ClCompile Include="LightClass.cpp" />
     <ClCompile Include="ModelClass.cpp" />
+    <ClCompile Include="ReflectioShaderClass.cpp" />
+    <ClCompile Include="RenderTextureClass.cpp" />
     <ClCompile Include="ShaderClass.cpp" />
     <ClCompile Include="SystemClass.cpp" />
+    <ClCompile Include="TextureClass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CameraClass.h" />
     <ClInclude Include="D3DClass.h" />
     <ClInclude Include="GraphicsClass.h" />
     <ClInclude Include="InputClass.h" />
+    <ClInclude Include="LightClass.h" />
     <ClInclude Include="ModelClass.h" />
+    <ClInclude Include="ReflectioShaderClass.h" />
+    <ClInclude Include="RenderTextureClass.h" />
     <ClInclude Include="ShaderClass.h" />
     <ClInclude Include="SystemClass.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="color-ps.hlsl">
-      <FileType>Document</FileType>
-    </Text>
-    <Text Include="color-vs.hlsl">
-      <FileType>Document</FileType>
-    </Text>
+    <ClInclude Include="TextureClass.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="shader-error.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="color-ds.hlsl">
-      <FileType>Document</FileType>
-    </Text>
-    <Text Include="color-hs.hlsl">
-      <FileType>Document</FileType>
-    </Text>
+>>>>>>> b132be200f06fe9d6441828f5c669cbf39a837be
+    <FxCompile Include="blend-ps.hlsl" />
+    <FxCompile Include="blend-vs.hlsl" />
+    <FxCompile Include="texture-fs.hlsl" />
+    <FxCompile Include="texture-vs.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

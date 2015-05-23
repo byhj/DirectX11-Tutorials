@@ -90,12 +90,9 @@
     <ClInclude Include="TextureClass.h" />
   </ItemGroup>
   <ItemGroup>
-<<<<<<< HEAD
-=======
     <Text Include="shader-error.txt" />
   </ItemGroup>
   <ItemGroup>
->>>>>>> b132be200f06fe9d6441828f5c669cbf39a837be
     <FxCompile Include="blend-ps.hlsl" />
     <FxCompile Include="blend-vs.hlsl" />
     <FxCompile Include="texture-fs.hlsl" />
