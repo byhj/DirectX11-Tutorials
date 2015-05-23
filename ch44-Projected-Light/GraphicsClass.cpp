@@ -119,7 +119,7 @@ bool GraphicsClass::Init(int screenWidth, int screenHeight, HWND hWnd)
 
 	pLight->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
 	pLight->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	pLight->SetDirection(0.0f, -0.75f, 0.5f);
+	pLight->SetPosition(2.0f, 5.0f, -2.0f);
 	
 	// Create the view point object.
 	m_ViewPoint = new ViewPointClass;
@@ -143,7 +143,7 @@ bool GraphicsClass::Init(int screenWidth, int screenHeight, HWND hWnd)
 	}
 
 	// Initialize the projection texture object.
-	result = m_ProjectionTexture->Init(pD3D->GetDevice(), L"../common/media/texture/dx11.dds");
+	result = m_ProjectionTexture->Init(pD3D->GetDevice(), L"../common/media/texture/grate.dds");
 	if(!result)
 	{
 		MessageBox(hWnd, L"Could not initialize the projection texture object.", L"Error", MB_OK);
@@ -230,7 +230,7 @@ bool GraphicsClass::RenderGraphics(float rot)
 	pGroundModel->Render(pD3D->GetDeviceContext());
 	result = pShadowShader->Render(pD3D->GetDeviceContext(), pGroundModel->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, 
 		pGroundModel->GetTexture(), pLight->GetAmbientColor(), pLight->GetDiffuseColor(), pLight->GetDirection(), 
-		viewMatrix2, projectionMatrix2, m_ProjectionTexture->GetTexture());
+		viewMatrix2, projectionMatrix2, m_ProjectionTexture->GetTexture(), pLight->GetPosition());
 	if(!result)
 	{
 		return false;
@@ -246,7 +246,7 @@ bool GraphicsClass::RenderGraphics(float rot)
 	pCubeModel->Render(pD3D->GetDeviceContext());
 	result = pShadowShader->Render(pD3D->GetDeviceContext(), pCubeModel->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, 
 		pCubeModel->GetTexture(), pLight->GetAmbientColor(), pLight->GetDiffuseColor(), pLight->GetDirection(), 
-		viewMatrix2, projectionMatrix2,  m_ProjectionTexture->GetTexture());
+		viewMatrix2, projectionMatrix2,  m_ProjectionTexture->GetTexture(), pLight->GetPosition());
 	if(!result)
 	{
 		return false;

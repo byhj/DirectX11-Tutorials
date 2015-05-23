@@ -75,8 +75,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ch37-Instancing", "ch37-Ins
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ch38-Hardware-Tessellation", "ch38-Hardware-Tessellation\ch38-Hardware-Tessellation.vcxproj", "{30183084-48B4-498C-A903-C1C771F2647E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ch32-Glass-Ice", "ch32-Glass-Ice\ch32-Glass-Ice.vcxproj", "{71A2C8E1-0913-4974-BC0B-3FF2D53178E0}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ch39-Particle-Systems", "ch39-Particle-Systems\ch39-Particle-Systems.vcxproj", "{C9C9B4EB-C2A5-45A7-A37C-0E3132782BAE}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ch40-Shadow-Mapping", "ch40-Shadow-Mapping\ch40-Shadow-Mapping.vcxproj", "{CF906315-D5AD-42A4-8ECC-3CE8B909357C}"
@@ -100,6 +98,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ch49-Shadow-Transparency", "ch49-Shadow-Transparency\ch49-Shadow-Transparency.vcxproj", "{9789FA7C-E9AE-436F-9A53-13A64D5C7F81}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ch50-Deferred-Shading", "ch50-Deferred-Shading\ch50-Deferred-Shading.vcxproj", "{347549DB-1719-4FBB-A7E3-3F0C5B5E9653}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ch32-Glass-Ice", "ch32-Glass-Ice\ch32-Glass-Ice.vcxproj", "{B275FB26-2DA9-4C23-BDD2-F96F4E85C30D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -255,10 +255,6 @@ Global
 		{30183084-48B4-498C-A903-C1C771F2647E}.Debug|Win32.Build.0 = Debug|Win32
 		{30183084-48B4-498C-A903-C1C771F2647E}.Release|Win32.ActiveCfg = Release|Win32
 		{30183084-48B4-498C-A903-C1C771F2647E}.Release|Win32.Build.0 = Release|Win32
-		{71A2C8E1-0913-4974-BC0B-3FF2D53178E0}.Debug|Win32.ActiveCfg = Debug|Win32
-		{71A2C8E1-0913-4974-BC0B-3FF2D53178E0}.Debug|Win32.Build.0 = Debug|Win32
-		{71A2C8E1-0913-4974-BC0B-3FF2D53178E0}.Release|Win32.ActiveCfg = Release|Win32
-		{71A2C8E1-0913-4974-BC0B-3FF2D53178E0}.Release|Win32.Build.0 = Release|Win32
 		{C9C9B4EB-C2A5-45A7-A37C-0E3132782BAE}.Debug|Win32.ActiveCfg = Debug|Win32
 		{C9C9B4EB-C2A5-45A7-A37C-0E3132782BAE}.Debug|Win32.Build.0 = Debug|Win32
 		{C9C9B4EB-C2A5-45A7-A37C-0E3132782BAE}.Release|Win32.ActiveCfg = Release|Win32
@@ -307,6 +303,10 @@ Global
 		{347549DB-1719-4FBB-A7E3-3F0C5B5E9653}.Debug|Win32.Build.0 = Debug|Win32
 		{347549DB-1719-4FBB-A7E3-3F0C5B5E9653}.Release|Win32.ActiveCfg = Release|Win32
 		{347549DB-1719-4FBB-A7E3-3F0C5B5E9653}.Release|Win32.Build.0 = Release|Win32
+		{B275FB26-2DA9-4C23-BDD2-F96F4E85C30D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B275FB26-2DA9-4C23-BDD2-F96F4E85C30D}.Debug|Win32.Build.0 = Debug|Win32
+		{B275FB26-2DA9-4C23-BDD2-F96F4E85C30D}.Release|Win32.ActiveCfg = Release|Win32
+		{B275FB26-2DA9-4C23-BDD2-F96F4E85C30D}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
