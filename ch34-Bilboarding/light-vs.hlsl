@@ -19,7 +19,6 @@ struct VS_OUT
 	float4 Position: SV_POSITION;
 	float2 Tex :TEXCOORD;
 	float3 Normal: NORMAL;
-	float4 depthPosition: TEXTURE1;
 };
 
 VS_OUT VS(VS_IN vs_in)
@@ -34,7 +33,7 @@ VS_OUT VS(VS_IN vs_in)
 	vs_out.Normal   = normalize(vs_out.Normal);
 
 	vs_out.Tex = vs_in.Tex;
-	vs_out.depthPosition = vs_out.Position;
+
 	return vs_out;
 }
 

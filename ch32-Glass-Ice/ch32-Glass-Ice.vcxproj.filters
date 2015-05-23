@@ -88,16 +88,32 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+<<<<<<< HEAD
     <FxCompile Include="texture-fs.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
     <FxCompile Include="texture-vs.hlsl">
+=======
+    <Text Include="shader-error.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="texture-fs.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="blend-ps.hlsl">
+>>>>>>> b132be200f06fe9d6441828f5c669cbf39a837be
       <Filter>Resource Files</Filter>
     </FxCompile>
     <FxCompile Include="blend-vs.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
+<<<<<<< HEAD
     <FxCompile Include="blend-ps.hlsl">
+=======
+    <FxCompile Include="texture-vs.hlsl">
+>>>>>>> b132be200f06fe9d6441828f5c669cbf39a837be
       <Filter>Resource Files</Filter>
     </FxCompile>
   </ItemGroup>

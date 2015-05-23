@@ -13,7 +13,7 @@
 const bool FULL_SCREEN   = false;
 const bool VSYNC_ENABLED = false;
 const float SCREEN_DEPTH = 100.0f;
-const float SCREEN_NEAR  = 0.1f;
+const float SCREEN_NEAR  = 1.0f;
 
 class GraphicsClass
 {
