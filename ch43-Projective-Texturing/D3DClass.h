@@ -36,7 +36,7 @@ public:
 
 	ID3D11DepthStencilView* GetDepthStencilView();
 	void SetBackBufferRenderTarget();
-
+	void ResetViewport();
 private:
 	bool m_vsync_enabled;
 	int m_videoCardMemory;
@@ -52,6 +52,7 @@ private:
 	ID3D11RasterizerState    * pRasterState;
 	ID3D11BlendState         *pAlphaEnableBlendingState;
 	ID3D11BlendState         *pAlphaDisableBlendingState;
+	D3D11_VIEWPORT m_viewport;
 	D3DXMATRIX Proj;
 	D3DXMATRIX World;
 	D3DXMATRIX View;

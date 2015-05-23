@@ -1,31 +1,28 @@
-#include "ShaderClass.h"
+#include "DepthShaderClass.h"
 
-ShaderClass::ShaderClass()
+DepthShaderClass::DepthShaderClass()
 	:pVS_Shader(0),
 	 pPS_Shader(0),
 	 pInputLayout(0),
-	 pMatrixBuffer(0),
-	 pLightBuffer(0),
-	 pCameraBuffer(0),
 	 pSampleState(0)
 {
 
 }
 
-ShaderClass::ShaderClass(const ShaderClass &)
+DepthShaderClass::DepthShaderClass(const DepthShaderClass &)
 {
 
 }
 
-ShaderClass::~ShaderClass()
+DepthShaderClass::~DepthShaderClass()
 {
 
 }
 
-bool ShaderClass::Init(ID3D11Device *pD3D11Device, HWND hwnd)
+bool DepthShaderClass::Init(ID3D11Device *pD3D11Device, HWND hwnd)
 {
 	bool result;
-	result = InitShader(pD3D11Device, hwnd, L"texture-vs.hlsl", L"texture-fs.hlsl");
+	result = InitShader(pD3D11Device, hwnd, L"depth-vs.hlsl", L"depth-ps.hlsl");
 
 	if (!result)
 	{
@@ -34,22 +31,20 @@ bool ShaderClass::Init(ID3D11Device *pD3D11Device, HWND hwnd)
 	return true;
 }
 
-void ShaderClass::Shutdown()
+void DepthShaderClass::Shutdown()
 {
 	ShutdownShader();
 
 	return ;
 }
 
-bool ShaderClass::Render(ID3D11DeviceContext *pD3D11DeviceContext, int IndexCount
-						 ,D3DXMATRIX World, D3DXMATRIX View, D3DXMATRIX Proj, 
-						 ID3D11ShaderResourceView** pTexture,
-						 D3DXVECTOR3 lightDirection, D3DXVECTOR4 diffuseColor,
-						 D3DXVECTOR3 cameraPosition, D3DXVECTOR4 specularColor, float specularPower)
+bool DepthShaderClass::Render(ID3D11DeviceContext *pD3D11DeviceContext, int IndexCount
+						 ,D3DXMATRIX World, D3DXMATRIX View, D3DXMATRIX Proj)
+					
 {
 	bool result;
-	result = SetShaderParameters(pD3D11DeviceContext, World, View, Proj, pTexture, 
-		                         lightDirection, diffuseColor, cameraPosition, specularColor, specularPower);
+	result = SetShaderParameters(pD3D11DeviceContext, World, View, Proj);
+		                        
 	if(!result)
 	{
 		return false;
@@ -59,13 +54,13 @@ bool ShaderClass::Render(ID3D11DeviceContext *pD3D11DeviceContext, int IndexCoun
 	return true;
 }
 
-bool ShaderClass::InitShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
+bool DepthShaderClass::InitShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
 {
 	HRESULT result;
 	ID3D10Blob* errorMessage;
 	ID3D10Blob* vertexShaderBuffer;
 	ID3D10Blob* pixelShaderBuffer;
-	D3D11_INPUT_ELEMENT_DESC polygonLayout[5];
+	D3D11_INPUT_ELEMENT_DESC polygonLayout[1];
 	unsigned int numElements;
 	D3D11_BUFFER_DESC matrixBufferDesc;
 
@@ -137,45 +132,6 @@ bool ShaderClass::InitShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename,
 	polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[0].InstanceDataStepRate = 0;
 
-	polygonLayout[1].SemanticName = "TEXCOORD";
-	polygonLayout[1].SemanticIndex = 0;
-	polygonLayout[1].Format = DXGI_FORMAT_R32G32_FLOAT;
-	polygonLayout[1].InputSlot = 0;
-	polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[1].InstanceDataStepRate = 0;
-
-	polygonLayout[2].SemanticName = "NORMAL";
-	polygonLayout[2].SemanticIndex = 0;
-	polygonLayout[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	polygonLayout[2].InputSlot = 0;
-	polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[2].InstanceDataStepRate = 0;
-
-	polygonLayout[2].SemanticName = "NORMAL";
-	polygonLayout[2].SemanticIndex = 0;
-	polygonLayout[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	polygonLayout[2].InputSlot = 0;
-	polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[2].InstanceDataStepRate = 0;
-
-	polygonLayout[3].SemanticName = "TANGENT";
-	polygonLayout[3].SemanticIndex = 0;
-	polygonLayout[3].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	polygonLayout[3].InputSlot = 0;
-	polygonLayout[3].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	polygonLayout[3].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[3].InstanceDataStepRate = 0;
-
-	polygonLayout[4].SemanticName = "BINORMAL";
-	polygonLayout[4].SemanticIndex = 0;
-	polygonLayout[4].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	polygonLayout[4].InputSlot = 0;
-	polygonLayout[4].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	polygonLayout[4].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[4].InstanceDataStepRate = 0;
 
 	// Get a count of the elements in the layout.
 	numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
@@ -233,56 +189,15 @@ bool ShaderClass::InitShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename,
 		return false;
 	}
 
-	D3D11_BUFFER_DESC lightBufferDesc;
-	// Note that ByteWidth always needs to be a multiple of 16 if using D3D11_BIND_CONSTANT_BUFFER or CreateBuffer will fail.
-	lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	lightBufferDesc.ByteWidth = sizeof(LightBuffer);
-	lightBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	lightBufferDesc.MiscFlags = 0;
-	lightBufferDesc.StructureByteStride = 0;
-
-	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-	result = device->CreateBuffer(&lightBufferDesc, NULL, &pLightBuffer);
-	if(FAILED(result))
-	{
-		return false;
-	}
-
-	D3D11_BUFFER_DESC cameraBufferDesc;
-	// Setup the description of the camera dynamic constant buffer that is in the vertex shader.
-	cameraBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	cameraBufferDesc.ByteWidth = sizeof(CameraBufferType);
-	cameraBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cameraBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	cameraBufferDesc.MiscFlags = 0;
-	cameraBufferDesc.StructureByteStride = 0;
-
-	// Create the camera constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-	result = device->CreateBuffer(&cameraBufferDesc, NULL, &pCameraBuffer);
-	if(FAILED(result))
-	{
-		return false;
-	}
 
 	return true;
 }
 
 
 
-void ShaderClass::ShutdownShader()
+void DepthShaderClass::ShutdownShader()
 {
-	if(pCameraBuffer)
-	{
-		pCameraBuffer->Release();
-		pCameraBuffer = 0;
-	}
 
-	if (pLightBuffer)
-	{
-		pLightBuffer->Release();
-		pLightBuffer = 0;
-	}
 	// Release the sampler state.
 	if(pSampleState)
 	{
@@ -314,7 +229,7 @@ void ShaderClass::ShutdownShader()
 	return ;
 }
 
-void ShaderClass::OutputShaderErrorMessage(ID3D10Blob *pErrorMessage, HWND hwnd, WCHAR *shaderFileName)
+void DepthShaderClass::OutputShaderErrorMessage(ID3D10Blob *pErrorMessage, HWND hwnd, WCHAR *shaderFileName)
 {
 	char *pCompileErrors;
 	unsigned long bufferSize, i;
@@ -340,10 +255,7 @@ void ShaderClass::OutputShaderErrorMessage(ID3D10Blob *pErrorMessage, HWND hwnd,
 
 }
 
-bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* pD3D11DeviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
-									  D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView **pTexture,
-									  D3DXVECTOR3 lightDirection, D3DXVECTOR4 diffuseColor, D3DXVECTOR3 cameraPosition, D3DXVECTOR4 specularColor,
-									  float specularPower)
+bool DepthShaderClass::SetShaderParameters(ID3D11DeviceContext* pD3D11DeviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,D3DXMATRIX projectionMatrix)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -376,58 +288,12 @@ bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* pD3D11DeviceContext, 
 
 	// Finanly set the constant buffer in the vertex shader with the updated values.
 	pD3D11DeviceContext->VSSetConstantBuffers(bufferNumber, 1, &pMatrixBuffer);
-	// Set shader texture resource in the pixel shader.
-	pD3D11DeviceContext->PSSetShaderResources(0, 3, pTexture);
-
-
-	///////////////////////////////////////////////////
-	result = pD3D11DeviceContext->Map(pLightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	if ( FAILED(result) )
-	{
-		return false;
-	}
-
-	LightBuffer *dataPtr2;
-	dataPtr2 = (LightBuffer*)mappedResource.pData;
-
-	dataPtr2->diffuseColor = diffuseColor;
-	dataPtr2->lightDirection = lightDirection;
-	dataPtr2->specularColor = specularColor;
-	dataPtr2->specularPower = specularPower;
-
-	pD3D11DeviceContext->Unmap(pLightBuffer, 0);
-	bufferNumber = 0;
-	pD3D11DeviceContext->PSSetConstantBuffers(bufferNumber, 1, &pLightBuffer);
-
-
-	CameraBufferType *dataPtr3;
-	// Lock the camera constant buffer so it can be written to.
-	result = pD3D11DeviceContext->Map(pCameraBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	if(FAILED(result))
-	{
-		return false;
-	}
-
-	// Get a pointer to the data in the constant buffer.
-	dataPtr3 = (CameraBufferType*)mappedResource.pData;
-
-	// Copy the camera position into the constant buffer.
-	dataPtr3->cameraPosition = cameraPosition;
-
-	// Unlock the matrix constant buffer.
-	pD3D11DeviceContext->Unmap(pCameraBuffer, 0);
-
-	// Set the position of the camera constant buffer in the vertex shader as the second buffer.
-	bufferNumber = 1;
-
-	// Now set the matrix constant buffer in the vertex shader with the updated values.
-	pD3D11DeviceContext->VSSetConstantBuffers(bufferNumber, 1, &pCameraBuffer);
 
 	return true;
 }
 
 
-void ShaderClass::RenderShader(ID3D11DeviceContext *pD3D11DeviceContext, int IndexCount)
+void DepthShaderClass::RenderShader(ID3D11DeviceContext *pD3D11DeviceContext, int IndexCount)
 {
 	pD3D11DeviceContext->IASetInputLayout(pInputLayout);
 	pD3D11DeviceContext->VSSetShader(pVS_Shader, NULL, 0);

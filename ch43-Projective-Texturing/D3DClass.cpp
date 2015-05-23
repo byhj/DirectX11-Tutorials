@@ -566,3 +566,10 @@ void D3DClass::SetBackBufferRenderTarget()
 
 	return;
 }
+void D3DClass::ResetViewport()
+{
+	// Set the viewport.
+	pD3D11DeviceContext->RSSetViewports(1, &m_viewport);
+
+	return;
+}

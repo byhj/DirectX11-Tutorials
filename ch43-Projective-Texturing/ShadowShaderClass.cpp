@@ -1,28 +1,29 @@
-#include "ReflectioShaderClass.h"
+#include "ShadowShaderClass.h"
 
-ReflectioShaderClass::ReflectioShaderClass()
+ShadowShaderClass::ShadowShaderClass()
 	:pVS_Shader(0),
 	 pPS_Shader(0),
 	 pInputLayout(0),
-	 pSampleState(0)
+	 pMatrixBuffer(0)
+
 {
 
 }
 
-ReflectioShaderClass::ReflectioShaderClass(const ReflectioShaderClass &)
+ShadowShaderClass::ShadowShaderClass(const ShadowShaderClass &)
 {
 
 }
 
-ReflectioShaderClass::~ReflectioShaderClass()
+ShadowShaderClass::~ShadowShaderClass()
 {
 
 }
 
-bool ReflectioShaderClass::Init(ID3D11Device *pD3D11Device, HWND hwnd)
+bool ShadowShaderClass::Init(ID3D11Device *pD3D11Device, HWND hwnd)
 {
 	bool result;
-	result = InitShader(pD3D11Device, hwnd, L"blend-vs.hlsl", L"blend-ps.hlsl");
+	result = InitShader(pD3D11Device, hwnd, L"shadow-vs.hlsl", L"shadow-ps.hlsl");
 
 	if (!result)
 	{
@@ -31,36 +32,37 @@ bool ReflectioShaderClass::Init(ID3D11Device *pD3D11Device, HWND hwnd)
 	return true;
 }
 
-void ReflectioShaderClass::Shutdown()
+void ShadowShaderClass::Shutdown()
 {
 	ShutdownShader();
 
 	return ;
 }
 
-bool ReflectioShaderClass::Render(ID3D11DeviceContext *pD3D11DeviceContext, int IndexCount
-						 ,D3DXMATRIX World, D3DXMATRIX View, D3DXMATRIX Proj, 
-						 ID3D11ShaderResourceView* pTexture, ID3D11ShaderResourceView* reflectionTexture,D3DXMATRIX reflectionMatrix)
+bool ShadowShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, 
+									 D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, D3DXVECTOR4 ambientColor, D3DXVECTOR4 diffuseColor, 
+									 D3DXVECTOR3 lightDirection, D3DXMATRIX viewMatrix2, D3DXMATRIX projectionMatrix2, 
+									 ID3D11ShaderResourceView* projectionTexture)
 {
 	bool result;
-	result = SetShaderParameters(pD3D11DeviceContext, World, View, Proj, pTexture, reflectionTexture, reflectionMatrix);
-		                        
+	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, texture, ambientColor, diffuseColor, lightDirection, 
+		viewMatrix2, projectionMatrix2, projectionTexture);
 	if(!result)
 	{
 		return false;
 	}
 
-	RenderShader(pD3D11DeviceContext, IndexCount);
+		RenderShader(deviceContext, indexCount);
 	return true;
 }
 
-bool ReflectioShaderClass::InitShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
+bool ShadowShaderClass::InitShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
 {
 	HRESULT result;
 	ID3D10Blob* errorMessage;
 	ID3D10Blob* vertexShaderBuffer;
 	ID3D10Blob* pixelShaderBuffer;
-	D3D11_INPUT_ELEMENT_DESC polygonLayout[2];
+	D3D11_INPUT_ELEMENT_DESC polygonLayout[3];
 	unsigned int numElements;
 	D3D11_BUFFER_DESC matrixBufferDesc;
 
@@ -140,6 +142,14 @@ bool ReflectioShaderClass::InitShader(ID3D11Device* device, HWND hwnd, WCHAR* vs
 	polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[1].InstanceDataStepRate = 0;
 
+	polygonLayout[2].SemanticName = "NORMAL";
+	polygonLayout[2].SemanticIndex = 0;
+	polygonLayout[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	polygonLayout[2].InputSlot = 0;
+	polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	polygonLayout[2].InstanceDataStepRate = 0;
+
 
 	// Get a count of the elements in the layout.
 	numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
@@ -173,9 +183,8 @@ bool ReflectioShaderClass::InitShader(ID3D11Device* device, HWND hwnd, WCHAR* vs
 	{
 		return false;
 	}
-
 	D3D11_SAMPLER_DESC samplerDesc;
-	// Create a texture sampler state description.
+
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -191,41 +200,40 @@ bool ReflectioShaderClass::InitShader(ID3D11Device* device, HWND hwnd, WCHAR* vs
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// Create the texture sampler state.
-	result = device->CreateSamplerState(&samplerDesc, &pSampleState);
+	result = device->CreateSamplerState(&samplerDesc, &m_sampleState);
 	if(FAILED(result))
 	{
 		return false;
 	}
 
-	D3D11_BUFFER_DESC reflectionBufferDesc;
-	// Setup the description of the reflection dynamic constant buffer that is in the vertex shader.
-	reflectionBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	reflectionBufferDesc.ByteWidth = sizeof(ReflectionBufferType);
-	reflectionBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	reflectionBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	reflectionBufferDesc.MiscFlags = 0;
-	reflectionBufferDesc.StructureByteStride = 0;
+	D3D11_BUFFER_DESC lightBufferDesc;
 
-	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-	result = device->CreateBuffer(&reflectionBufferDesc, NULL, &pReflectionBuffer);
+
+	// Setup the description of the light dynamic constant buffer that is in the pixel shader.
+	lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	lightBufferDesc.ByteWidth = sizeof(LightBufferType);
+	lightBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	lightBufferDesc.MiscFlags = 0;
+	lightBufferDesc.StructureByteStride = 0;
+
+	// Create the constant buffer pointer so we can access the pixel shader constant buffer from within this class.
+	result = device->CreateBuffer(&lightBufferDesc, NULL, &m_lightBuffer);
 	if(FAILED(result))
 	{
 		return false;
 	}
+
+
+
 	return true;
 }
 
 
 
-void ReflectioShaderClass::ShutdownShader()
+void ShadowShaderClass::ShutdownShader()
 {
 
-	// Release the sampler state.
-	if(pSampleState)
-	{
-		pSampleState->Release();
-		pSampleState = 0;
-	}
 
 	if (pMatrixBuffer)
 	{
@@ -251,7 +259,7 @@ void ReflectioShaderClass::ShutdownShader()
 	return ;
 }
 
-void ReflectioShaderClass::OutputShaderErrorMessage(ID3D10Blob *pErrorMessage, HWND hwnd, WCHAR *shaderFileName)
+void ShadowShaderClass::OutputShaderErrorMessage(ID3D10Blob *pErrorMessage, HWND hwnd, WCHAR *shaderFileName)
 {
 	char *pCompileErrors;
 	unsigned long bufferSize, i;
@@ -277,26 +285,32 @@ void ReflectioShaderClass::OutputShaderErrorMessage(ID3D10Blob *pErrorMessage, H
 
 }
 
-bool ReflectioShaderClass::SetShaderParameters(ID3D11DeviceContext* pD3D11DeviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
-									  D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView *pTexture,ID3D11ShaderResourceView* reflectionTexture,D3DXMATRIX reflectionMatrix)
+bool ShadowShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, 
+											D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, D3DXVECTOR4 ambientColor, 
+											D3DXVECTOR4 diffuseColor, D3DXVECTOR3 lightDirection, D3DXMATRIX viewMatrix2, D3DXMATRIX projectionMatrix2,
+											ID3D11ShaderResourceView* projectionTexture)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	unsigned int bufferNumber;
+	MatrixBuffer* dataPtr;
+	LightBufferType* dataPtr2;
 
 	// Transpose the matrices to prepare them for the shader.
 	D3DXMatrixTranspose(&worldMatrix, &worldMatrix);
 	D3DXMatrixTranspose(&viewMatrix, &viewMatrix);
 	D3DXMatrixTranspose(&projectionMatrix, &projectionMatrix);
-	D3DXMatrixTranspose(&reflectionMatrix, &reflectionMatrix);
-		// Lock the constant buffer so it can be written to.
-	result = pD3D11DeviceContext->Map(pMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	D3DXMatrixTranspose(&viewMatrix2, &viewMatrix2);
+	D3DXMatrixTranspose(&projectionMatrix2, &projectionMatrix2);
+
+	
+	// Lock the constant buffer so it can be written to.
+	result = deviceContext->Map(pMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if(FAILED(result))
 	{
 		return false;
 	}
-	
-	MatrixBuffer* dataPtr;
+
 	// Get a pointer to the data in the constant buffer.
 	dataPtr = (MatrixBuffer*)mappedResource.pData;
 
@@ -304,53 +318,57 @@ bool ReflectioShaderClass::SetShaderParameters(ID3D11DeviceContext* pD3D11Device
 	dataPtr->World = worldMatrix;
 	dataPtr->View = viewMatrix;
 	dataPtr->Proj = projectionMatrix;
+	dataPtr->View2 = viewMatrix2;
+	dataPtr->Projection2 = projectionMatrix2;
 
 	// Unlock the constant buffer.
-	pD3D11DeviceContext->Unmap(pMatrixBuffer, 0);
+	deviceContext->Unmap(pMatrixBuffer, 0);
+
+	// Set the position of the constant buffer in the vertex shader.
 	bufferNumber = 0;
 
-	// Finanly set the constant buffer in the vertex shader with the updated values.
-	pD3D11DeviceContext->VSSetConstantBuffers(bufferNumber, 1, &pMatrixBuffer);
+	// Now set the constant buffer in the vertex shader with the updated values.
+	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &pMatrixBuffer);
 
-
-	// Lock the constant buffer so it can be written to.
-	result = pD3D11DeviceContext->Map(pReflectionBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	// Lock the light constant buffer so it can be written to.
+	result = deviceContext->Map(m_lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if(FAILED(result))
 	{
 		return false;
 	}
-	ReflectionBufferType *dataPtr2;
-	// Get a pointer to the data in the matrix constant buffer.
-	dataPtr2 = (ReflectionBufferType*)mappedResource.pData;
 
-	// Copy the matrix into the reflection constant buffer.
-	dataPtr2->reflectionMatrix = reflectionMatrix;
+	// Get a pointer to the data in the constant buffer.
+	dataPtr2 = (LightBufferType*)mappedResource.pData;
 
-	// Unlock the reflection constant buffer.
-	pD3D11DeviceContext->Unmap(pReflectionBuffer, 0);
+	// Copy the lighting variables into the constant buffer.
+	dataPtr2->ambientColor = ambientColor;
+	dataPtr2->diffuseColor = diffuseColor;
+	dataPtr2->lightDirection = lightDirection;
+	dataPtr2->padding = 0.0f;
 
-	// Set the position of the reflection constant buffer in the vertex shader.
-	bufferNumber = 1;
+	// Unlock the constant buffer.
+	deviceContext->Unmap(m_lightBuffer, 0);
 
-	// Now set the reflection constant buffer in the vertex shader with the updated values.
-	pD3D11DeviceContext->VSSetConstantBuffers(bufferNumber, 1, &pReflectionBuffer);
+	// Set the position of the light constant buffer in the pixel shader.
+	bufferNumber = 0;
 
-	// Set shader texture resource in the pixel shader.
-	pD3D11DeviceContext->PSSetShaderResources(0, 1, &pTexture);
-	pD3D11DeviceContext->PSSetShaderResources(1, 1, &reflectionTexture);
+	// Finally set the light constant buffer in the pixel shader with the updated values.
+	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &m_lightBuffer);
 
+	deviceContext->PSSetShaderResources(0, 1, &texture);
+	deviceContext->PSSetShaderResources(1, 1, &projectionTexture);
+	
 	return true;
 }
 
 
-void ReflectioShaderClass::RenderShader(ID3D11DeviceContext *pD3D11DeviceContext, int IndexCount)
+void ShadowShaderClass::RenderShader(ID3D11DeviceContext *pD3D11DeviceContext, int IndexCount)
 {
 	pD3D11DeviceContext->IASetInputLayout(pInputLayout);
 	pD3D11DeviceContext->VSSetShader(pVS_Shader, NULL, 0);
 	pD3D11DeviceContext->PSSetShader(pPS_Shader, NULL, 0);
 
-	// Set the sampler state in the pixel shader.
-	pD3D11DeviceContext->PSSetSamplers(0, 1, &pSampleState);
+    pD3D11DeviceContext->PSSetSamplers(0, 1, &m_sampleState);
 
 	pD3D11DeviceContext->DrawIndexed(IndexCount, 0, 0);
 }

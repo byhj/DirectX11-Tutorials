@@ -6,17 +6,20 @@
 #include "D3DClass.h"
 #include "CameraClass.h"
 #include "ModelClass.h"
-#include "ShaderClass.h"
-#include "ReflectioShaderClass.h"
+#include "ShadowShaderClass.h"
+#include "DepthShaderClass.h"
 #include "LightClass.h"
 #include "rendertextureclass.h"
+#include "viewpointclass.h"
 
 //Global
 const bool FULL_SCREEN   = false;
 const bool VSYNC_ENABLED = false;
-const float SCREEN_DEPTH = 1000.0f;
-const float SCREEN_NEAR  = 0.1f;
 
+const float SCREEN_DEPTH = 100.0f;
+const float SCREEN_NEAR = 1.0f;
+const int SHADOWMAP_WIDTH = 1024;
+const int SHADOWMAP_HEIGHT = 1024;
 class GraphicsClass
 {
 public:
@@ -35,11 +38,10 @@ private:
 
 	D3DClass    *pD3D;
 	CameraClass *pCamera;
-	ModelClass  *pModel;
-	ModelClass  *pModelFloor;
-	ShaderClass *pShader;
-	ReflectioShaderClass *pReflectionShader;
-	RenderTextureClass   *pRenderTexture;
+    ModelClass *pCubeModel, *pGroundModel, *pSphereModel;
+	ShadowShaderClass *pShadowShader;
 	LightClass  *pLight;
+	TextureClass* m_ProjectionTexture;
+	ViewPointClass* m_ViewPoint;
 };
 #endif //GraphicsClass
