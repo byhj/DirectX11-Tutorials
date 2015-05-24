@@ -103,7 +103,7 @@ bool GraphicsClass::Init(int screenWidth, int screenHeight, HWND hWnd)
 	}
 
 	// Initialize the ground model object.
-	result = pGroundModel->Init(pD3D->GetDevice(), L"../common/media/texture/metal001.dds" , "plane01.txt");
+	result = pGroundModel->Init(pD3D->GetDevice(), L"../common/media/texture/metal001.dds" , "floor.txt");
 	if(!result)
 	{
 		MessageBox(hWnd, L"Could not initialize the ground model object.", L"Error", MB_OK);
