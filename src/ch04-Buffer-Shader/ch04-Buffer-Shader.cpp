@@ -1,4 +1,6 @@
+#ifdef _WIN32
 #define _XM_NO_INTRINSICS_
+#endif 
 
 #include "common/d3dApp.h"
 #include <common/d3dShader.h>
@@ -9,19 +11,43 @@ public:
 	D3DInitApp()
 	{
 		m_AppName = L"DirectX11: ch04-Buffer-Shader";
-		m_pSwapChain          = 0;
-		m_pD3D11Device        = 0;
-		m_pD3D11DeviceContext = 0;
-		m_pRenderTargetView   = 0;
+
+		m_pInputLayout        = NULL;
+		m_pVS                 = NULL;
+		m_pPS                 = NULL;
+		m_pSwapChain          = NULL;
+		m_pD3D11Device        = NULL;
+		m_pD3D11DeviceContext = NULL;
+		m_pRenderTargetView   = NULL;
+		m_pMVPBuffer          = NULL;
+		m_pVertexBuffer       = NULL;
+		m_pIndexBuffer        = NULL;
 	}
 
 	bool v_InitD3D();
 	void v_Render();
 
+    void v_Shutdown()
+	{
+		ReleaseCOM(m_pInputLayout       )
+		ReleaseCOM(m_pVS                )
+		ReleaseCOM(m_pPS                )
+		ReleaseCOM(m_pSwapChain         )
+		ReleaseCOM(m_pD3D11Device       )
+		ReleaseCOM(m_pD3D11DeviceContext)
+		ReleaseCOM(m_pRenderTargetView  )
+		ReleaseCOM(m_pMVPBuffer         )
+		ReleaseCOM(m_pVertexBuffer      )
+		ReleaseCOM(m_pIndexBuffer       )
+	}
+
 private:
 	bool init_buffer();
 	bool init_device();
 	bool init_shader();
+	bool init_camera();
+
+private:
 
 	struct cbPerObject
 	{
@@ -35,7 +61,6 @@ private:
 		D3DXVECTOR4 Color;
 	};
 
-	ID3D11Buffer            *m_pMVPBuffer;
 	ID3D11InputLayout       *m_pInputLayout;
 	ID3D11VertexShader      *m_pVS;
 	ID3D11PixelShader       *m_pPS;
@@ -43,7 +68,7 @@ private:
 	ID3D11Device            *m_pD3D11Device;
 	ID3D11DeviceContext     *m_pD3D11DeviceContext;
 	ID3D11RenderTargetView  *m_pRenderTargetView;
-
+	ID3D11Buffer            *m_pMVPBuffer;
 	ID3D11Buffer            *m_pVertexBuffer;
 	ID3D11Buffer            *m_pIndexBuffer;
 	int m_VertexCount;
@@ -65,21 +90,23 @@ CALL_MAIN(D3DInitApp);
 
 bool D3DInitApp::v_InitD3D()
 {
-	init_device();
+    init_device();
 	init_buffer();
+	init_camera();
 	init_shader();
-
 
  	return true;
 }
 
 void D3DInitApp::v_Render()
 {
-	//Render 
+	//Render scene 
+
 	D3DXCOLOR bgColor( 0.0f, 0.0f, 0.0f, 1.0f );
 	Model = XMMatrixIdentity();
 	MVP = (Model * View * Proj);
 	cbPerObj.MVP = XMMatrixTranspose(MVP);	
+
 	m_pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbPerObj, 0, 0 );
 	m_pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
@@ -117,17 +144,17 @@ bool D3DInitApp::init_device()
 
 	//Create the double buffer chain
 	hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE,
-		NULL, NULL, NULL, NULL, D3D11_SDK_VERSION, 
-		&swapChainDesc, &m_pSwapChain, &m_pD3D11Device,
-		NULL, &m_pD3D11DeviceContext);
+		                               NULL, NULL, NULL, NULL, D3D11_SDK_VERSION, 
+		                               &swapChainDesc, &m_pSwapChain, &m_pD3D11Device,
+		                               NULL, &m_pD3D11DeviceContext);
 
 	//Create backbuffer, buffer also is a texture
 	ID3D11Texture2D *pBackBuffer;
 	hr = m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBuffer);
 	hr = m_pD3D11Device->CreateRenderTargetView(pBackBuffer, NULL, &m_pRenderTargetView);
 	pBackBuffer->Release();
-
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, NULL);
+
 	return true;
 }
 
@@ -135,45 +162,7 @@ bool D3DInitApp::init_buffer()
 {
 	HRESULT result;
 
-
-
-	return true;
-}
-
-bool D3DInitApp::init_shader()
-{
-	HRESULT result;
-
-	D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc[2];
-
-	pInputLayoutDesc[0].SemanticName         = "POSITION";
-	pInputLayoutDesc[0].SemanticIndex        = 0;
-	pInputLayoutDesc[0].Format               = DXGI_FORMAT_R32G32B32_FLOAT;
-	pInputLayoutDesc[0].InputSlot            = 0;
-	pInputLayoutDesc[0].AlignedByteOffset    = 0;
-	pInputLayoutDesc[0].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[0].InstanceDataStepRate = 0;
-
-	pInputLayoutDesc[1].SemanticName         = "COLOR";
-	pInputLayoutDesc[1].SemanticIndex        = 0;
-	pInputLayoutDesc[1].Format               = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	pInputLayoutDesc[1].InputSlot            = 0;
-	pInputLayoutDesc[1].AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
-	pInputLayoutDesc[1].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[1].InstanceDataStepRate = 0;
-	UINT numElements = ARRAYSIZE(pInputLayoutDesc);
-
-	TestShader.init(m_pD3D11Device, GetHwnd());
-	TestShader.attachVS(L"triangle.vsh", pInputLayoutDesc);
-	TestShader.attachPS(L"triangle.psh");
-	TestShader.use();
-
-	m_pD3D11DeviceContext->IASetInputLayout(TestShader.GetInputLayout());
-	m_pD3D11DeviceContext->VSSetShader(TestShader.GetVS(), NULL, 0);
-	m_pD3D11DeviceContext->PSSetShader(TestShader.GetPS(), NULL, 0);
-
-
-	/////////////////////////Index Buffer ///////////////////////////
+	///////////////////////////Index Buffer ////////////////////////////////
 	m_VertexCount = 3;
 	Vertex *VertexData = new Vertex[m_VertexCount];
 
@@ -206,7 +195,7 @@ bool D3DInitApp::init_shader()
 		return false;
 	}
 
-	/////////////////////////Index Buffer ///////////////////////////
+	/////////////////////////////////Index Buffer ///////////////////////////////////////
 	m_IndexCount = 3;
 	unsigned long *IndexData= new unsigned long[m_IndexCount];
 	IndexData[0] = 0;  // Bottom left.
@@ -234,33 +223,23 @@ bool D3DInitApp::init_shader()
 		return false;
 	}
 
+	////////////////////////////////////////////////////////////////////////////////////////
 	// Release the arrays now that the vertex and index buffers have been created and loaded.
 	delete [] VertexData;
 	VertexData = 0;
-
 	delete [] IndexData;
 	IndexData = 0;
 
-
+	// Set vertex buffer stride and offset.=
 	unsigned int stride;
 	unsigned int offset;
-	// Set vertex buffer stride and offset.
 	stride = sizeof(Vertex); 
 	offset = 0;
 	m_pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
 	m_pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	m_pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-
-	//set viewpot
-	D3D11_VIEWPORT vp;
-	ZeroMemory(&vp, sizeof(D3D11_VIEWPORT));
-	vp.TopLeftX = 0;
-	vp.TopLeftY = 0;
-	vp.Width    = m_ScreenWidth;
-	vp.Height   = m_ScreenHeight;
-	m_pD3D11DeviceContext->RSSetViewports(1, &vp);
-
+	////////////////////////////////Const Buffer//////////////////////////////////////
 
 	D3D11_BUFFER_DESC mvpDesc;	
 	ZeroMemory(&mvpDesc, sizeof(D3D11_BUFFER_DESC));
@@ -271,11 +250,60 @@ bool D3DInitApp::init_shader()
 	mvpDesc.MiscFlags      = 0;
 	m_pD3D11Device->CreateBuffer(&mvpDesc, NULL, &m_pMVPBuffer);
 
+	return true;
+}
+
+bool D3DInitApp::init_camera()
+{
+	//Viewport Infomation
+	D3D11_VIEWPORT vp;
+	ZeroMemory(&vp, sizeof(D3D11_VIEWPORT));
+	vp.TopLeftX = 0;
+	vp.TopLeftY = 0;
+	vp.Width    = m_ScreenWidth;
+	vp.Height   = m_ScreenHeight;
+	m_pD3D11DeviceContext->RSSetViewports(1, &vp);
+
+	//MVP Matrix
 	camPos    = XMVectorSet( 0.0f, 0.0f, -5.0f, 0.0f );
 	camTarget = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
 	camUp     = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
 	View      = XMMatrixLookAtLH( camPos, camTarget, camUp );
 	Proj      = XMMatrixPerspectiveFovLH( 0.4f*3.14f, GetAspect(), 1.0f, 1000.0f);
+
+
+	return true;
+}
+
+bool D3DInitApp::init_shader()
+{
+	HRESULT result;
+
+	D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc[2];
+	pInputLayoutDesc[0].SemanticName         = "POSITION";
+	pInputLayoutDesc[0].SemanticIndex        = 0;
+	pInputLayoutDesc[0].Format               = DXGI_FORMAT_R32G32B32_FLOAT;
+	pInputLayoutDesc[0].InputSlot            = 0;
+	pInputLayoutDesc[0].AlignedByteOffset    = 0;
+	pInputLayoutDesc[0].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc[0].InstanceDataStepRate = 0;
+
+	pInputLayoutDesc[1].SemanticName         = "COLOR";
+	pInputLayoutDesc[1].SemanticIndex        = 0;
+	pInputLayoutDesc[1].Format               = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	pInputLayoutDesc[1].InputSlot            = 0;
+	pInputLayoutDesc[1].AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
+	pInputLayoutDesc[1].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc[1].InstanceDataStepRate = 0;
+
+	TestShader.init(m_pD3D11Device, GetHwnd());
+	TestShader.attachVS(L"triangle.vsh", pInputLayoutDesc);
+	TestShader.attachPS(L"triangle.psh");
+	TestShader.use();
+
+	m_pD3D11DeviceContext->IASetInputLayout(TestShader.GetInputLayout());
+	m_pD3D11DeviceContext->VSSetShader(TestShader.GetVS(), NULL, 0);
+	m_pD3D11DeviceContext->PSSetShader(TestShader.GetPS(), NULL, 0);
 
 	return true;
 }

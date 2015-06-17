@@ -2,7 +2,7 @@
 #define D3DAPP_H
 
 #include <string>
-#define _XM_NO_INTRINSICS_
+
 #if defined(DEBUG) || defined(_DEBUG)
 #define _CRTDBG_MAP_ALLOC
 #include <crtdbg.h>
@@ -15,6 +15,7 @@
 #include <d3dcommon.h>
 #include <d3d11.h>
 #include <D3DX10math.h>
+#include <D3DX11async.h>
 
 #include <ctime>
 #include <algorithm>
@@ -39,12 +40,14 @@ public:
 
 	virtual	bool v_InitD3D();
 	virtual bool v_Init();
-	virtual void v_Reshape(){};
-	virtual void v_Render();
-	virtual void v_Update(){};
-	virtual void v_MouseDown() {};
-	virtual void v_MouseMove(){};
-	virtual void v_MouseUp(){};
+	virtual void v_Reshape()  {}
+	virtual void v_Shutdown() {}
+	virtual void v_Render()   {}
+	virtual void v_Update()   {}
+
+	virtual void v_MouseDown() {}
+	virtual void v_MouseMove() {}
+	virtual void v_MouseUp()   {}
 
 protected:
 	int m_ScreenWidth;
@@ -96,7 +99,7 @@ int D3DApp::Run()
 		}
 
 	}
-
+	v_Shutdown();
 	return (int)msg.wParam;
 }
 
@@ -111,10 +114,7 @@ bool D3DApp::v_Init()
 	return true;
 }
 
-void D3DApp::v_Render()
-{
 
-}
 bool D3DApp::init_window()
 {
 	//Set the window in the middle of screen
