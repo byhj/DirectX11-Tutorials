@@ -1,10 +1,13 @@
 #include "common/d3dApp.h"
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline, int iCmdshow)
+class FrameWorkApp: public D3DApp
 {
-	byhj::D3DApp *System = new byhj::D3DApp;
+public:
+	FrameWorkApp()
+	{
+		 m_AppName = L"DirectX11.0: ch02-FrameWork";
+	}
+	~FrameWorkApp(){}
+};
 
-	System->Run();
-
-	bool result;
-}
+CALL_MAIN(FrameWorkApp);

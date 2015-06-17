@@ -15,7 +15,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\common\d3dApp.h" />
-    <ClInclude Include="..\..\include\common\d3dDebug.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{876C5654-278A-4E0A-8B85-2A020A4846C7}</ProjectGuid>

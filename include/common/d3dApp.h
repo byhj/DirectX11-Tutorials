@@ -20,28 +20,31 @@
 
 #include "d3dDebug.h"
 
-namespace byhj
-{
-
 class D3DApp
 {
 public:
-	D3DApp(){};
-	virtual ~D3DApp() {};
+	D3DApp():m_AppName(L"Framework"), m_WndClassName(L"D3DWindow") {}
+	virtual ~D3DApp() {}
 
 	int Run();
 	LRESULT CALLBACK MessageHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-	virtual bool v_Init();
-	virtual void v_Reshape(){};
-	virtual void v_Render();
-	virtual void v_Update(){};
+	 bool v_Init();
+	 void v_Reshape(){};
+	 void v_Render();
+	 void v_Update(){};
 
-	virtual void v_MouseDown() {};
-	virtual void v_MouseMove(){};
-	virtual void v_MouseUp(){};
+	 void v_MouseDown() {};
+	 void v_MouseMove(){};
+	 void v_MouseUp(){};
+protected:
 
-
+	int m_ScreenWidth;
+	int m_ScreenHeight;
+	int m_PosX;
+	int m_PosY;
+	LPCTSTR m_AppName;
+	LPCTSTR m_WndClassName;
 
 private:
 	bool init_window();
@@ -51,20 +54,12 @@ private:
 	HWND      GetHwnd() const;
 	float     GetAspect() const;
 private:
-
-	int m_ScreenWidth;
-	int m_ScreenHeight;
-	int m_PosX;
-	int m_PosY;
-
-	LPCTSTR m_AppName;
-	LPCTSTR m_WndClassName;
 	HINSTANCE m_hInstance;
 	HWND m_hWnd;
 };
 
 static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-static byhj::D3DApp *app = NULL;
+static D3DApp *AppHandle = 0;
 
 int D3DApp::Run()
 {	
@@ -108,16 +103,19 @@ void D3DApp::v_Render()
 }
 bool D3DApp::init_window()
 {
-	//Window Class information
+	//Set the window in the middle of screen
 	m_ScreenWidth = GetSystemMetrics(SM_CXSCREEN) * 0.75;
 	m_ScreenHeight = GetSystemMetrics(SM_CYSCREEN) * 0.75;
 	m_PosX = (GetSystemMetrics(SM_CXSCREEN) - m_ScreenWidth)  / 2;
 	m_PosY = (GetSystemMetrics(SM_CYSCREEN) - m_ScreenHeight) / 2;
 
+	AppHandle = this;
+	m_hInstance = GetModuleHandle(NULL);
+
 	WNDCLASSEX wc;	
 	wc.cbSize = sizeof(WNDCLASSEX);	
-	wc.style = CS_HREDRAW | CS_VREDRAW;	
-	//wc.lpfnWndProc = WndProc;	
+	wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+	wc.lpfnWndProc = WndProc;	
 	wc.cbClsExtra = NULL;	
 	wc.cbWndExtra = NULL;	
 	wc.hInstance = m_hInstance;
@@ -138,7 +136,7 @@ bool D3DApp::init_window()
 
 	m_hWnd = CreateWindowEx(	
 		NULL,	           
-		m_WndClassName,	  
+		m_WndClassName,
 		m_AppName,
 		WS_OVERLAPPEDWINDOW,	
 		m_PosX, m_PosY,
@@ -157,6 +155,8 @@ bool D3DApp::init_window()
 	}
 
 	ShowWindow(m_hWnd, SW_SHOW);
+	SetForegroundWindow(m_hWnd);
+	SetFocus(m_hWnd);
 	UpdateWindow(m_hWnd);	
 
 	return true;
@@ -183,31 +183,44 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 {
 	switch(umessage)
 	{
-	case WM_DESTROY:
-		{
-			PostQuitMessage(0);
-			return 0;
-		}
-	case WM_CLOSE:
-		{
-			PostQuitMessage(0);		
-			return 0;
-		}
+	    case WM_KEYDOWN: 
+	    	switch (wparam) 
+	    	{ 
+	    	    case VK_ESCAPE:
+	    		{
+	    			PostQuitMessage(0);
+	    			return 0;
+	    		}
+	    	} 
+	    case WM_DESTROY:
+	    {
+	    		PostQuitMessage(0);
+	    		return 0;
+	    }
+	    case WM_CLOSE:
+	    {
+	    		PostQuitMessage(0);		
+	    		return 0;
+	    }
+	    	// All other messages pass to the message handler in the system class.
+	    default:
+	    {
+	    		return AppHandle->MessageHandler(hwnd, umessage, wparam, lparam);
+	    }
 	}
 }
 
-}
 
-/*
-byhj::D3DApp * byhj::D3DApp::app; 
+
+//D3DApp * D3DApp::app; 
 #define CALL_MAIN(a)                                    \
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline, int iCmdshow) \
 {                                                       \
 	a *app = new a;                                     \
-	app->Run(app);                                      \
+	app->Run();                                         \
 	delete app;                                         \
 	return 0;                                           \
 }
 
-*/
+
 #endif
