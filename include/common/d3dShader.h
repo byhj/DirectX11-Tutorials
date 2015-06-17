@@ -137,5 +137,6 @@ bool Shader::attachPS(WCHAR* Filename)
 	PixelShaderBuffer->Release();
 	PixelShaderBuffer = 0;
 
+	return true;
 }
 #endif
