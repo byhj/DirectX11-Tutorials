@@ -1,7 +1,11 @@
-#define _XM_NO_INTRINSICS_
-
 #include "common/d3dApp.h"
 #include <common/d3dShader.h>
+
+
+
+
+
+
 
 class D3DInitApp: public D3DApp
 {
@@ -17,11 +21,15 @@ public:
 
 	bool v_InitD3D();
 	void v_Render();
-
+	XMMATRIX MVP;
+	XMMATRIX Model;
+	XMMATRIX View;
+	XMMATRIX Proj;
 private:
 	bool init_buffer();
 	bool init_device();
 	bool init_shader();
+
 
 	struct cbPerObject
 	{
@@ -34,7 +42,9 @@ private:
 		D3DXVECTOR3 Position;
 		D3DXVECTOR4 Color;
 	};
-
+	XMVECTOR camPos;
+	XMVECTOR camTarget;
+	XMVECTOR camUp;
 	ID3D11Buffer            *m_pMVPBuffer;
 	ID3D11InputLayout       *m_pInputLayout;
 	ID3D11VertexShader      *m_pVS;
@@ -48,17 +58,7 @@ private:
 	ID3D11Buffer            *m_pIndexBuffer;
 	int m_VertexCount;
 	int m_IndexCount;
-
 	Shader TestShader;
-
-	XMMATRIX MVP;
-	XMMATRIX Model;
-	XMMATRIX View;
-	XMMATRIX Proj;
-
-	XMVECTOR camPos;
-	XMVECTOR camTarget;
-	XMVECTOR camUp;
 };
 
 CALL_MAIN(D3DInitApp);

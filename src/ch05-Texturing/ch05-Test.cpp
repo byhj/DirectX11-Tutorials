@@ -10,6 +10,15 @@ struct cbPerObject
 	XMMATRIX  MVP;
 };
 cbPerObject cbPerObj;
+
+XMMATRIX MVP;
+XMMATRIX Model;
+XMMATRIX View;
+XMMATRIX Proj;
+XMVECTOR camPos;
+XMVECTOR camTarget;
+XMVECTOR camUp;
+
 struct Vertex
 {
 	Vertex(){}
@@ -52,13 +61,7 @@ private:
 	ID3D10Blob             *PS_Buffer;
 	ID3D11InputLayout      *pInputLayout;
 
-	XMMATRIX MVP;
-	XMMATRIX Model;
-	XMMATRIX View;
-	XMMATRIX Proj;
-	XMVECTOR camPos;
-	XMVECTOR camTarget;
-	XMVECTOR camUp;
+
 };
 
 CALL_MAIN(D3DInitApp);
@@ -138,13 +141,27 @@ bool D3DInitApp::init_buffer()
 	//vs, ps shader input layout
 	HRESULT hr;
 	hr = D3DX11CompileFromFile(L"triangle.vsh", 0, 0, "VS", "vs_4_0", 0, 0, 0, &VS_Buffer, 0, 0);
-	hr = D3DX11CompileFromFile(L"triangle.psh", 0, 0, "PS", "ps_4_0", 0, 0, 0, &PS_Buffer, 0, 0);
 	hr = pDevice->CreateVertexShader(VS_Buffer->GetBufferPointer(), VS_Buffer->GetBufferSize(),NULL, &pVS);
-	hr = pDevice->CreatePixelShader(PS_Buffer->GetBufferPointer(), PS_Buffer->GetBufferSize(),NULL, &pPS);
 
+
+	//set input layout
+	D3D11_INPUT_ELEMENT_DESC layout[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },  
+		{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
+	};
+
+	UINT numElements = ARRAYSIZE(layout);
+	pDevice->CreateInputLayout(layout, numElements, VS_Buffer->GetBufferPointer(), VS_Buffer->GetBufferSize(), &pInputLayout);
+
+
+	hr = D3DX11CompileFromFile(L"triangle.psh", 0, 0, "PS", "ps_4_0", 0, 0, 0, &PS_Buffer, 0, 0);
+	hr = pDevice->CreatePixelShader(PS_Buffer->GetBufferPointer(), PS_Buffer->GetBufferSize(),NULL, &pPS);
+   
 	pDeviceContext->VSSetShader(pVS, 0, 0);
 	pDeviceContext->PSSetShader(pPS, 0, 0);
-
+	pDeviceContext->IASetInputLayout(pInputLayout);
+	pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//triangle data
 	Vertex VertexData[] = 
 	{
@@ -191,17 +208,6 @@ bool D3DInitApp::init_buffer()
 	UINT offset = 0;
 	pDeviceContext->IASetVertexBuffers(0, 1, &pVB, &stride, &offset);
 
-	//set input layout
-	D3D11_INPUT_ELEMENT_DESC layout[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },  
-		{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
-	};
-
-	UINT numElements = ARRAYSIZE(layout);
-	pDevice->CreateInputLayout(layout, numElements, VS_Buffer->GetBufferPointer(), VS_Buffer->GetBufferSize(), &pInputLayout);
-	pDeviceContext->IASetInputLayout(pInputLayout);
-	pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 
 	//Describe our Depth/Stencil Buffer

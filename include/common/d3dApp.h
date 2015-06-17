@@ -2,7 +2,7 @@
 #define D3DAPP_H
 
 #include <string>
-
+#define _XM_NO_INTRINSICS_
 #if defined(DEBUG) || defined(_DEBUG)
 #define _CRTDBG_MAP_ALLOC
 #include <crtdbg.h>
