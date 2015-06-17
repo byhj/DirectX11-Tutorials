@@ -5,15 +5,8 @@
 #include <D3DX10math.h>
 #include <D3DX11async.h>
 #include <fstream>
-
-enum ShaderType
-{
-	VS,
-	HS,
-	DS,
-	GS,
-	PS
-};
+#include <iostream>
+#include <string>
 
 class Shader
 {
@@ -49,26 +42,21 @@ void Shader::Debug(ID3D10Blob *pErrorMessage, HWND hwnd, WCHAR *shaderFileName)
 {
 	char *pCompileErrors;
 	unsigned long bufferSize, i;
-	std::ofstream fout;
 
 	pCompileErrors = (char*)(pErrorMessage->GetBufferPointer());
-	bufferSize = pErrorMessage->GetBufferSize();
+	std::string errorStr = pCompileErrors;
+	unsigned found = errorStr.find_last_of("\\") ;
+	errorStr = errorStr.substr( found + 1);
+	std::cerr << errorStr;
 
-	fout.open("shader-error.txt");
-	for (i = 0; i < bufferSize; ++i)
-	{
-		fout << pCompileErrors[i];
-	}
-
-	fout.close();
 	pErrorMessage->Release();
 	pErrorMessage = 0;
 
-	// Pop a message up on the screen to notify the user to check the text file for compile errors.
-	MessageBox(hwnd, L"Error compiling shader.  Check shader-error.txt for message.", shaderFileName, MB_OK);
+	MessageBox(hwnd, L"Error compiling shader", shaderFileName, MB_OK);
 
 	return;
-
+	// Pop a message up on the screen to notify the user to check the text file for compile errors.
+	
 }
 
 bool Shader::attachVS(WCHAR* Filename,  D3D11_INPUT_ELEMENT_DESC *pInputLayoutDesc)

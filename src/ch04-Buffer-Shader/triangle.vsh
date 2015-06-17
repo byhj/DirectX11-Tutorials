@@ -13,9 +13,9 @@ struct VS_OUTPUT
 VS_OUTPUT VS(float4 inPos: POSITION, float4 inColor: COLOR0)
 {	
  
-   VS_OUTPUT vs_out;
-   vs_out.Pos = mul(inPos, MVP);
-   vs_out.Color = inColor;
+   VS_OUTPU vs_out;
+   vs_out.Po = mul(inPos, MVP);
+   vs_out.Clor = inColor;
  
    return vs_out;
 }

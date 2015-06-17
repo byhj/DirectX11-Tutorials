@@ -1,3 +1,5 @@
+#pragma comment( linker, "/subsystem:\"console\" /entry:\"WinMainCRTStartup\"")
+
 #ifdef _WIN32
 #define _XM_NO_INTRINSICS_
 #endif 
