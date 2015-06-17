@@ -11,6 +11,11 @@
 #include <windows.h>
 #include <d3dx11.h>
 #include <xnamath.h>
+#include <dxgi.h>
+#include <d3dcommon.h>
+#include <d3d11.h>
+#include <D3DX10math.h>
+
 #include <ctime>
 #include <algorithm>
 #include <string>
@@ -23,22 +28,25 @@
 class D3DApp
 {
 public:
-	D3DApp():m_AppName(L"Framework"), m_WndClassName(L"D3DWindow") {}
+	D3DApp():m_AppName(L"Framework"), m_WndClassName(L"D3DWindow") 
+	{
+
+	}
 	virtual ~D3DApp() {}
 
 	int Run();
 	LRESULT CALLBACK MessageHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-	 bool v_Init();
-	 void v_Reshape(){};
-	 void v_Render();
-	 void v_Update(){};
+	virtual	bool v_InitD3D();
+	virtual bool v_Init();
+	virtual void v_Reshape(){};
+	virtual void v_Render();
+	virtual void v_Update(){};
+	virtual void v_MouseDown() {};
+	virtual void v_MouseMove(){};
+	virtual void v_MouseUp(){};
 
-	 void v_MouseDown() {};
-	 void v_MouseMove(){};
-	 void v_MouseUp(){};
 protected:
-
 	int m_ScreenWidth;
 	int m_ScreenHeight;
 	int m_PosX;
@@ -46,16 +54,20 @@ protected:
 	LPCTSTR m_AppName;
 	LPCTSTR m_WndClassName;
 
+	//void      GetVideoCardInfo(char &, int &);
+	HINSTANCE GetAppInst() const { return m_hInstance; }
+	HWND      GetHwnd()    const { return m_hWnd; }
+	float     GetAspect()  const { return (float)m_ScreenWidth / m_ScreenHeight; }
+
 private:
 	bool init_window();
-	bool init_d3d();
 
-	HINSTANCE GetAppInst() const;
-	HWND      GetHwnd() const;
-	float     GetAspect() const;
 private:
 	HINSTANCE m_hInstance;
-	HWND m_hWnd;
+	HWND      m_hWnd;
+	int       m_videoCardMemory;
+	char      m_videoCardInfo;
+
 };
 
 static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -91,7 +103,7 @@ bool D3DApp::v_Init()
 	if (!init_window())
 	   return false;
 
-	if (!init_d3d())
+	if (!v_InitD3D())
 		return false;
 
 	return true;
@@ -162,7 +174,7 @@ bool D3DApp::init_window()
 	return true;
 }
 
-bool D3DApp::init_d3d()
+bool D3DApp::v_InitD3D()
 {
 	return true;
 }
