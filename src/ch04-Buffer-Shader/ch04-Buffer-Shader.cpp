@@ -23,9 +23,9 @@ private:
 
 	struct MatrixBuffer
 	{
-		D3DXMATRIX model;
-		D3DXMATRIX view;
 		D3DXMATRIX proj;
+		D3DXMATRIX view;
+		D3DXMATRIX model;
 	};
 
 	struct  Vertex
@@ -49,6 +49,7 @@ private:
 	ID3D11RenderTargetView  *m_pRenderTargetView;
 
 	Shader TestShader;
+	MatrixBuffer MVP;
 };
 
 CALL_MAIN(D3DInitApp);
@@ -66,7 +67,7 @@ bool D3DInitApp::v_InitD3D()
 void D3DInitApp::v_Render()
 {
 	//Render 
-	D3DXCOLOR bgColor( 0.0f, 0.0f, 0.5f, 1.0f );
+	D3DXCOLOR bgColor( 0.0f, 0.0f, 0.0f, 1.0f );
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
 
 	m_pD3D11DeviceContext->DrawIndexed(3, 0, 0);
@@ -127,11 +128,11 @@ bool D3DInitApp::init_buffer()
 	Vertex *VertexData = new Vertex[m_VertexCount];
 
 	VertexData[0].Position = D3DXVECTOR3(-1.0f, -1.0f, 0.0f);  // Bottom left.
-	VertexData[0].Color    = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
+	VertexData[0].Color    = D3DXVECTOR4(1.0f, 0.0f, 0.0f, 1.0f);
 	VertexData[1].Position = D3DXVECTOR3(0.0f, 1.0f, 0.0f);  // Top middle.
 	VertexData[1].Color    = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
 	VertexData[2].Position = D3DXVECTOR3(1.0f, -1.0f, 0.0f);  // Bottom right.
-	VertexData[2].Color    = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
+	VertexData[2].Color    = D3DXVECTOR4(0.0f, 0.0f, 1.0f, 1.0f);
 
 	// Set up the description of the static vertex buffer.
 	D3D11_BUFFER_DESC VertexBufferDesc;
@@ -195,7 +196,6 @@ bool D3DInitApp::init_buffer()
 	unsigned int stride;
 	unsigned int offset;
 
-
 	//set viewpot
 	D3D11_VIEWPORT vp;
 	ZeroMemory(&vp, sizeof(D3D11_VIEWPORT));
@@ -217,25 +217,60 @@ bool D3DInitApp::init_buffer()
 
 bool D3DInitApp::init_shader()
 {
+	HRESULT result;
 	D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc[2];
 
-	pInputLayoutDesc[0].SemanticName = "POSITION";
-	pInputLayoutDesc[0].SemanticIndex = 0;
-	pInputLayoutDesc[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	pInputLayoutDesc[0].InputSlot = 0;
-	pInputLayoutDesc[0].AlignedByteOffset = 0;
-	pInputLayoutDesc[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc[0].SemanticName         = "POSITION";
+	pInputLayoutDesc[0].SemanticIndex        = 0;
+	pInputLayoutDesc[0].Format               = DXGI_FORMAT_R32G32B32_FLOAT;
+	pInputLayoutDesc[0].InputSlot            = 0;
+	pInputLayoutDesc[0].AlignedByteOffset    = 0;
+	pInputLayoutDesc[0].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
 	pInputLayoutDesc[0].InstanceDataStepRate = 0;
 
-	pInputLayoutDesc[1].SemanticName = "COLOR";
-	pInputLayoutDesc[1].SemanticIndex = 0;
-	pInputLayoutDesc[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	pInputLayoutDesc[1].InputSlot = 0;
-	pInputLayoutDesc[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	pInputLayoutDesc[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc[1].SemanticName         = "COLOR";
+	pInputLayoutDesc[1].SemanticIndex        = 0;
+	pInputLayoutDesc[1].Format               = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	pInputLayoutDesc[1].InputSlot            = 0;
+	pInputLayoutDesc[1].AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
+	pInputLayoutDesc[1].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
 	pInputLayoutDesc[1].InstanceDataStepRate = 0;
-
 	UINT numElements = ARRAYSIZE(pInputLayoutDesc);
+
+	D3D11_BUFFER_DESC matrixBufferDesc;
+	matrixBufferDesc.ByteWidth           = sizeof(MatrixBuffer);
+	matrixBufferDesc.BindFlags           = D3D11_BIND_CONSTANT_BUFFER;
+	matrixBufferDesc.CPUAccessFlags      = D3D11_CPU_ACCESS_WRITE;
+	matrixBufferDesc.MiscFlags           = 0;
+	matrixBufferDesc.StructureByteStride = 0;
+
+	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
+
+	result = m_pD3D11Device->CreateBuffer(&matrixBufferDesc, NULL, &m_pMatrixBuffer);
+	if(FAILED(result))
+	{
+		return false;
+	}	
+
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	MatrixBuffer* dataPtr;
+	// Transpose the matrices to prepare them for the shader.
+	D3DXMatrixTranspose(&MVP.model, &MVP.model);
+	D3DXMatrixTranspose(&MVP.view, &MVP.view);
+	D3DXMatrixTranspose(&MVP.proj, &MVP.proj);
+
+	// Lock the constant buffer so it can be written to.
+	result = m_pD3D11DeviceContext->Map(m_pMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	if(FAILED(result))
+	{
+		return false;
+	}
+	// Get a pointer to the data in the constant buffer.
+	// Copy the matrices into the constant buffer.
+	dataPtr = (MatrixBuffer*)mappedResource.pData;
+	dataPtr = &MVP;
+
+	m_pD3D11DeviceContext->Unmap(m_pMatrixBuffer, 0);
 
 	TestShader.init(m_pD3D11Device, GetHwnd());
 	TestShader.attachVS(L"triangle.vsh", pInputLayoutDesc);
@@ -245,6 +280,11 @@ bool D3DInitApp::init_shader()
 	m_pD3D11DeviceContext->IASetInputLayout(TestShader.GetInputLayout());
 	m_pD3D11DeviceContext->VSSetShader(TestShader.GetVS(), NULL, 0);
 	m_pD3D11DeviceContext->PSSetShader(TestShader.GetPS(), NULL, 0);
+    m_pD3D11DeviceContext->VSSetConstantBuffers(0, 1, &m_pMatrixBuffer);
+	float fieldOfView = (float)D3DX_PI / 4.0f;
+	D3DXMatrixPerspectiveFovLH(&MVP.proj, fieldOfView, GetAspect(), m_ScreenNear, m_ScreenFar);
+	D3DXMatrixIdentity(&MVP.model);
+	D3DXMatrixOrthoLH(&MVP.view, (float)m_ScreenWidth, (float)m_ScreenHeight, m_ScreenNear, m_ScreenFar);
 
 	return true;
 }

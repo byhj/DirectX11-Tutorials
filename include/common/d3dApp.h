@@ -49,6 +49,8 @@ public:
 protected:
 	int m_ScreenWidth;
 	int m_ScreenHeight;
+	float m_ScreenFar;
+	float m_ScreenNear;
 	int m_PosX;
 	int m_PosY;
 	LPCTSTR m_AppName;
@@ -120,6 +122,8 @@ bool D3DApp::init_window()
 	m_ScreenHeight = GetSystemMetrics(SM_CYSCREEN) * 0.75;
 	m_PosX = (GetSystemMetrics(SM_CXSCREEN) - m_ScreenWidth)  / 2;
 	m_PosY = (GetSystemMetrics(SM_CYSCREEN) - m_ScreenHeight) / 2;
+	m_ScreenNear = 0.1f;
+	m_ScreenFar  = 1000.0f;
 
 	AppHandle = this;
 	m_hInstance = GetModuleHandle(NULL);
