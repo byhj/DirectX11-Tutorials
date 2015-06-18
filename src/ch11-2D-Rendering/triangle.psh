@@ -1,0 +1,42 @@
+
+cbuffer LightBuffer
+{
+  float4 ambientColor;
+  float4 diffuseColor;
+  float3 lightDirection;
+  float  specularPower;
+  float4 specularColor;
+
+};
+
+struct VS_OUTPUT 
+{
+    float4 Pos : SV_POSITION;
+   	float2 Tex : TEXCOORD0;
+	float3 Normal: NORMAL;
+	float3 ViewDir: TEXCOORD1;
+};
+
+Texture2D tex;
+SamplerState texSample;
+
+float4 PS(VS_OUTPUT ps_in) : SV_TARGET
+{
+
+  float4 ambient = ambientColor;
+  //Calc the diffuse light
+  float3 lightDir  = -lightDirection;
+  float  intensity = saturate( dot(ps_in.Normal, lightDir) ); 
+  float4 diffuse   = saturate(diffuseColor * intensity);
+
+  //Specular light
+  float3 reflectDir = normalize(2 * intensity * ps_in.Normal - lightDir); 
+  float4 specular   = pow( saturate( dot(reflectDir, ps_in.ViewDir) ), specularPower) * specularColor;
+ 
+  float4 result     = saturate(ambient + diffuse) + specular;
+   
+  float4 texColor = tex.Sample(texSample, ps_in.Tex);
+  float4 pixelColor = result * texColor;
+
+  return pixelColor;
+}
