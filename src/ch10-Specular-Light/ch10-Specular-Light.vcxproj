@@ -18,6 +18,13 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="triangle.psh" />
+    <None Include="triangle.vsh" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ch10-Specular-Light.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B33031EC-FFA0-46EF-B7B7-1D66BA9E6585}</ProjectGuid>
     <RootNamespace>ch10SpecularLight</RootNamespace>

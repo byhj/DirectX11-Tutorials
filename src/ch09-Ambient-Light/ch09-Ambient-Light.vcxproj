@@ -18,6 +18,13 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="triangle.psh" />
+    <None Include="triangle.vsh" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ch09-Ambient-Light.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DA95B1E6-66C9-4610-91D9-0F9AFD594B49}</ProjectGuid>
     <RootNamespace>ch09AmbientLight</RootNamespace>
