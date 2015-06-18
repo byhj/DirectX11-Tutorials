@@ -15,7 +15,7 @@ public:
 	~Shader() {}
 
 	void init(ID3D11Device *pD3D11Device, HWND hWnd);
-	bool attachVS(WCHAR* Filename,  D3D11_INPUT_ELEMENT_DESC *pInputLayoutDesc);
+	bool attachVS(WCHAR* Filename,  D3D11_INPUT_ELEMENT_DESC *pInputLayoutDesc, unsigned numElements);
 	bool attachPS(WCHAR* Filename);
 	void use() {};
 	void Debug(ID3D10Blob *pErrorMessage, HWND hwnd, WCHAR *shaderFileName);
@@ -59,7 +59,7 @@ void Shader::Debug(ID3D10Blob *pErrorMessage, HWND hwnd, WCHAR *shaderFileName)
 	
 }
 
-bool Shader::attachVS(WCHAR* Filename,  D3D11_INPUT_ELEMENT_DESC *pInputLayoutDesc)
+bool Shader::attachVS(WCHAR* Filename,  D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc[], unsigned numElements)
 {	
 	HRESULT result;
 	ID3D10Blob* errorMessage = 0;
@@ -82,7 +82,7 @@ bool Shader::attachVS(WCHAR* Filename,  D3D11_INPUT_ELEMENT_DESC *pInputLayoutDe
 	{
 		return false;
 	}
-	UINT  numElements = 2;
+
 	result = pD3D11Device->CreateInputLayout(pInputLayoutDesc, numElements, VertexShaderBuffer->GetBufferPointer(), 
 		                                     VertexShaderBuffer->GetBufferSize(), &pInputLayout);
 	if(FAILED(result))

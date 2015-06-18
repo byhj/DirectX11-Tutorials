@@ -21,6 +21,8 @@ public:
 		m_pD3D11Device        = NULL;
 		m_pD3D11DeviceContext = NULL;
 		m_pRenderTargetView   = NULL;
+		m_pDepthStencilView   = NULL;
+		m_pDepthStencilBuffer = NULL;
 		m_pMVPBuffer          = NULL;
 		m_pVertexBuffer       = NULL;
 		m_pIndexBuffer        = NULL;
@@ -38,6 +40,8 @@ public:
 		ReleaseCOM(m_pD3D11Device       )
 		ReleaseCOM(m_pD3D11DeviceContext)
 		ReleaseCOM(m_pRenderTargetView  )
+		ReleaseCOM(m_pDepthStencilView  )
+		ReleaseCOM(m_pDepthStencilBuffer)
 		ReleaseCOM(m_pMVPBuffer         )
 		ReleaseCOM(m_pVertexBuffer      )
 		ReleaseCOM(m_pIndexBuffer       )
@@ -70,6 +74,8 @@ private:
 	ID3D11Device            *m_pD3D11Device;
 	ID3D11DeviceContext     *m_pD3D11DeviceContext;
 	ID3D11RenderTargetView  *m_pRenderTargetView;
+	ID3D11DepthStencilView  *m_pDepthStencilView;
+	ID3D11Texture2D         *m_pDepthStencilBuffer;
 	ID3D11Buffer            *m_pMVPBuffer;
 	ID3D11Buffer            *m_pVertexBuffer;
 	ID3D11Buffer            *m_pIndexBuffer;
@@ -112,6 +118,7 @@ void D3DInitApp::v_Render()
 	m_pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbPerObj, 0, 0 );
 	m_pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
+	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
 	m_pD3D11DeviceContext->DrawIndexed(3, 0, 0);
 
 	m_pSwapChain->Present(0, 0);
@@ -156,6 +163,26 @@ bool D3DInitApp::init_device()
 	hr = m_pD3D11Device->CreateRenderTargetView(pBackBuffer, NULL, &m_pRenderTargetView);
 	pBackBuffer->Release();
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, NULL);
+
+
+	//Describe our Depth/Stencil Buffer
+	D3D11_TEXTURE2D_DESC depthStencilDesc;
+
+	depthStencilDesc.Width              = m_ScreenWidth;
+	depthStencilDesc.Height             = m_ScreenHeight;
+	depthStencilDesc.MipLevels          = 1;
+	depthStencilDesc.ArraySize          = 1;
+	depthStencilDesc.Format             = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilDesc.SampleDesc.Count   = 1;
+	depthStencilDesc.SampleDesc.Quality = 0;
+	depthStencilDesc.Usage              = D3D11_USAGE_DEFAULT;
+	depthStencilDesc.BindFlags          = D3D11_BIND_DEPTH_STENCIL;
+	depthStencilDesc.CPUAccessFlags     = 0; 
+	depthStencilDesc.MiscFlags          = 0;
+
+	m_pD3D11Device->CreateTexture2D(&depthStencilDesc, NULL, &m_pDepthStencilBuffer);
+	m_pD3D11Device->CreateDepthStencilView(m_pDepthStencilBuffer, NULL, &m_pDepthStencilView);
+	m_pD3D11DeviceContext->OMSetRenderTargets( 1, &m_pRenderTargetView, m_pDepthStencilView );
 
 	return true;
 }
@@ -297,9 +324,10 @@ bool D3DInitApp::init_shader()
 	pInputLayoutDesc[1].AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
 	pInputLayoutDesc[1].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
 	pInputLayoutDesc[1].InstanceDataStepRate = 0;
+	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
 
 	TestShader.init(m_pD3D11Device, GetHwnd());
-	TestShader.attachVS(L"triangle.vsh", pInputLayoutDesc);
+	TestShader.attachVS(L"triangle.vsh", pInputLayoutDesc, numElements);
 	TestShader.attachPS(L"triangle.psh");
 	TestShader.use();
 
