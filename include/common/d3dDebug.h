@@ -25,6 +25,16 @@
 #endif
 #endif 
 
+#ifndef DebugHR()
+#define DebugHR(hr)                                                  \
+	{                                                                \
+    HRESULT result = hr;                                             \
+	if(FAILED(result))                                               \
+	{                                                                \
+		DXTrace(__FILE__, (DWORD)__LINE__, result, L"Error", true);  \
+	}                                                                \
+	}
+#endif
 
 //---------------------------------------------------------------------------------------
 // Convenience macro for releasing COM objects.

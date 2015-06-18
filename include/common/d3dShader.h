@@ -45,16 +45,16 @@ void Shader::Debug(ID3D10Blob *pErrorMessage, HWND hwnd, WCHAR *shaderFileName)
 
 	pCompileErrors = (char*)(pErrorMessage->GetBufferPointer());
 	std::string errorStr = pCompileErrors;
-	unsigned found = errorStr.find_last_of("\\") ;
-	errorStr = errorStr.substr( found + 1);
-	std::cerr << errorStr;
+	//unsigned found = errorStr.find_last_of("\\") ;
+	//errorStr = errorStr.substr( found + 1);
+	std::cerr << pCompileErrors;
 
 	pErrorMessage->Release();
 	pErrorMessage = 0;
 
-	MessageBox(hwnd, L"Error compiling shader", shaderFileName, MB_OK);
+	//MessageBox(hwnd, L"Error compiling shader", shaderFileName, MB_OK);
 
-	return;
+	//return;
 	// Pop a message up on the screen to notify the user to check the text file for compile errors.
 	
 }

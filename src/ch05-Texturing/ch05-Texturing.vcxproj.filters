@@ -15,16 +15,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="triangle.vsh">
-      <Filter>Header Files</Filter>
-    </None>
     <None Include="triangle.psh">
-      <Filter>Header Files</Filter>
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="triangle.vsh">
+      <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ch05-Test.cpp">
-      <Filter>Header Files</Filter>
+    <ClCompile Include="ch05-Texturing.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

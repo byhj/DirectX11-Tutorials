@@ -4,18 +4,24 @@ cbuffer cbPerObject
 	float4x4 MVP;
 };
 
-struct VS_OUTPUT 
+struct VS_IN
 {
-    float4 Pos : SV_POSITION;
-    float4 Color : COLOR;
+   float4 Pos: POSITION; 
+   float2 Tex: TEXCOORD0;
 };
 
-VS_OUTPUT VS(float4 inPos: POSITION, float4 inColor: COLOR)
+struct VS_OUT
+{
+    float4 Pos : SV_POSITION;
+    float2 Tex: TEXCOORD0;
+};
+
+VS_OUT VS(VS_IN vs_in)
 {	
  
-   VS_OUTPUT vs_out;
-   vs_out.Pos = mul(inPos, MVP);
-   vs_out.Color = inColor;
+   VS_OUT vs_out;
+   vs_out.Pos = mul(vs_in.Pos, MVP); 
+   vs_out.Tex = vs_in.Tex;
  
    return vs_out;
 }

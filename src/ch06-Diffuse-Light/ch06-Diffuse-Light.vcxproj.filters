@@ -23,8 +23,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ch04-Buffer-Shader.cpp">
-      <Filter>Resource Files</Filter>
+    <ClCompile Include="ch05-Diffuse-Light.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

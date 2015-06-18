@@ -23,7 +23,7 @@
     <None Include="triangle.vsh" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ch05-Test.cpp" />
+    <ClCompile Include="ch05-Texturing.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1C58C243-29DE-4FDD-ABA7-D9288AB669BF}</ProjectGuid>
