@@ -56,6 +56,7 @@ private:
 	bool init_shader();
 	bool init_camera();
 	void init_texture();
+	bool load_model(char *modelFile);
 
 private:
 
@@ -82,6 +83,14 @@ private:
 		D3DXVECTOR2 TexCoord;
 		D3DXVECTOR3 Normal;
 	};
+
+	struct ModelVertex
+	{
+		float x, y , z;
+		float u, v;
+		float nx, ny, nz;
+	};
+	ModelVertex  *m_pModelVertex;
 
 	ID3D11InputLayout       *m_pInputLayout;
 	ID3D11VertexShader      *m_pVS;
@@ -133,13 +142,14 @@ void D3DInitApp::v_Render()
 	static float rot = 0.0f;
 	rot += .0001f;
 
+	//Update the mvp matrix
 	D3DXCOLOR bgColor( 0.0f, 0.0f, 0.0f, 1.0f );
-
-	XMVECTOR rotaxis = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+	XMVECTOR rotaxis = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 	         Model   = XMMatrixRotationAxis( rotaxis, rot); 
      cbMatrix.model  = XMMatrixTranspose(Model);
 	 cbMatrix.view   = XMMatrixTranspose(View);
 	 cbMatrix.proj   = XMMatrixTranspose(Proj);
+
 	m_pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
 	m_pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
 
@@ -147,7 +157,7 @@ void D3DInitApp::v_Render()
 	m_pD3D11DeviceContext->PSSetSamplers( 0, 1, &m_pTexSamplerState );
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
-	m_pD3D11DeviceContext->DrawIndexed(3, 0, 0);
+	m_pD3D11DeviceContext->DrawIndexed(m_IndexCount, 0, 0);
 
 	m_pSwapChain->Present(0, 0);
 }
@@ -222,20 +232,17 @@ bool D3DInitApp::init_buffer()
 	HRESULT hr;
 
 	///////////////////////////Index Buffer ////////////////////////////////
-	m_VertexCount = 3;
+	load_model("../../media/objects/cube.txt");
 	Vertex *VertexData = new Vertex[m_VertexCount];
+	unsigned long * IndexData = new unsigned long[m_IndexCount];
 
-	VertexData[0].Position = D3DXVECTOR3(-1.0f, -1.0f, 0.0f);  // Bottom left.
-	VertexData[1].Position = D3DXVECTOR3(0.0f, 1.0f, 0.0f);    // Top middle.
-	VertexData[2].Position = D3DXVECTOR3(1.0f, -1.0f, 0.0f);   // Bottom right.
-
-	VertexData[0].TexCoord = D3DXVECTOR2(0.0f, 1.0f);
-	VertexData[1].TexCoord = D3DXVECTOR2(0.5f, 0.0f);
-	VertexData[2].TexCoord = D3DXVECTOR2(1.0f, 1.0f);
-
-	VertexData[0].Normal = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
-	VertexData[1].Normal = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
-	VertexData[2].Normal = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+	for (int i = 0; i != m_VertexCount; ++i)
+	{
+		VertexData[i].Position = D3DXVECTOR3(m_pModelVertex[i].x,  m_pModelVertex[i].y,  m_pModelVertex[i].z);
+		VertexData[i].TexCoord = D3DXVECTOR2(m_pModelVertex[i].u,  m_pModelVertex[i].v);
+		VertexData[i].Normal   = D3DXVECTOR3(m_pModelVertex[i].nx, m_pModelVertex[i].ny, m_pModelVertex[i].nz);
+		IndexData[i] = i;
+	}
 
 	// Set up the description of the static vertex buffer.
 	D3D11_BUFFER_DESC VertexBufferDesc;
@@ -257,11 +264,6 @@ bool D3DInitApp::init_buffer()
     DebugHR(hr);
 
 	/////////////////////////////////Index Buffer ///////////////////////////////////////
-	m_IndexCount = 3;
-	unsigned long *IndexData= new unsigned long[m_IndexCount];
-	IndexData[0] = 0;  // Bottom left.
-	IndexData[1] = 1;  // Top middle.
-	IndexData[2] = 2;  // Bottom right.
 
 	// Set up the description of the static index buffer.
 	D3D11_BUFFER_DESC IndexBufferDesc;
@@ -344,7 +346,7 @@ bool D3DInitApp::init_buffer()
 	// Get a pointer to the data in the constant buffer.
 	LightBuffer *dataPtr2 = (LightBuffer*)mappedResource.pData;
 
-	dataPtr2->diffuseColor = D3DXVECTOR4(0.0f, 0.0f, 1.0f, 1.0f);
+	dataPtr2->diffuseColor = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f);
 	dataPtr2->lightDirection = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
 	dataPtr2->padding = 0.0f;
 
@@ -447,4 +449,50 @@ void D3DInitApp::init_texture()
 	hr = m_pD3D11Device->CreateSamplerState(&samplerDesc, &m_pTexSamplerState);
 	DebugHR(hr);
 
+}
+
+bool D3DInitApp::load_model(char *modelFile)
+{
+		std::ifstream fin;
+		char ch;
+		int i;
+		fin.open(modelFile);
+
+		if (fin.fail())
+		{
+			return false;
+		}
+		// Read up to the value of vertex count.
+		fin.get(ch);
+		while(ch != ':')
+		{
+			fin.get(ch);
+		}
+
+		// Read in the vertex count.
+		fin >> m_VertexCount;
+		m_IndexCount = m_VertexCount;
+
+		m_pModelVertex  = new ModelVertex[m_VertexCount];
+		if (!m_pModelVertex)
+		{
+			return false;
+		}
+
+		//Read up the beginning of the data
+		fin.get(ch);
+		while (ch != ':')
+		{
+			fin.get(ch);
+		}
+
+		for (int i = 0; i != m_VertexCount; ++i)
+		{
+			fin >> m_pModelVertex[i].x  >> m_pModelVertex[i].y >> m_pModelVertex[i].z;
+			fin >> m_pModelVertex[i].u  >> m_pModelVertex[i].v;
+			fin >> m_pModelVertex[i].nx >> m_pModelVertex[i].ny >> m_pModelVertex[i].nz;
+		}
+		fin.close();
+
+		return true;
 }

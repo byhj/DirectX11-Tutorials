@@ -23,7 +23,7 @@
     <None Include="triangle.vsh" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ch05-Diffuse-Light.cpp" />
+    <ClCompile Include="ch06-Diffuse-Light.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{3DE57B4D-960B-4E8A-A51D-13D0E7944916}</ProjectGuid>
