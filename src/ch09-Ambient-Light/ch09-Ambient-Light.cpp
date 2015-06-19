@@ -157,7 +157,7 @@ void D3DInitApp::v_Render()
      cbMatrix.model  = XMMatrixTranspose(Model);
 	 cbMatrix.view   = XMMatrixTranspose(View);
 	 cbMatrix.proj   = XMMatrixTranspose(Proj);
-
+	 TestShader.use(m_pD3D11DeviceContext);
 	m_pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
 	m_pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
 
@@ -438,11 +438,7 @@ bool D3DInitApp::init_shader()
 	TestShader.init(m_pD3D11Device, GetHwnd());
 	TestShader.attachVS(L"triangle.vsh", pInputLayoutDesc, numElements);
 	TestShader.attachPS(L"triangle.psh");
-	TestShader.use();
-
-	m_pD3D11DeviceContext->IASetInputLayout(TestShader.GetInputLayout());
-	m_pD3D11DeviceContext->VSSetShader(TestShader.GetVS(), NULL, 0);
-	m_pD3D11DeviceContext->PSSetShader(TestShader.GetPS(), NULL, 0);
+	TestShader.end();
 
 	return true;
 }

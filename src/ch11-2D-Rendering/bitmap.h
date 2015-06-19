@@ -1,9 +1,4 @@
 
-#ifdef _WIN32
-#define _XM_NO_INTRINSICS_
-#endif 
-
-#include "common/d3dApp.h"
 #include <common/d3dShader.h>
 
 class Bitmap
@@ -14,8 +9,6 @@ public:
 		m_pInputLayout        = NULL;
 		m_pVS                 = NULL;
 		m_pPS                 = NULL;
-		m_pD3D11Device        = NULL;
-		m_pD3D11DeviceContext = NULL;
 		m_pRenderTargetView   = NULL;
 		m_pMVPBuffer          = NULL;
 		m_pVertexBuffer       = NULL;
@@ -23,26 +16,23 @@ public:
 		m_pTexture            = NULL;
 	}
 
-	void Render();
+	void Render(ID3D11DeviceContext *pD3D11DeviceContext);
 
 	void Shutdown()
 	{
 		    ReleaseCOM(m_pInputLayout       )
 			ReleaseCOM(m_pVS                )
 			ReleaseCOM(m_pPS                )
-			ReleaseCOM(m_pD3D11Device       )
-			ReleaseCOM(m_pD3D11DeviceContext)
 			ReleaseCOM(m_pMVPBuffer         )
 			ReleaseCOM(m_pVertexBuffer      )
 			ReleaseCOM(m_pIndexBuffer       )
 	}
 
 public:
-	bool init_window(HWND hWnd, int sw, int sh);
-	bool init_device(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext);
-	bool init_buffer(int posX, int posY);
-	bool init_shader();
-	void init_texture(LPCWSTR texFile);
+	bool init_window(int sw, int sh);
+	bool init_buffer (ID3D11Device *pD3D11Device, int posX, int posY);
+	bool init_shader (ID3D11Device *pD3D11Device, HWND hWnd);
+	void init_texture(ID3D11Device *pD3D11Device, LPCWSTR texFile);
 
 private:
 
@@ -61,8 +51,6 @@ private:
 	ID3D11InputLayout        *m_pInputLayout;
 	ID3D11VertexShader       *m_pVS;
 	ID3D11PixelShader        *m_pPS;
-	ID3D11Device             *m_pD3D11Device;
-	ID3D11DeviceContext      *m_pD3D11DeviceContext;
 	ID3D11RenderTargetView   *m_pRenderTargetView;
 	ID3D11Buffer             *m_pMVPBuffer;
 	ID3D11Buffer             *m_pVertexBuffer;
@@ -70,16 +58,15 @@ private:
 	ID3D11ShaderResourceView *m_pTexture;
 	ID3D11SamplerState       *m_pTexSamplerState;
 
-	int m_VertexCount;
-	int m_IndexCount;
+	int VertexCount;
+	int IndexCount;
 
-	Shader TestShader;
+	Shader BitmapShader;
 
 	int screenWidth, screenHeight;
 	int bitmapWidth, bitmapHeight;
 	int lastPosX, lastPosY;
 	float aspect;
-	HWND hWnd;
 
 	XMMATRIX MVP;
 	XMMATRIX Model;
@@ -93,25 +80,33 @@ private:
 
 
 
-void Bitmap::Render()
+void Bitmap::Render(ID3D11DeviceContext *pD3D11DeviceContext)
 {
-	//Render scene 
-	D3DXCOLOR bgColor( 0.0f, 0.0f, 0.0f, 1.0f );
 	Model = XMMatrixIdentity();
 	MVP = (Model * View * Proj);
 	cbPerObj.MVP = XMMatrixTranspose(MVP);	
+	// Set vertex buffer stride and offset.
 
-	m_pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbPerObj, 0, 0 );
-	m_pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
-	m_pD3D11DeviceContext->PSSetShaderResources( 0, 1, &m_pTexture );
-	m_pD3D11DeviceContext->PSSetSamplers( 0, 1, &m_pTexSamplerState );
-	m_pD3D11DeviceContext->DrawIndexed(3, 0, 0);
+	unsigned int stride;
+	unsigned int offset;
+	stride = sizeof(Vertex); 
+	offset = 0;
+	pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
+	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	BitmapShader.use(pD3D11DeviceContext);
+
+	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbPerObj, 0, 0 );
+	pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
+	pD3D11DeviceContext->PSSetShaderResources( 0, 1, &m_pTexture );
+	pD3D11DeviceContext->PSSetSamplers( 0, 1, &m_pTexSamplerState );
+	pD3D11DeviceContext->DrawIndexed(IndexCount, 0, 0);
 
 }
 
-bool Bitmap::init_window(HWND hWnd, int sw, int sh)
+bool Bitmap::init_window(int sw, int sh)
 {
-	this->hWnd = hWnd;
 	screenWidth  = sw;
 	screenHeight = sh;
 	lastPosX = -1;
@@ -122,15 +117,8 @@ bool Bitmap::init_window(HWND hWnd, int sw, int sh)
 	return true;
 }
 
-bool Bitmap::init_device(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext)
-{
-	m_pD3D11Device = pD3D11Device;
-	m_pD3D11DeviceContext = pD3D11DeviceContext;
 
-	return true;
-}
-
-bool Bitmap::init_buffer(int posX, int posY)
+bool Bitmap::init_buffer(ID3D11Device *pD3D11Device, int posX, int posY)
 {
 	HRESULT hr;
 	float left, right, top, bottom;
@@ -156,8 +144,8 @@ bool Bitmap::init_buffer(int posX, int posY)
 	bottom = top - (float)bitmapHeight;
 
 	///////////////////////////Index Buffer ////////////////////////////////
-	m_VertexCount = 6;
-	Vertex *VertexData = new Vertex[m_VertexCount];
+	VertexCount = 6;
+	Vertex *VertexData = new Vertex[VertexCount];
 	// First triangle.
 	VertexData[0].Pos = D3DXVECTOR3(left, top, 0.0f);  // Top left.
 	VertexData[0].Tex = D3DXVECTOR2(0.0f, 0.0f);
@@ -182,7 +170,7 @@ bool Bitmap::init_buffer(int posX, int posY)
 	// Set up the description of the static vertex buffer.
 	D3D11_BUFFER_DESC VertexBufferDesc;
 	VertexBufferDesc.Usage               = D3D11_USAGE_DEFAULT;
-	VertexBufferDesc.ByteWidth           = sizeof(Vertex) * m_VertexCount;
+	VertexBufferDesc.ByteWidth           = sizeof(Vertex) * VertexCount;
 	VertexBufferDesc.BindFlags           = D3D11_BIND_VERTEX_BUFFER;
 	VertexBufferDesc.CPUAccessFlags      = 0;
 	VertexBufferDesc.MiscFlags           = 0;
@@ -195,12 +183,12 @@ bool Bitmap::init_buffer(int posX, int posY)
 	VBO.SysMemSlicePitch = 0;
 
 	// Now create the vertex buffer.
-	hr = m_pD3D11Device->CreateBuffer(&VertexBufferDesc, &VBO, &m_pVertexBuffer);
+	hr = pD3D11Device->CreateBuffer(&VertexBufferDesc, &VBO, &m_pVertexBuffer);
 	DebugHR(hr);
 
 	/////////////////////////////////Index Buffer ///////////////////////////////////////
-	m_IndexCount = 6;
-	unsigned long *IndexData= new unsigned long[m_IndexCount];
+	IndexCount = 6;
+	unsigned long *IndexData= new unsigned long[IndexCount];
 	IndexData[0] = 0;  // Bottom left.
 	IndexData[1] = 1;  // Top middle.
 	IndexData[2] = 2;  // Bottom right.
@@ -211,7 +199,7 @@ bool Bitmap::init_buffer(int posX, int posY)
 	// Set up the description of the static index buffer.
 	D3D11_BUFFER_DESC IndexBufferDesc;
 	IndexBufferDesc.Usage               = D3D11_USAGE_DEFAULT;
-	IndexBufferDesc.ByteWidth           = sizeof(unsigned long) * m_IndexCount;
+	IndexBufferDesc.ByteWidth           = sizeof(unsigned long) * IndexCount;
 	IndexBufferDesc.BindFlags           = D3D11_BIND_INDEX_BUFFER;
 	IndexBufferDesc.CPUAccessFlags      = 0;
 	IndexBufferDesc.MiscFlags           = 0;
@@ -223,23 +211,17 @@ bool Bitmap::init_buffer(int posX, int posY)
 	IBO.SysMemPitch      = 0;
 	IBO.SysMemSlicePitch = 0;
 
-	hr = m_pD3D11Device->CreateBuffer(&IndexBufferDesc, &IBO, &m_pIndexBuffer);
+	hr = pD3D11Device->CreateBuffer(&IndexBufferDesc, &IBO, &m_pIndexBuffer);
 	DebugHR(hr);
 
 	////////////////////////////////////////////////////////////////////////////////////////
 	// Release the arrays now that the vertex and index buffers have been created and loaded.
 	delete [] VertexData;
 	VertexData = 0;
+	delete IndexData;
+	IndexData = 0;
 
 
-	// Set vertex buffer stride and offset.=
-	unsigned int stride;
-	unsigned int offset;
-	stride = sizeof(Vertex); 
-	offset = 0;
-	m_pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
-	m_pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	m_pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	////////////////////////////////Const Buffer//////////////////////////////////////
 
@@ -258,13 +240,13 @@ bool Bitmap::init_buffer(int posX, int posY)
 	mvpDesc.BindFlags      = D3D11_BIND_CONSTANT_BUFFER;
 	mvpDesc.CPUAccessFlags = 0;
 	mvpDesc.MiscFlags      = 0;
-	m_pD3D11Device->CreateBuffer(&mvpDesc, NULL, &m_pMVPBuffer);
+	pD3D11Device->CreateBuffer(&mvpDesc, NULL, &m_pMVPBuffer);
 
 	return true;
 }
 
 
-bool Bitmap::init_shader()
+bool Bitmap::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 {
 	HRESULT result;
 
@@ -286,22 +268,18 @@ bool Bitmap::init_shader()
 	pInputLayoutDesc[1].InstanceDataStepRate = 0;
 	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
 
-	TestShader.init(m_pD3D11Device, hWnd);
-	TestShader.attachVS(L"bitmap.vsh", pInputLayoutDesc, numElements);
-	TestShader.attachPS(L"bitmap.psh");
-	TestShader.use();
-
-	m_pD3D11DeviceContext->IASetInputLayout(TestShader.GetInputLayout());
-	m_pD3D11DeviceContext->VSSetShader(TestShader.GetVS(), NULL, 0);
-	m_pD3D11DeviceContext->PSSetShader(TestShader.GetPS(), NULL, 0);
+	BitmapShader.init(pD3D11Device, hWnd);
+	BitmapShader.attachVS(L"bitmap.vsh", pInputLayoutDesc, numElements);
+	BitmapShader.attachPS(L"bitmap.psh");
+	BitmapShader.end();
 
 	return true;
 }
 
-void Bitmap::init_texture(LPCWSTR texFile)
+void Bitmap::init_texture(ID3D11Device *pD3D11Device, LPCWSTR texFile)
 {
 	HRESULT hr;
-	hr = D3DX11CreateShaderResourceViewFromFile(m_pD3D11Device, texFile, NULL,NULL, &m_pTexture, NULL);
+	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, texFile, NULL,NULL, &m_pTexture, NULL);
 	DebugHR(hr);
 
 	// Create a texture sampler state description.
@@ -321,7 +299,7 @@ void Bitmap::init_texture(LPCWSTR texFile)
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// Create the texture sampler state.
-	hr = m_pD3D11Device->CreateSamplerState(&samplerDesc, &m_pTexSamplerState);
+	hr = pD3D11Device->CreateSamplerState(&samplerDesc, &m_pTexSamplerState);
 	DebugHR(hr);
 
 }

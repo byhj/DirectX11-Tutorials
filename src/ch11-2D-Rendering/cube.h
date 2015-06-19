@@ -1,65 +1,40 @@
-#pragma comment( linker, "/subsystem:\"console\" /entry:\"WinMainCRTStartup\"")
-
-#ifdef _WIN32
-#define _XM_NO_INTRINSICS_
-#endif 
 
 #include "common/d3dApp.h"
 #include <common/d3dShader.h>
 
-class D3DInitApp: public D3DApp
+class Cube
 {
 public:
-	D3DInitApp()
+	Cube()
 	{
-		m_AppName = L"DirectX11: ch04-Buffer-Shader";
-
 		m_pInputLayout        = NULL;
-		m_pVS                 = NULL;
-		m_pPS                 = NULL;
-		m_pSwapChain          = NULL;
-		m_pD3D11Device        = NULL;
-		m_pD3D11DeviceContext = NULL;
-		m_pRenderTargetView   = NULL;
-		m_pDepthStencilView   = NULL;
-		m_pDepthStencilBuffer = NULL;
 		m_pMVPBuffer          = NULL;
 		m_pLightBuffer        = NULL;
 		m_pVertexBuffer       = NULL;
 		m_pIndexBuffer        = NULL;
 		m_pTexture            = NULL;
-		m_pRasterState        = NULL;
 	}
 
-	bool v_InitD3D();
-	void v_Render();
+	void Render(ID3D11DeviceContext *pD3D11DeviceContext);
 
-    void v_Shutdown()
+	void shutdown()
 	{
-		ReleaseCOM(m_pInputLayout       )
-		ReleaseCOM(m_pVS                )
-		ReleaseCOM(m_pPS                )
-		ReleaseCOM(m_pSwapChain         )
-		ReleaseCOM(m_pD3D11Device       )
-		ReleaseCOM(m_pD3D11DeviceContext)
-		ReleaseCOM(m_pRenderTargetView  )
-		ReleaseCOM(m_pDepthStencilView  )
-		ReleaseCOM(m_pDepthStencilBuffer)
-		ReleaseCOM(m_pMVPBuffer         )
-		ReleaseCOM(m_pLightBuffer       )
-		ReleaseCOM(m_pVertexBuffer      )
-		ReleaseCOM(m_pIndexBuffer       )
-		ReleaseCOM(m_pRasterState       )
+			ReleaseCOM(m_pRenderTargetView  )
+			ReleaseCOM(m_pMVPBuffer         )
+			ReleaseCOM(m_pLightBuffer       )
+			ReleaseCOM(m_pVertexBuffer      )
+			ReleaseCOM(m_pIndexBuffer       )
 	}
 
-private:
-	bool init_buffer();
-	bool init_device();
-	bool init_shader();
-	bool init_camera();
-	void init_texture();
 	bool load_model(char *modelFile);
 	bool load_obj(char *objFile);
+	bool init_camera(float aspect);
+	bool init_buffer (ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext);
+	bool init_shader (ID3D11Device *pD3D11Device, HWND hWnd);
+	void init_texture(ID3D11Device *pD3D11Device, LPCWSTR texFile);
+
+private:
+
 
 private:
 	struct CameraBuffer
@@ -102,15 +77,7 @@ private:
 	};
 	ModelVertex  *m_pModelVertex;
 
-	ID3D11InputLayout        *m_pInputLayout;
-	ID3D11VertexShader       *m_pVS;
-	ID3D11PixelShader        *m_pPS;
-	IDXGISwapChain           *m_pSwapChain;
-	ID3D11Device             *m_pD3D11Device;
-	ID3D11DeviceContext      *m_pD3D11DeviceContext;
 	ID3D11RenderTargetView   *m_pRenderTargetView;
-	ID3D11DepthStencilView   *m_pDepthStencilView;
-	ID3D11Texture2D          *m_pDepthStencilBuffer;
 	ID3D11Buffer             *m_pMVPBuffer;
 	ID3D11Buffer             *m_pLightBuffer;
 	ID3D11Buffer             *m_CameraBuffer;
@@ -118,7 +85,7 @@ private:
 	ID3D11Buffer             *m_pIndexBuffer;
 	ID3D11ShaderResourceView *m_pTexture;
 	ID3D11SamplerState       *m_pTexSamplerState;
-	ID3D11RasterizerState    *m_pRasterState;
+	ID3D11InputLayout        *m_pInputLayout;
 
 
 	int m_VertexCount;
@@ -137,20 +104,8 @@ private:
 	XMVECTOR camUp;
 };
 
-CALL_MAIN(D3DInitApp);
 
-bool D3DInitApp::v_InitD3D()
-{
-    init_device();
-	init_camera();
-	init_buffer();
-	init_texture();
-	init_shader();
-
- 	return true;
-}
-
-void D3DInitApp::v_Render()
+void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext)
 {
 	//Render scene 
 	//Keep the cubes rotating
@@ -158,111 +113,22 @@ void D3DInitApp::v_Render()
 	rot += .0001f;
 
 	//Update the mvp matrix
-	D3DXCOLOR bgColor( 0.0f, 0.0f, 0.0f, 1.0f );
 	XMVECTOR rotaxis = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	         Model   = XMMatrixRotationAxis( rotaxis, rot); 
-     cbMatrix.model  = XMMatrixTranspose(Model);
-	 cbMatrix.view   = XMMatrixTranspose(View);
-	 cbMatrix.proj   = XMMatrixTranspose(Proj);
-	 TestShader.use(m_pD3D11DeviceContext);
-	m_pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
-	m_pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
+	Model   = XMMatrixRotationAxis( rotaxis, rot); 
+	cbMatrix.model  = XMMatrixTranspose(Model);
+	cbMatrix.view   = XMMatrixTranspose(View);
+	cbMatrix.proj   = XMMatrixTranspose(Proj);
+	TestShader.use(pD3D11DeviceContext);
+	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
+	pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
 
-	m_pD3D11DeviceContext->PSSetShaderResources( 0, 1, &m_pTexture );
-	m_pD3D11DeviceContext->PSSetSamplers( 0, 1, &m_pTexSamplerState );
-	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
-	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
-	m_pD3D11DeviceContext->DrawIndexed(m_IndexCount, 0, 0);
+	pD3D11DeviceContext->PSSetShaderResources( 0, 1, &m_pTexture );
+	pD3D11DeviceContext->PSSetSamplers( 0, 1, &m_pTexSamplerState );
+	pD3D11DeviceContext->DrawIndexed(m_IndexCount, 0, 0);
 
-	m_pSwapChain->Present(0, 0);
 }
 
-bool D3DInitApp::init_device()
-{
-	HRESULT hr;
-
-	//Create buffer desc
-	DXGI_MODE_DESC bufferDesc;
-	ZeroMemory(&bufferDesc, sizeof(DXGI_MODE_DESC));
-	bufferDesc.Width                   = m_ScreenWidth;
-	bufferDesc.Height                  = m_ScreenHeight;
-	bufferDesc.RefreshRate.Numerator   = 60;
-	bufferDesc.RefreshRate.Denominator = 1;
-	bufferDesc.Format                  = DXGI_FORMAT_R8G8B8A8_UNORM;
-	bufferDesc.ScanlineOrdering        = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-	bufferDesc.Scaling                 = DXGI_MODE_SCALING_UNSPECIFIED;
-
-	//Create swapChain Desc
-	DXGI_SWAP_CHAIN_DESC swapChainDesc;
-	ZeroMemory(&swapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
-	swapChainDesc.BufferDesc         = bufferDesc;
-	swapChainDesc.SampleDesc.Count   = 1;
-	swapChainDesc.SampleDesc.Quality = 0;
-	swapChainDesc.BufferUsage        = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	swapChainDesc.BufferCount        = 1;
-	swapChainDesc.OutputWindow       = GetHwnd();
-	swapChainDesc.Windowed           = TRUE;
-	swapChainDesc.SwapEffect         = DXGI_SWAP_EFFECT_DISCARD;
-
-	//Create the double buffer chain
-	hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE,
-		                               NULL, NULL, NULL, NULL, D3D11_SDK_VERSION, 
-		                               &swapChainDesc, &m_pSwapChain, &m_pD3D11Device,
-		                               NULL, &m_pD3D11DeviceContext);
-
-	//Create backbuffer, buffer also is a texture
-	ID3D11Texture2D *pBackBuffer;
-	hr = m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBuffer);
-	DebugHR(hr);
-	hr = m_pD3D11Device->CreateRenderTargetView(pBackBuffer, NULL, &m_pRenderTargetView);
-	DebugHR(hr);
-	pBackBuffer->Release();
-	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, NULL);
-
-
-	//Describe our Depth/Stencil Buffer
-	D3D11_TEXTURE2D_DESC depthStencilDesc;
-
-	depthStencilDesc.Width              = m_ScreenWidth;
-	depthStencilDesc.Height             = m_ScreenHeight;
-	depthStencilDesc.MipLevels          = 1;
-	depthStencilDesc.ArraySize          = 1;
-	depthStencilDesc.Format             = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthStencilDesc.SampleDesc.Count   = 1;
-	depthStencilDesc.SampleDesc.Quality = 0;
-	depthStencilDesc.Usage              = D3D11_USAGE_DEFAULT;
-	depthStencilDesc.BindFlags          = D3D11_BIND_DEPTH_STENCIL;
-	depthStencilDesc.CPUAccessFlags     = 0; 
-	depthStencilDesc.MiscFlags          = 0;
-
-	m_pD3D11Device->CreateTexture2D(&depthStencilDesc, NULL, &m_pDepthStencilBuffer);
-	m_pD3D11Device->CreateDepthStencilView(m_pDepthStencilBuffer, NULL, &m_pDepthStencilView);
-	m_pD3D11DeviceContext->OMSetRenderTargets( 1, &m_pRenderTargetView, m_pDepthStencilView );
-
-
-	// Setup the raster description which will determine how and what polygons will be drawn.
-	D3D11_RASTERIZER_DESC rasterDesc;
-	rasterDesc.AntialiasedLineEnable = false;
-	rasterDesc.CullMode              = D3D11_CULL_BACK;
-	rasterDesc.DepthBias             = 0;
-	rasterDesc.DepthBiasClamp        = 0.0f;
-	rasterDesc.DepthClipEnable       = true;
-	rasterDesc.FillMode              = D3D11_FILL_SOLID;
-	rasterDesc.FrontCounterClockwise = false;
-	rasterDesc.MultisampleEnable     = false;
-	rasterDesc.ScissorEnable         = false;
-	rasterDesc.SlopeScaledDepthBias  = 0.0f;
-	// Now set the rasterizer state.
-
-	// Create the rasterizer state from the description we just filled out.
-	hr = m_pD3D11Device->CreateRasterizerState(&rasterDesc, &m_pRasterState);
-	DebugHR(hr);
-	m_pD3D11DeviceContext->RSSetState(m_pRasterState);
-
-	return true;
-}
-
-bool D3DInitApp::init_buffer()
+bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext)
 {
 	HRESULT hr;
 
@@ -285,8 +151,8 @@ bool D3DInitApp::init_buffer()
 	VBO.SysMemSlicePitch = 0;
 
 	// Now create the vertex buffer.
-	hr = m_pD3D11Device->CreateBuffer(&VertexBufferDesc, &VBO, &m_pVertexBuffer);
-    DebugHR(hr);
+	hr = pD3D11Device->CreateBuffer(&VertexBufferDesc, &VBO, &m_pVertexBuffer);
+	DebugHR(hr);
 
 	/////////////////////////////////Index Buffer ///////////////////////////////////////
 
@@ -305,8 +171,8 @@ bool D3DInitApp::init_buffer()
 	IBO.SysMemPitch      = 0;
 	IBO.SysMemSlicePitch = 0;
 
-	hr = m_pD3D11Device->CreateBuffer(&IndexBufferDesc, &IBO, &m_pIndexBuffer);
-    DebugHR(hr);
+	hr = pD3D11Device->CreateBuffer(&IndexBufferDesc, &IBO, &m_pIndexBuffer);
+	DebugHR(hr);
 
 	////////////////////////////////////////////////////////////////////////////////////////
 
@@ -315,9 +181,9 @@ bool D3DInitApp::init_buffer()
 	unsigned int offset;
 	stride = sizeof(Vertex); 
 	offset = 0;
-	m_pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
-	m_pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	m_pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
+	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	////////////////////////////////MVP Buffer//////////////////////////////////////
 
@@ -328,7 +194,7 @@ bool D3DInitApp::init_buffer()
 	mvpBufferDesc.BindFlags      = D3D11_BIND_CONSTANT_BUFFER;
 	mvpBufferDesc.CPUAccessFlags = 0;
 	mvpBufferDesc.MiscFlags      = 0;
-	hr = m_pD3D11Device->CreateBuffer(&mvpBufferDesc, NULL, &m_pMVPBuffer);
+	hr = pD3D11Device->CreateBuffer(&mvpBufferDesc, NULL, &m_pMVPBuffer);
 	DebugHR(hr);
 
 	///////////////////////////////////////Light buffer////////////////////////////////////////
@@ -340,13 +206,13 @@ bool D3DInitApp::init_buffer()
 	lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	lightBufferDesc.MiscFlags      = 0;
 
-	hr = m_pD3D11Device->CreateBuffer(&lightBufferDesc, NULL, &m_pLightBuffer);
+	hr = pD3D11Device->CreateBuffer(&lightBufferDesc, NULL, &m_pLightBuffer);
 	DebugHR(hr);
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	// Lock the light constant buffer so it can be written to.
-	hr = m_pD3D11DeviceContext->Map(m_pLightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-    DebugHR(hr);
+	hr = pD3D11DeviceContext->Map(m_pLightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	DebugHR(hr);
 
 	// Get a pointer to the data in the constant buffer.
 	LightBuffer *dataPtr2 = (LightBuffer*)mappedResource.pData;
@@ -357,10 +223,10 @@ bool D3DInitApp::init_buffer()
 	dataPtr2->specularPower  = 32.0f;
 	dataPtr2->specularColor  = D3DXVECTOR4(0.0f, 0.0f, 1.0f, 1.0f);
 
-	m_pD3D11DeviceContext->Unmap(m_pLightBuffer, 0);
+	pD3D11DeviceContext->Unmap(m_pLightBuffer, 0);
 
 	int lightSlot = 0;
-	m_pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, &m_pLightBuffer);
+	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, &m_pLightBuffer);
 
 
 	D3D11_BUFFER_DESC cameraBufferDesc;
@@ -372,48 +238,39 @@ bool D3DInitApp::init_buffer()
 	cameraBufferDesc.StructureByteStride = 0;
 
 	// Create the camera constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-	hr = m_pD3D11Device->CreateBuffer(&cameraBufferDesc, NULL, &m_CameraBuffer);
-    DebugHR(hr);
+	hr = pD3D11Device->CreateBuffer(&cameraBufferDesc, NULL, &m_CameraBuffer);
+	DebugHR(hr);
 
 	// Lock the camera constant buffer so it can be written to.
-	hr = m_pD3D11DeviceContext->Map(m_CameraBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-    DebugHR(hr);
+	hr = pD3D11DeviceContext->Map(m_CameraBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	DebugHR(hr);
 
 	// Get a pointer to the data in the constant buffer.
 	CameraBuffer *dataPtr3 = (CameraBuffer*)mappedResource.pData;
 	dataPtr3->camPos = D3DXVECTOR3(0.0f, 0.0f, -3.0f);
 	dataPtr3->padding = 0.0f;
-	m_pD3D11DeviceContext->Unmap(m_CameraBuffer, 0);
+	pD3D11DeviceContext->Unmap(m_CameraBuffer, 0);
 
 	int bufferSlot = 1;
-	m_pD3D11DeviceContext->VSSetConstantBuffers( bufferSlot, 1, &m_CameraBuffer);
+	pD3D11DeviceContext->VSSetConstantBuffers( bufferSlot, 1, &m_CameraBuffer);
 
 	return true;
 }
 
-bool D3DInitApp::init_camera()
+bool Cube::init_camera(float aspect)
 {
-	//Viewport Infomation
-	D3D11_VIEWPORT vp;
-	ZeroMemory(&vp, sizeof(D3D11_VIEWPORT));
-	vp.TopLeftX = 0;
-	vp.TopLeftY = 0;
-	vp.Width    = m_ScreenWidth;
-	vp.Height   = m_ScreenHeight;
-	m_pD3D11DeviceContext->RSSetViewports(1, &vp);
-
 	//MVP Matrix
 	camPos    = XMVectorSet( 0.0f, 0.0f, -3.0f, 0.0f );
 	camTarget = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
 	camUp     = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
 	View      = XMMatrixLookAtLH( camPos, camTarget, camUp );
-	Proj      = XMMatrixPerspectiveFovLH( 0.4f*3.14f, GetAspect(), 1.0f, 1000.0f);
+	Proj      = XMMatrixPerspectiveFovLH( 0.4f*3.14f, aspect, 1.0f, 1000.0f);
 	Model     = XMMatrixIdentity();
 
 	return true;
 }
 
-bool D3DInitApp::init_shader()
+bool Cube::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 {
 	HRESULT result;
 
@@ -444,7 +301,7 @@ bool D3DInitApp::init_shader()
 
 	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
 
-	TestShader.init(m_pD3D11Device, GetHwnd());
+	TestShader.init(pD3D11Device, hWnd);
 	TestShader.attachVS(L"triangle.vsh", pInputLayoutDesc, numElements);
 	TestShader.attachPS(L"triangle.psh");
 	TestShader.end();
@@ -452,10 +309,10 @@ bool D3DInitApp::init_shader()
 	return true;
 }
 
-void D3DInitApp::init_texture()
+void Cube::init_texture(ID3D11Device *pD3D11Device, LPCWSTR texFile)
 {
 	HRESULT hr;
-	hr = D3DX11CreateShaderResourceViewFromFile(m_pD3D11Device, L"../../media/textures/seafloor.dds", NULL,NULL, &m_pTexture, NULL);
+	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, texFile, NULL,NULL, &m_pTexture, NULL);
 	DebugHR(hr);
 
 	// Create a texture sampler state description.
@@ -475,58 +332,58 @@ void D3DInitApp::init_texture()
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// Create the texture sampler state.
-	hr = m_pD3D11Device->CreateSamplerState(&samplerDesc, &m_pTexSamplerState);
+	hr = pD3D11Device->CreateSamplerState(&samplerDesc, &m_pTexSamplerState);
 	DebugHR(hr);
 
 }
 
-bool D3DInitApp::load_model(char *modelFile)
+bool Cube::load_model(char *modelFile)
 {
-		std::ifstream fin;
-		char ch;
-		int i;
-		fin.open(modelFile);
+	std::ifstream fin;
+	char ch;
+	int i;
+	fin.open(modelFile);
 
-		if (fin.fail())
-		{
-			return false;
-		}
-		// Read up to the value of vertex count.
+	if (fin.fail())
+	{
+		return false;
+	}
+	// Read up to the value of vertex count.
+	fin.get(ch);
+	while(ch != ':')
+	{
 		fin.get(ch);
-		while(ch != ':')
-		{
-			fin.get(ch);
-		}
+	}
 
-		// Read in the vertex count.
-		fin >> m_VertexCount;
-		m_IndexCount = m_VertexCount;
+	// Read in the vertex count.
+	fin >> m_VertexCount;
+	m_IndexCount = m_VertexCount;
 
-		m_pModelVertex  = new ModelVertex[m_VertexCount];
-		if (!m_pModelVertex)
-		{
-			return false;
-		}
+	m_pModelVertex  = new ModelVertex[m_VertexCount];
+	if (!m_pModelVertex)
+	{
+		return false;
+	}
 
-		//Read up the beginning of the data
+	//Read up the beginning of the data
+	fin.get(ch);
+	while (ch != ':')
+	{
 		fin.get(ch);
-		while (ch != ':')
-		{
-			fin.get(ch);
-		}
+	}
 
-		for (int i = 0; i != m_VertexCount; ++i)
-		{
-			fin >> m_pModelVertex[i].x  >> m_pModelVertex[i].y >> m_pModelVertex[i].z;
-			fin >> m_pModelVertex[i].u  >> m_pModelVertex[i].v;
-			fin >> m_pModelVertex[i].nx >> m_pModelVertex[i].ny >> m_pModelVertex[i].nz;
-		}
-		fin.close();
+	for (int i = 0; i != m_VertexCount; ++i)
+	{
+		fin >> m_pModelVertex[i].x  >> m_pModelVertex[i].y >> m_pModelVertex[i].z;
+		fin >> m_pModelVertex[i].u  >> m_pModelVertex[i].v;
+		fin >> m_pModelVertex[i].nx >> m_pModelVertex[i].ny >> m_pModelVertex[i].nz;
+	}
+	fin.close();
 
-		return true;
+	return true;
 }
 
-bool D3DInitApp::load_obj(char *objFile)
+bool Cube::load_obj(char *objFile)
 {
 	std::ifstream fin;
 	char ch;
@@ -609,14 +466,14 @@ bool D3DInitApp::load_obj(char *objFile)
 	}//While
 	fin.close();
 
-	 for (int i = 0; i != vPosIndex.size(); ++i)
-	 {
+	for (int i = 0; i != vPosIndex.size(); ++i)
+	{
 		vt.Position = vPos[vPosIndex[i] - 1];
 		vt.TexCoord = vTex[vTexIndex[i] - 1];
 		vt.Normal   = vNormal[vNormalIndex[i] - 1];
 		VertexData.push_back(vt);
 		IndexData.push_back(i);
-	  }
+	}
 	m_VertexCount = VertexData.size();
 	m_IndexCount = IndexData.size();
 

@@ -128,6 +128,8 @@ bool D3DInitApp::v_InitD3D()
 
 void D3DInitApp::v_Render()
 {
+
+	TestShader.use(m_pD3D11DeviceContext);
 	//Render scene 
 	//Keep the cubes rotating
 	static float rot = 0.0f;
@@ -413,11 +415,7 @@ bool D3DInitApp::init_shader()
 	TestShader.init(m_pD3D11Device, GetHwnd());
 	TestShader.attachVS(L"triangle.vsh", pInputLayoutDesc, numElements);
 	TestShader.attachPS(L"triangle.psh");
-	TestShader.use();
-
-	m_pD3D11DeviceContext->IASetInputLayout(TestShader.GetInputLayout());
-	m_pD3D11DeviceContext->VSSetShader(TestShader.GetVS(), NULL, 0);
-	m_pD3D11DeviceContext->PSSetShader(TestShader.GetPS(), NULL, 0);
+	TestShader.end();
 
 	return true;
 }

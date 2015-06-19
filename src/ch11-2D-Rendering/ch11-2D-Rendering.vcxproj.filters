@@ -23,12 +23,15 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ch11-2D-Rendering.cpp">
+    <ClCompile Include="renderSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bitmap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cube.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
