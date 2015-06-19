@@ -11,7 +11,7 @@
 class Shader
 {
 public:
-	Shader() {}
+	Shader(): pVS_Shader(0), pPS_Shader(0), pInputLayout(0), pD3D11Device(0) {}
 	~Shader() {}
 
 	void init(ID3D11Device *pD3D11Device, HWND hWnd);

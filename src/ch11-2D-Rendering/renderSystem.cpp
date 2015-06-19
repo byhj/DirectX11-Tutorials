@@ -227,7 +227,7 @@ void D3DRenderSystem::init_bitmap()
 	bitmap.init_window(m_ScreenWidth, m_ScreenHeight);
 	bitmap.init_buffer(m_pD3D11Device, 100, 100);
 	bitmap.init_shader(m_pD3D11Device, GetHwnd());
-	bitmap.init_texture(m_pD3D11Device, L"../../media/textures/seafloor.dds");
+	bitmap.init_texture(m_pD3D11Device, L"../../media/textures/stone.dds");
 }
 
 void D3DRenderSystem::init_cube()
@@ -242,12 +242,14 @@ void D3DRenderSystem::init_cube()
 void D3DRenderSystem::v_Render()
 {
 
- BeginScene();
-  cube.Render(m_pD3D11DeviceContext);
-  TurnZBufferOff();
-  bitmap.Render(m_pD3D11DeviceContext);
-  TurnZBufferOn();
+   BeginScene();
 
+
+   TurnZBufferOff();
+   bitmap.Render(m_pD3D11DeviceContext);
+   TurnZBufferOn();
+
+   cube.Render(m_pD3D11DeviceContext);
    EndScene();
 }
 

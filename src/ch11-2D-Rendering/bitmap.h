@@ -24,8 +24,10 @@ public:
 			ReleaseCOM(m_pVS                )
 			ReleaseCOM(m_pPS                )
 			ReleaseCOM(m_pMVPBuffer         )
+			ReleaseCOM(m_pRenderTargetView  )
 			ReleaseCOM(m_pVertexBuffer      )
 			ReleaseCOM(m_pIndexBuffer       )
+			ReleaseCOM(m_pTexture           )
 	}
 
 public:
