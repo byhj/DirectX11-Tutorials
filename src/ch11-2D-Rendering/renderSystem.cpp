@@ -78,7 +78,7 @@ bool D3DRenderSystem::init_device()
 {
 	HRESULT hr;
 
-	//Create buffer desc
+	////////////////////////////Create buffer desc//////////////////////////
 	DXGI_MODE_DESC bufferDesc;
 	ZeroMemory(&bufferDesc, sizeof(DXGI_MODE_DESC));
 	bufferDesc.Width                   = m_ScreenWidth;
@@ -88,8 +88,8 @@ bool D3DRenderSystem::init_device()
 	bufferDesc.Format                  = DXGI_FORMAT_R8G8B8A8_UNORM;
 	bufferDesc.ScanlineOrdering        = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	bufferDesc.Scaling                 = DXGI_MODE_SCALING_UNSPECIFIED;
-
-	//Create swapChain Desc
+	
+	///////////////////////////Create swapChain Desc////////////////////////
 	DXGI_SWAP_CHAIN_DESC swapChainDesc;
 	ZeroMemory(&swapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
 	swapChainDesc.BufferDesc         = bufferDesc;
@@ -115,10 +115,10 @@ bool D3DRenderSystem::init_device()
 
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, NULL);
 	// Initialize the description of the depth buffer.
-	
+		
+	///////////////////// Set up the description of the depth buffer.////////////////////////
 	D3D11_TEXTURE2D_DESC depthBufferDesc;
 	ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
-	// Set up the description of the depth buffer.
 	depthBufferDesc.Width              = m_ScreenWidth;
 	depthBufferDesc.Height             = m_ScreenHeight;
 	depthBufferDesc.MipLevels          = 1;
@@ -134,8 +134,8 @@ bool D3DRenderSystem::init_device()
 	hr = m_pD3D11Device->CreateTexture2D(&depthBufferDesc, NULL, &m_pDepthStencilBuffer);
 
 
+	//////////////////////////// Initialize the description of the stencil state.///////////////////////////////////////////////
 	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
-	// Initialize the description of the stencil state.
 	ZeroMemory(&depthStencilDesc, sizeof(depthStencilDesc));
 
 	// Set up the description of the stencil state.
@@ -175,12 +175,11 @@ bool D3DRenderSystem::init_device()
 
 	// Create the depth stencil view.
 	hr = m_pD3D11Device->CreateDepthStencilView(m_pDepthStencilBuffer, &depthStencilViewDesc, &m_pDepthStencilView);
-
 	
+	
+	// ////////////Clear the second depth stencil state before setting the parameters.//////////////////////
 	D3D11_DEPTH_STENCIL_DESC depthDisabledStencilDesc;
-	// Clear the second depth stencil state before setting the parameters.
 	ZeroMemory(&depthDisabledStencilDesc, sizeof(depthDisabledStencilDesc));
-
 	// Now create a second depth stencil state which turns off the Z buffer for 2D rendering.  The only difference is 
 	// that DepthEnable is set to false, all other parameters are the same as the other depth stencil state.
 	depthDisabledStencilDesc.DepthEnable = false;
@@ -206,7 +205,18 @@ bool D3DRenderSystem::init_device()
 
 bool D3DRenderSystem::v_InitD3D()
 {
-	init_device();
+		init_device();
+
+	//Viewport Infomation
+	D3D11_VIEWPORT vp;
+	ZeroMemory(&vp, sizeof(D3D11_VIEWPORT));
+	vp.TopLeftX = 0;
+	vp.TopLeftY = 0;
+	vp.Width    = m_ScreenWidth;
+	vp.Height   = m_ScreenHeight;
+	m_pD3D11DeviceContext->RSSetViewports(1, &vp);
+
+
 	init_bitmap();
 	init_cube();
 	return true;
@@ -222,6 +232,7 @@ void D3DRenderSystem::init_bitmap()
 
 void D3DRenderSystem::init_cube()
 {
+
 	cube.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
 	cube.init_camera(GetAspect());
 	cube.init_shader(m_pD3D11Device, GetHwnd());
@@ -230,13 +241,13 @@ void D3DRenderSystem::init_cube()
 
 void D3DRenderSystem::v_Render()
 {
-   BeginScene();
 
-   TurnZBufferOff();
-   bitmap.Render(m_pD3D11DeviceContext);
-   TurnZBufferOn();
+ BeginScene();
+  cube.Render(m_pD3D11DeviceContext);
+  TurnZBufferOff();
+  bitmap.Render(m_pD3D11DeviceContext);
+  TurnZBufferOn();
 
-   cube.Render(m_pD3D11DeviceContext);
    EndScene();
 }
 
