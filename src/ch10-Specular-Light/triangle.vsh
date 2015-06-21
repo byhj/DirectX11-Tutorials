@@ -1,12 +1,12 @@
 
-cbuffer MatrixObject
+cbuffer MatrixObject  : register(b0)
 {
 	float4x4 model;
 	float4x4 view;
 	float4x4 proj;
 };
 
-cbuffer CameraBuffer
+cbuffer CameraBuffer : register(b1)
 {
   float3 camPos;
   float  padding;

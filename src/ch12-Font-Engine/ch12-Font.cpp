@@ -5,7 +5,9 @@
 #endif 
 
 #include "common/d3dApp.h"
-#include "bitmap.h"
+#include "common/d3dFont.h"
+#include "common/d3dTimer.h"
+
 #include "cube.h"
 
 class D3DRenderSystem: public D3DApp
@@ -13,7 +15,7 @@ class D3DRenderSystem: public D3DApp
 public:
 	D3DRenderSystem()
 	{
-		m_AppName = L"DirectX11: ch03-Init-D3D";
+		m_AppName = L"DirectX11: ch12-Font";
 		m_pSwapChain          = NULL;
 		m_pD3D11Device        = NULL;
 		m_pD3D11DeviceContext = NULL;
@@ -22,6 +24,7 @@ public:
 		m_pDepthStencilBuffer = NULL;
 		m_pMVPBuffer          = NULL;
 		m_pRasterState        = NULL;
+		fps = 0.0f;
 	}
 
 	bool v_InitD3D();
@@ -43,12 +46,15 @@ public:
 
 private:
 	bool init_device();
-	void init_bitmap();
-	void init_cube();
+	void init_camera();
+	void init_object();
+
 	void BeginScene();
 	void EndScene();
 	void TurnZBufferOn();
 	void TurnZBufferOff();
+	void DrawFps();
+	void DrawMessage();
 
 	XMMATRIX Model;
 	XMMATRIX View;
@@ -57,6 +63,7 @@ private:
 	XMVECTOR camTarget;
 	XMVECTOR camUp;
 
+	//D3D Device 
 	IDXGISwapChain           *m_pSwapChain;
 	ID3D11Device             *m_pD3D11Device;
 	ID3D11DeviceContext      *m_pD3D11DeviceContext;
@@ -68,11 +75,48 @@ private:
 	ID3D11Buffer             *m_pMVPBuffer;
 	ID3D11RasterizerState    *m_pRasterState;
 
-	Bitmap bitmap;
+	D3DFont font;
 	Cube cube;
+	D3DTimer timer;
+	int m_videoCardMemory;
+	WCHAR m_videoCardInfo[255];
+	float fps;
 };
 
 CALL_MAIN(D3DRenderSystem);
+
+void D3DRenderSystem::DrawFps()
+{
+	static bool flag = true;
+	if (flag)
+	{
+		timer.Start();
+		flag = false;
+	}
+
+	timer.Count();
+	static int frameCnt = 0;
+	static float timeElapsed = 0.0f;
+	frameCnt++;
+	if(timer.GetTotalTime() - timeElapsed >= 1.0f)
+	{
+		fps = frameCnt;
+		frameCnt = 0;
+		timeElapsed += 1.0f;
+	}	
+
+	font.drawFps(m_pD3D11DeviceContext, (UINT)fps);
+}
+
+void D3DRenderSystem::DrawMessage()
+{
+	WCHAR WinInfo[255];
+    swprintf(WinInfo, L"Window Size: %d x %d", m_ScreenWidth, m_ScreenHeight);
+	DrawFps();
+	font.drawText(m_pD3D11DeviceContext, WinInfo, 20.0f, 10.0f, 40.0f);
+	font.drawText(m_pD3D11DeviceContext, m_videoCardInfo, 20.0f, 10.0f, 70.0f);
+
+}
 
 bool D3DRenderSystem::init_device()
 {
@@ -161,8 +205,8 @@ bool D3DRenderSystem::init_device()
 	// Create the depth stencil state.
 	hr = m_pD3D11Device->CreateDepthStencilState(&depthStencilDesc, &m_pDepthStencilState);
 	// Set the depth stencil state.
-	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
 
+	DebugHR(hr);
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 	// Initialize the depth stencil view.
@@ -175,7 +219,7 @@ bool D3DRenderSystem::init_device()
 
 	// Create the depth stencil view.
 	hr = m_pD3D11Device->CreateDepthStencilView(m_pDepthStencilBuffer, &depthStencilViewDesc, &m_pDepthStencilView);
-	
+	DebugHR(hr);
 	
 	// ////////////Clear the second depth stencil state before setting the parameters.//////////////////////
 	D3D11_DEPTH_STENCIL_DESC depthDisabledStencilDesc;
@@ -199,14 +243,37 @@ bool D3DRenderSystem::init_device()
 
 	// Create the state using the device.
 	hr = m_pD3D11Device->CreateDepthStencilState(&depthDisabledStencilDesc, &m_pDepthDisabledStencilState);
+	DebugHR(hr);
 
-	return true;
+	unsigned int numModes, i, numerator, denominator, stringLength;
+	IDXGIFactory* factory;
+	IDXGIAdapter* adapter;
+	IDXGISurface *surface;
+	DXGI_ADAPTER_DESC adapterDesc;
+
+	// Create a DirectX graphics interface factory.
+	 CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
+	 // Use the factory to create an adapter for the primary graphics interface (video card).
+	 factory->EnumAdapters(0, &adapter);
+	adapter->GetDesc(&adapterDesc);
+	m_videoCardMemory = (int)(adapterDesc.DedicatedVideoMemory / 1024 / 1024);
+
+	 // Convert the name of the video card to a character array and store it.
+	 swprintf(m_videoCardInfo,L"Video Card  : %ls", adapterDesc.Description);
+	 return true;
 }
 
 bool D3DRenderSystem::v_InitD3D()
 {
-		init_device();
+	init_device();
+	init_camera();
+	init_object();
 
+	return true;
+}
+
+void D3DRenderSystem::init_camera()
+{
 	//Viewport Infomation
 	D3D11_VIEWPORT vp;
 	ZeroMemory(&vp, sizeof(D3D11_VIEWPORT));
@@ -216,40 +283,39 @@ bool D3DRenderSystem::v_InitD3D()
 	vp.Height   = m_ScreenHeight;
 	m_pD3D11DeviceContext->RSSetViewports(1, &vp);
 
-
-	init_bitmap();
-	init_cube();
-	return true;
+	//MVP Matrix
+	camPos    = XMVectorSet( 0.0f, 0.0f, -3.0f, 0.0f );
+	camTarget = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
+	camUp     = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
+	View      = XMMatrixLookAtLH( camPos, camTarget, camUp );
+	Proj      = XMMatrixPerspectiveFovLH( 0.4f*3.14f, GetAspect(), 1.0f, 1000.0f);
+	Model     = XMMatrixIdentity();
 }
 
-void D3DRenderSystem::init_bitmap()
-{
-	bitmap.init_window(m_ScreenWidth, m_ScreenHeight);
-	bitmap.init_buffer(m_pD3D11Device, 100, 100);
-	bitmap.init_shader(m_pD3D11Device, GetHwnd());
-	bitmap.init_texture(m_pD3D11Device, L"../../media/textures/stone.dds");
-}
-
-void D3DRenderSystem::init_cube()
+void D3DRenderSystem::init_object()
 {
 
 	cube.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-	cube.init_camera(GetAspect());
 	cube.init_shader(m_pD3D11Device, GetHwnd());
 	cube.init_texture(m_pD3D11Device, L"../../media/textures/seafloor.dds");
+
+	font.init(m_pD3D11Device);
+
+	timer.Reset();
 }
 
 void D3DRenderSystem::v_Render()
 {
 
    BeginScene();
+ 
+   DrawMessage();
+   static float rot = 0.0f;
+   rot +=  timer.GetDeltaTime();
 
-
-   TurnZBufferOff();
-   bitmap.Render(m_pD3D11DeviceContext);
-   TurnZBufferOn();
-
-   cube.Render(m_pD3D11DeviceContext);
+   Model = XMMatrixRotationY(rot);
+   cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
+  
    EndScene();
 }
 
@@ -268,12 +334,10 @@ void D3DRenderSystem::TurnZBufferOff()
 
 void  D3DRenderSystem::BeginScene()
 {
-	D3DXVECTOR4 bgColor = D3DXVECTOR4(0.0f, 0.0f, 0.5f, 1.0f);
+	D3DXVECTOR4 bgColor = D3DXVECTOR4(0.0f, 0.25f, 0.0f, 1.0f);
 
-	// Clear the back buffer.
+	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
-
-	// Clear the depth buffer.
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 	return;

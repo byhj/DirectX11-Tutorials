@@ -23,11 +23,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="renderSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="bitmap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -42,5 +37,10 @@
     <Text Include="bitmap.psh">
       <Filter>Resource Files</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ch11-2D-Rendering.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -139,10 +139,9 @@ void D3DInitApp::v_Render()
 	D3DXCOLOR bgColor( 0.0f, 0.0f, 0.0f, 1.0f );
 	XMVECTOR rotaxis = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 	         Model   = XMMatrixRotationAxis( rotaxis, rot); 
-     cbMatrix.model  = XMMatrixTranspose(Model);
-	 cbMatrix.view   = XMMatrixTranspose(View);
-	 cbMatrix.proj   = XMMatrixTranspose(Proj);
-
+    cbMatrix.model   = XMMatrixTranspose(Model);
+	cbMatrix.view    = XMMatrixTranspose(View);
+	cbMatrix.proj    = XMMatrixTranspose(Proj);
 	m_pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
 	m_pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
 

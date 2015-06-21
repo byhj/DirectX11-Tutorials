@@ -16,6 +16,7 @@ public:
 	void v_Render();
 
 private:
+
 	IDXGISwapChain          *m_pSwapChain;
 	ID3D11Device            *m_pD3D11Device;
 	ID3D11DeviceContext     *m_pD3D11DeviceContext;
@@ -56,14 +57,15 @@ bool D3DInitApp::v_InitD3D()
 		                               NULL, NULL, NULL, NULL, D3D11_SDK_VERSION, 
 		                               &swapChainDesc, &m_pSwapChain, &m_pD3D11Device,
 		                               NULL, &m_pD3D11DeviceContext);
+	DebugHR(hr);
 
 	//Create backbuffer, buffer also is a texture
 	ID3D11Texture2D *pBackBuffer;
 	hr = m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBuffer);
 	hr = m_pD3D11Device->CreateRenderTargetView(pBackBuffer, NULL, &m_pRenderTargetView);
 	pBackBuffer->Release();
+	DebugHR(hr);
 
-	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, NULL);
 	return true;
 }
 
@@ -71,6 +73,9 @@ void D3DInitApp::v_Render()
 {
 	//Render 
 	D3DXCOLOR bgColor( 0.0f, 0.0f, 0.5f, 1.0f );
+
+	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, NULL);
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
+
 	m_pSwapChain->Present(0, 0);
 }

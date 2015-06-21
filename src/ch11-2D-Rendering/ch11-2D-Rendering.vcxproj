@@ -31,7 +31,7 @@
     <None Include="triangle.vsh" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="renderSystem.cpp" />
+    <ClCompile Include="ch11-2D-Rendering.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bitmap.h" />

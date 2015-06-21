@@ -1,8 +1,6 @@
+#ifdef _DEBUG
 #pragma comment( linker, "/subsystem:\"console\" /entry:\"WinMainCRTStartup\"")
-
-#ifdef _WIN32
-#define _XM_NO_INTRINSICS_
-#endif 
+#endif
 
 #include "common/d3dApp.h"
 #include <common/d3dShader.h>
@@ -117,8 +115,10 @@ void D3DInitApp::v_Render()
 
 	m_pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbPerObj, 0, 0 );
 	m_pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
+	m_pD3D11DeviceContext->OMSetRenderTargets( 1, &m_pRenderTargetView, m_pDepthStencilView );
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
+	
 	TestShader.use(m_pD3D11DeviceContext);
 	m_pD3D11DeviceContext->DrawIndexed(3, 0, 0);
 
@@ -157,18 +157,17 @@ bool D3DInitApp::init_device()
 		                               NULL, NULL, NULL, NULL, D3D11_SDK_VERSION, 
 		                               &swapChainDesc, &m_pSwapChain, &m_pD3D11Device,
 		                               NULL, &m_pD3D11DeviceContext);
+	DebugHR(hr);
 
 	//Create backbuffer, buffer also is a texture
 	ID3D11Texture2D *pBackBuffer;
 	hr = m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBuffer);
 	hr = m_pD3D11Device->CreateRenderTargetView(pBackBuffer, NULL, &m_pRenderTargetView);
 	pBackBuffer->Release();
-	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, NULL);
-
+	DebugHR(hr);
 
 	//Describe our Depth/Stencil Buffer
 	D3D11_TEXTURE2D_DESC depthStencilDesc;
-
 	depthStencilDesc.Width              = m_ScreenWidth;
 	depthStencilDesc.Height             = m_ScreenHeight;
 	depthStencilDesc.MipLevels          = 1;
@@ -181,16 +180,16 @@ bool D3DInitApp::init_device()
 	depthStencilDesc.CPUAccessFlags     = 0; 
 	depthStencilDesc.MiscFlags          = 0;
 
-	m_pD3D11Device->CreateTexture2D(&depthStencilDesc, NULL, &m_pDepthStencilBuffer);
-	m_pD3D11Device->CreateDepthStencilView(m_pDepthStencilBuffer, NULL, &m_pDepthStencilView);
-	m_pD3D11DeviceContext->OMSetRenderTargets( 1, &m_pRenderTargetView, m_pDepthStencilView );
+	hr = m_pD3D11Device->CreateTexture2D(&depthStencilDesc, NULL, &m_pDepthStencilBuffer);
+	hr = m_pD3D11Device->CreateDepthStencilView(m_pDepthStencilBuffer, NULL, &m_pDepthStencilView);
+	DebugHR(hr);
 
 	return true;
 }
 
 bool D3DInitApp::init_buffer()
 {
-	HRESULT result;
+	HRESULT hr;
 
 	///////////////////////////Index Buffer ////////////////////////////////
 	m_VertexCount = 3;
@@ -219,11 +218,8 @@ bool D3DInitApp::init_buffer()
 	VBO.SysMemSlicePitch = 0;
 
 	// Now create the vertex buffer.
-	result = m_pD3D11Device->CreateBuffer(&VertexBufferDesc, &VBO, &m_pVertexBuffer);
-	if(FAILED(result))
-	{
-		return false;
-	}
+	hr = m_pD3D11Device->CreateBuffer(&VertexBufferDesc, &VBO, &m_pVertexBuffer);
+    DebugHR(hr);
 
 	/////////////////////////////////Index Buffer ///////////////////////////////////////
 	m_IndexCount = 3;
@@ -247,11 +243,8 @@ bool D3DInitApp::init_buffer()
 	IBO.SysMemPitch      = 0;
 	IBO.SysMemSlicePitch = 0;
 
-	result = m_pD3D11Device->CreateBuffer(&IndexBufferDesc, &IBO, &m_pIndexBuffer);
-	if(FAILED(result))
-	{
-		return false;
-	}
+	hr = m_pD3D11Device->CreateBuffer(&IndexBufferDesc, &IBO, &m_pIndexBuffer);
+    DebugHR(hr);
 
 	////////////////////////////////////////////////////////////////////////////////////////
 	// Release the arrays now that the vertex and index buffers have been created and loaded.
@@ -278,7 +271,8 @@ bool D3DInitApp::init_buffer()
 	mvpDesc.BindFlags      = D3D11_BIND_CONSTANT_BUFFER;
 	mvpDesc.CPUAccessFlags = 0;
 	mvpDesc.MiscFlags      = 0;
-	m_pD3D11Device->CreateBuffer(&mvpDesc, NULL, &m_pMVPBuffer);
+	hr = m_pD3D11Device->CreateBuffer(&mvpDesc, NULL, &m_pMVPBuffer);
+	DebugHR(hr);
 
 	return true;
 }
@@ -290,8 +284,8 @@ bool D3DInitApp::init_camera()
 	ZeroMemory(&vp, sizeof(D3D11_VIEWPORT));
 	vp.TopLeftX = 0;
 	vp.TopLeftY = 0;
-	vp.Width    = m_ScreenWidth;
-	vp.Height   = m_ScreenHeight;
+	vp.Width    = static_cast<FLOAT>(m_ScreenWidth);
+	vp.Height   = static_cast<FLOAT>(m_ScreenHeight);
 	m_pD3D11DeviceContext->RSSetViewports(1, &vp);
 
 	//MVP Matrix
@@ -301,14 +295,11 @@ bool D3DInitApp::init_camera()
 	View      = XMMatrixLookAtLH( camPos, camTarget, camUp );
 	Proj      = XMMatrixPerspectiveFovLH( 0.4f*3.14f, GetAspect(), 1.0f, 1000.0f);
 
-
 	return true;
 }
 
 bool D3DInitApp::init_shader()
 {
-	HRESULT result;
-
 	D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc[2];
 	pInputLayoutDesc[0].SemanticName         = "POSITION";
 	pInputLayoutDesc[0].SemanticIndex        = 0;

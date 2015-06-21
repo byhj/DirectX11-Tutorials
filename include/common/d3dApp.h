@@ -40,22 +40,18 @@ public:
 
 	virtual	bool v_InitD3D();
 	virtual bool v_Init();
-	virtual void v_Reshape()  {}
 	virtual void v_Shutdown() {}
 	virtual void v_Render()   {}
 	virtual void v_Update()   {}
 
-	virtual void v_MouseDown() {}
-	virtual void v_MouseMove() {}
-	virtual void v_MouseUp()   {}
-
 protected:
-	int m_ScreenWidth;
-	int m_ScreenHeight;
+	int   m_ScreenWidth;
+	int   m_ScreenHeight;
 	float m_ScreenFar;
 	float m_ScreenNear;
-	int m_PosX;
-	int m_PosY;
+	int   m_PosX;
+	int   m_PosY;
+
 	LPCTSTR m_AppName;
 	LPCTSTR m_WndClassName;
 
@@ -70,9 +66,6 @@ private:
 private:
 	HINSTANCE m_hInstance;
 	HWND      m_hWnd;
-	int       m_videoCardMemory;
-	char      m_videoCardInfo;
-
 };
 
 static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -95,6 +88,7 @@ int D3DApp::Run()
 		}
 		else 
 		{
+		   v_Update();
 		   v_Render();
 		}
 
@@ -171,9 +165,6 @@ bool D3DApp::init_window()
 	}
 
 	ShowWindow(m_hWnd, SW_SHOW);
-	SetForegroundWindow(m_hWnd);
-	SetFocus(m_hWnd);
-	UpdateWindow(m_hWnd);	
 
 	return true;
 }

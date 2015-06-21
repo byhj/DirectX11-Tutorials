@@ -5,8 +5,8 @@ struct VS_OUTPUT
    	float2 Tex : TEXCOORD0;
 };
 
-Texture2D tex;
-SamplerState texSample;
+Texture2D tex: register(t0);
+SamplerState texSample : register(s0);
 
 float4 PS(VS_OUTPUT ps_in) : SV_TARGET
 {
