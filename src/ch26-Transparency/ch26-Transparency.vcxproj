@@ -18,6 +18,16 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="cube.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cube.psh" />
+    <None Include="cube.vsh" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ch26-Transparency.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{79F02CC9-6802-458A-AF7E-48683A846AC0}</ProjectGuid>
     <RootNamespace>ch26Transparency</RootNamespace>
