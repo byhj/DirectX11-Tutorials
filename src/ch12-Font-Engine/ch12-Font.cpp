@@ -85,37 +85,29 @@ private:
 
 CALL_MAIN(D3DRenderSystem);
 
-void D3DRenderSystem::DrawFps()
+
+bool D3DRenderSystem::v_InitD3D()
 {
-	static bool flag = true;
-	if (flag)
-	{
-		timer.Start();
-		flag = false;
-	}
+	init_device();
+	init_camera();
+	init_object();
 
-	timer.Count();
-	static int frameCnt = 0;
-	static float timeElapsed = 0.0f;
-	frameCnt++;
-	if(timer.GetTotalTime() - timeElapsed >= 1.0f)
-	{
-		fps = frameCnt;
-		frameCnt = 0;
-		timeElapsed += 1.0f;
-	}	
-
-	font.drawFps(m_pD3D11DeviceContext, (UINT)fps);
+	return true;
 }
 
-void D3DRenderSystem::DrawMessage()
+void D3DRenderSystem::v_Render()
 {
-	WCHAR WinInfo[255];
-    swprintf(WinInfo, L"Window Size: %d x %d", m_ScreenWidth, m_ScreenHeight);
-	DrawFps();
-	font.drawText(m_pD3D11DeviceContext, WinInfo, 20.0f, 10.0f, 40.0f);
-	font.drawText(m_pD3D11DeviceContext, m_videoCardInfo, 20.0f, 10.0f, 70.0f);
 
+	BeginScene();
+
+	DrawMessage();
+	static float rot = 0.0f;
+	rot +=  timer.GetDeltaTime();
+
+	Model = XMMatrixRotationY(rot);
+	cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
+
+	EndScene();
 }
 
 bool D3DRenderSystem::init_device()
@@ -132,7 +124,7 @@ bool D3DRenderSystem::init_device()
 	bufferDesc.Format                  = DXGI_FORMAT_R8G8B8A8_UNORM;
 	bufferDesc.ScanlineOrdering        = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	bufferDesc.Scaling                 = DXGI_MODE_SCALING_UNSPECIFIED;
-	
+
 	///////////////////////////Create swapChain Desc////////////////////////
 	DXGI_SWAP_CHAIN_DESC swapChainDesc;
 	ZeroMemory(&swapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
@@ -159,7 +151,7 @@ bool D3DRenderSystem::init_device()
 
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, NULL);
 	// Initialize the description of the depth buffer.
-		
+
 	///////////////////// Set up the description of the depth buffer.////////////////////////
 	D3D11_TEXTURE2D_DESC depthBufferDesc;
 	ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
@@ -220,7 +212,7 @@ bool D3DRenderSystem::init_device()
 	// Create the depth stencil view.
 	hr = m_pD3D11Device->CreateDepthStencilView(m_pDepthStencilBuffer, &depthStencilViewDesc, &m_pDepthStencilView);
 	DebugHR(hr);
-	
+
 	// ////////////Clear the second depth stencil state before setting the parameters.//////////////////////
 	D3D11_DEPTH_STENCIL_DESC depthDisabledStencilDesc;
 	ZeroMemory(&depthDisabledStencilDesc, sizeof(depthDisabledStencilDesc));
@@ -252,23 +244,14 @@ bool D3DRenderSystem::init_device()
 	DXGI_ADAPTER_DESC adapterDesc;
 
 	// Create a DirectX graphics interface factory.
-	 CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
-	 // Use the factory to create an adapter for the primary graphics interface (video card).
-	 factory->EnumAdapters(0, &adapter);
+	CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
+	// Use the factory to create an adapter for the primary graphics interface (video card).
+	factory->EnumAdapters(0, &adapter);
 	adapter->GetDesc(&adapterDesc);
 	m_videoCardMemory = (int)(adapterDesc.DedicatedVideoMemory / 1024 / 1024);
 
-	 // Convert the name of the video card to a character array and store it.
-	 swprintf(m_videoCardInfo,L"Video Card  : %ls", adapterDesc.Description);
-	 return true;
-}
-
-bool D3DRenderSystem::v_InitD3D()
-{
-	init_device();
-	init_camera();
-	init_object();
-
+	// Convert the name of the video card to a character array and store it.
+	swprintf(m_videoCardInfo,L"Video Card  : %ls", adapterDesc.Description);
 	return true;
 }
 
@@ -304,20 +287,7 @@ void D3DRenderSystem::init_object()
 	timer.Reset();
 }
 
-void D3DRenderSystem::v_Render()
-{
 
-   BeginScene();
- 
-   DrawMessage();
-   static float rot = 0.0f;
-   rot +=  timer.GetDeltaTime();
-
-   Model = XMMatrixRotationY(rot);
-   cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
-  
-   EndScene();
-}
 
 void D3DRenderSystem::TurnZBufferOn()
 {
@@ -334,7 +304,7 @@ void D3DRenderSystem::TurnZBufferOff()
 
 void  D3DRenderSystem::BeginScene()
 {
-	D3DXVECTOR4 bgColor = D3DXVECTOR4(0.0f, 0.25f, 0.0f, 1.0f);
+	D3DXVECTOR4 bgColor = D3DXVECTOR4(0.2f, 0.3f, 0.4f, 1.0f);
 
 	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
@@ -350,4 +320,37 @@ void D3DRenderSystem::EndScene()
 	m_pSwapChain->Present(0, 0);
 
 	return;
+}
+
+
+void D3DRenderSystem::DrawFps()
+{
+	static bool flag = true;
+	if (flag)
+	{
+		timer.Start();
+		flag = false;
+	}
+
+	timer.Count();
+	static int frameCnt = 0;
+	static float timeElapsed = 0.0f;
+	frameCnt++;
+	if(timer.GetTotalTime() - timeElapsed >= 1.0f)
+	{
+		fps = frameCnt;
+		frameCnt = 0;
+		timeElapsed += 1.0f;
+	}	
+
+	font.drawFps(m_pD3D11DeviceContext, (UINT)fps);
+}
+
+void D3DRenderSystem::DrawMessage()
+{
+	WCHAR WinInfo[255];
+	swprintf(WinInfo, L"Window Size: %d x %d", m_ScreenWidth, m_ScreenHeight);
+	DrawFps();
+	font.drawText(m_pD3D11DeviceContext, WinInfo, 22.0f, 10.0f, 40.0f);
+	font.drawText(m_pD3D11DeviceContext, m_videoCardInfo, 22.0f, 10.0f, 70.0f);
 }

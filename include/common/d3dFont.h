@@ -18,7 +18,7 @@ public:
     void init(ID3D11Device *pD3D11Device)
 	{
 		HRESULT hr = FW1CreateFactory(FW1_VERSION, &m_pFW1Factory);
-		hr = m_pFW1Factory->CreateFontWrapper(pD3D11Device, L"Book Antiqua", &m_pFontWrapper);
+		hr = m_pFW1Factory->CreateFontWrapper(pD3D11Device, L"Arial", &m_pFontWrapper);
 		DebugHR(hr);
 		m_pFW1Factory->Release();
 	}
@@ -40,7 +40,7 @@ void D3DFont::drawFps(ID3D11DeviceContext *pD3D11DeviceContext, UINT fps)
 	m_pFontWrapper->DrawString(
 		pD3D11DeviceContext,
 		frameStr,// String
-		20.0f,// Font size
+		22.0f,// Font size
 		10.0f,// X position
 		10.0f,// Y position
 		0xff0099ff,// Text color, 0xAaBbGgRr
