@@ -53,7 +53,7 @@ public:
 
 	void v_Shutdown()
 	{		
-		ReleaseCOM(m_pSwapChain         )
+		    ReleaseCOM(m_pSwapChain         )
 			ReleaseCOM(m_pD3D11Device       )
 			ReleaseCOM(m_pD3D11DeviceContext)
 			ReleaseCOM(m_pRenderTargetView  )
@@ -111,7 +111,6 @@ private:
 	float m_Theta;
 	float m_Phi;
 	float m_Radius;
-
 	POINT m_LastMousePos;
 };
 
@@ -128,6 +127,7 @@ void D3DRenderSystem::update()
 	XMVECTOR pos    = XMVectorSet(x, y, z, 1.0f);
 	XMVECTOR target = XMVectorZero();
 	XMVECTOR up     = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	camPos = pos;
 
 	XMMATRIX V = XMMatrixLookAtLH(pos, target, up);
 	XMStoreFloat4x4(&m_View, V);
@@ -201,12 +201,13 @@ void D3DRenderSystem::v_Render()
 
 	BeginScene();
 
+
 	static float rot = 0.0f;
 	rot +=  timer.GetDeltaTime();
 	update();
 	View = XMLoadFloat4x4(&m_View);
 
-	cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
+	cube.Render(m_pD3D11DeviceContext, Model, View, Proj, camPos);
 
 	DrawMessage();
 	EndScene();

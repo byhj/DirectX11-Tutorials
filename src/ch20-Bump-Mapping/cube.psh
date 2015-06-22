@@ -24,7 +24,10 @@ SamplerState texSample : register(s0);
 
 float4 PS(VS_OUTPUT ps_in) : SV_TARGET
 {
-   
+ // ps_in.Normal = normalize(ps_in.Normal);
+ // ps_in.tangent = normalize(ps_in.tangent);
+ // ps_in.binormal = normalize(ps_in.binormal);
+
   float4 texColor0 = tex0.Sample(texSample, ps_in.Tex);
   float4 bumpMap   = tex1.Sample(texSample, ps_in.Tex);
 
@@ -34,16 +37,14 @@ float4 PS(VS_OUTPUT ps_in) : SV_TARGET
   float3 bumpNormal = (bumpMap.x * ps_in.tangent) 
                     + (bumpMap.y * ps_in.binormal) 
                     + (bumpMap.z * ps_in.Normal);
-   bumpNormal = normalize(bumpNormal);
+  bumpNormal = normalize(bumpNormal);
 
   float4 ambient = ambientColor;
-  float3 lightDir = -lightDirection;
+  float3 lightDir = float3(0.0, 1.0f, 0.0f);// -lightDirection;
   float  intensity = saturate( dot(bumpNormal, lightDir) ); 
   float4 diffuse   = saturate(diffuseColor * intensity);
 
-  float4 result = saturate(ambient + diffuse);
-
-  float4 pixelColor =  result * texColor0;
+  float4 pixelColor =  (ambient + diffuse) * texColor0;
 
   return pixelColor;
 }

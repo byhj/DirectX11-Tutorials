@@ -1,0 +1,62 @@
+
+cbuffer LightBuffer	 : register(b0)
+{
+  float4 ambientColor;
+  float4 diffuseColor;
+  float3 lightDirection;
+  float  specularPower;
+  float4 specularColor;
+
+};
+
+struct VS_OUTPUT 
+{
+    float4 pos       : SV_POSITION;
+   	float2 tex       : TEXCOORD0;
+	float3 normal    : NORMAL;
+	float3 tangent   : TANGENT;
+	float3 binormal  : BINORMAL;
+	float3 viewDir   : TEXCOORD1;
+};
+
+Texture2D colorTex     : register(t0);
+Texture2D bumpTex      : register(t1);
+Texture2D specularTex  : register(t2);
+
+SamplerState texSample : register(s0);
+
+float4 PS(VS_OUTPUT ps_in) : SV_TARGET
+{
+  float4 result	= 0.0f;
+  float4 texColor = colorTex.Sample(texSample, ps_in.tex);
+  float4 bumpMap  = bumpTex.Sample(texSample, ps_in.tex);
+
+  // Expand the range of the normal value from (0, +1) to (-1, +1).
+  bumpMap = (bumpMap * 2.0f) - 1.0f;
+
+  // Calculate the normal from the data in the bump map.
+  float3 bumpNormal = (bumpMap.x * ps_in.tangent) 
+                    + (bumpMap.y * ps_in.binormal) 
+                    + (bumpMap.z * ps_in.normal);
+  bumpNormal = normalize(bumpNormal);
+
+  //Calc the diffuse light
+  float4 ambient = ambientColor;
+  float3 lightDir = -lightDirection;
+  float  intensity = saturate( dot(bumpNormal, lightDir) ); 
+  float4 diffuse   = saturate(diffuseColor * intensity);
+
+   result  =  ambient + diffuse;
+  //Calc the specular light
+  if (intensity > 0.0f)
+  {
+     float4	specIntensity = specularTex.Sample(texSample, ps_in.tex);
+	 float3 reflection = normalize(2 * intensity * bumpNormal - lightDir);
+	 float4 specular = specIntensity * pow(saturate( dot(reflection, ps_in.viewDir) ), specularPower);
+    result += specular;
+  }
+
+  float4 pixelColor =  saturate(result * texColor);
+
+  return pixelColor;
+}

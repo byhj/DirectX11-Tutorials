@@ -26,8 +26,6 @@ struct VS_OUT
     float4 Pos : SV_POSITION;
     float2 Tex : TEXCOORD0;
 	float3 Normal: NORMAL;
-	float3 ViewDir: TEXCOORD1;
-	float4 worldPos: TEXCOORD2;
 	float3 tangent   :TANGENT;
 	float3 binormal  :BINORMAL;
 };
@@ -39,7 +37,6 @@ VS_OUT VS(VS_IN vs_in)
 
   // Make the position with mvp matrix
    vs_out.Pos = mul(vs_in.Pos, model);
-   vs_out.worldPos = vs_out.Pos;
    vs_out.Pos = mul(vs_out.Pos, view);
    vs_out.Pos = mul(vs_out.Pos, proj);
 
@@ -53,10 +50,6 @@ VS_OUT VS(VS_IN vs_in)
 	vs_out.binormal = mul(vs_in.binormal, (float3x3)model);
     vs_out.binormal = normalize(vs_out.binormal);
 
-   //Calc the view direction
-   float4 worldPos = mul(vs_in.Pos, model);
-   vs_out.ViewDir  = camPos.xyz - worldPos.xyz;
-   vs_out.ViewDir  = normalize(vs_out.ViewDir);
     
    return vs_out;
 }
