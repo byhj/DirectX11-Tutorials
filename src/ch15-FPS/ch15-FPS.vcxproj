@@ -18,6 +18,16 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="cube.psh" />
+    <None Include="cube.vsh" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ch15-FPS.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="cube.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{88AE5FA7-938F-44D4-BCEF-D630374AB71A}</ProjectGuid>
     <RootNamespace>ch15FPS</RootNamespace>
@@ -76,62 +86,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="CameraClass.cpp" />
-    <ClCompile Include="ch15-FPS.cpp" />
-    <ClCompile Include="CpuClass.cpp" />
-    <ClCompile Include="D3DClass.cpp" />
-    <ClCompile Include="FontClass.cpp" />
-    <ClCompile Include="FontShader.cpp" />
-    <ClCompile Include="FpsClass.cpp" />
-    <ClCompile Include="GraphicsClass.cpp" />
-    <ClCompile Include="InputClass.cpp" />
-    <ClCompile Include="LightClass.cpp" />
-    <ClCompile Include="ModelClass.cpp" />
-    <ClCompile Include="ShaderClass.cpp" />
-    <ClCompile Include="SystemClass.cpp" />
-    <ClCompile Include="TextClass.cpp" />
-    <ClCompile Include="TextureClass.cpp" />
-    <ClCompile Include="TimerClass.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="CameraClass.h" />
-    <ClInclude Include="CpuClass.h" />
-    <ClInclude Include="D3DClass.h" />
-    <ClInclude Include="FontClass.h" />
-    <ClInclude Include="FontShader.h" />
-    <ClInclude Include="FpsClass.h" />
-    <ClInclude Include="GraphicsClass.h" />
-    <ClInclude Include="InputClass.h" />
-    <ClInclude Include="LightClass.h" />
-    <ClInclude Include="ModelClass.h" />
-    <ClInclude Include="ShaderClass.h" />
-    <ClInclude Include="SystemClass.h" />
-    <ClInclude Include="TextClass.h" />
-    <ClInclude Include="TextureClass.h" />
-    <ClInclude Include="TimerClass.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="font-fs.hlsl">
-      <FileType>Document</FileType>
-    </Text>
-    <Text Include="font-vs.hlsl">
-      <FileType>Document</FileType>
-    </Text>
-    <Text Include="light-fs.hlsl">
-      <FileType>Document</FileType>
-    </Text>
-    <Text Include="light-vs.hlsl">
-      <FileType>Document</FileType>
-    </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="fontdata.txt" />
-    <Text Include="shader-error.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="font.dds" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

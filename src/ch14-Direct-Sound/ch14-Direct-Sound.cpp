@@ -8,6 +8,7 @@
 #include "common/d3dFont.h"
 #include "common/d3dTimer.h"
 #include "common/d3dCamera.h"
+#include "common/d3dSound.h"
 
 #include "cube.h"
 
@@ -83,6 +84,7 @@ private:
 	int m_videoCardMemory;
 	WCHAR m_videoCardInfo[255];
 	float fps;
+	D3DSound sound;
 };
 
 CALL_MAIN(D3DRenderSystem);
@@ -94,13 +96,13 @@ bool D3DRenderSystem::v_InitD3D()
 	init_camera();
 	init_object();
 	camera.InitDirectInput(GetHwnd(), GetAppInst());
-
+	sound.Init(GetHwnd(), "sound01.wav");
+	sound.PlayWaveFile();
 	return true;
 }
 
 void D3DRenderSystem::v_Render()
 {
-
 	BeginScene();
 
 	DrawMessage();
