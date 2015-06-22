@@ -18,6 +18,18 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="cube.psh" />
+    <None Include="cube.vsh" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ch31-3D-Sound.cpp" />
+    <ClCompile Include="SoundClass.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="cube.h" />
+    <ClInclude Include="SoundClass.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{EFC82F0C-3CC1-4686-BBCA-CB7B7D93B0E5}</ProjectGuid>
     <RootNamespace>ch313DSound</RootNamespace>
@@ -76,58 +88,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="CameraClass.h" />
-    <ClInclude Include="D3DClass.h" />
-    <ClInclude Include="FontClass.h" />
-    <ClInclude Include="FontShader.h" />
-    <ClInclude Include="GraphicsClass.h" />
-    <ClInclude Include="InputClass.h" />
-    <ClInclude Include="LightClass.h" />
-    <ClInclude Include="ModelClass.h" />
-    <ClInclude Include="ShaderClass.h" />
-    <ClInclude Include="SoundClass.h" />
-    <ClInclude Include="SystemClass.h" />
-    <ClInclude Include="TextClass.h" />
-    <ClInclude Include="TextureClass.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="CameraClass.cpp" />
-    <ClCompile Include="ch31-3D-Sound.cpp" />
-    <ClCompile Include="D3DClass.cpp" />
-    <ClCompile Include="FontClass.cpp" />
-    <ClCompile Include="FontShader.cpp" />
-    <ClCompile Include="GraphicsClass.cpp" />
-    <ClCompile Include="InputClass.cpp" />
-    <ClCompile Include="LightClass.cpp" />
-    <ClCompile Include="ModelClass.cpp" />
-    <ClCompile Include="ShaderClass.cpp" />
-    <ClCompile Include="SoundClass.cpp" />
-    <ClCompile Include="SystemClass.cpp" />
-    <ClCompile Include="TextClass.cpp" />
-    <ClCompile Include="TextureClass.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="font.dds" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="fontdata.txt" />
-    <Text Include="shader-error.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="font-fs.hlsl">
-      <FileType>Document</FileType>
-    </Text>
-    <Text Include="font-vs.hlsl">
-      <FileType>Document</FileType>
-    </Text>
-    <Text Include="light-fs.hlsl">
-      <FileType>Document</FileType>
-    </Text>
-    <Text Include="light-vs.hlsl">
-      <FileType>Document</FileType>
-    </Text>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

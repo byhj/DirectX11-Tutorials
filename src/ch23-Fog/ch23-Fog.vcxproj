@@ -18,6 +18,16 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="cube.psh" />
+    <None Include="cube.vsh" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ch15-FPS.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="cube.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{4B2DCB0D-1E56-4374-9436-DE1542F9C7EF}</ProjectGuid>
     <RootNamespace>ch23Fog</RootNamespace>
@@ -76,41 +86,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="CameraClass.h" />
-    <ClInclude Include="D3DClass.h" />
-    <ClInclude Include="GraphicsClass.h" />
-    <ClInclude Include="InputClass.h" />
-    <ClInclude Include="LightClass.h" />
-    <ClInclude Include="ModelClass.h" />
-    <ClInclude Include="ShaderClass.h" />
-    <ClInclude Include="SystemClass.h" />
-    <ClInclude Include="TextureClass.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="CameraClass.cpp" />
-    <ClCompile Include="ch23-Fog.cpp" />
-    <ClCompile Include="D3DClass.cpp" />
-    <ClCompile Include="GraphicsClass.cpp" />
-    <ClCompile Include="InputClass.cpp" />
-    <ClCompile Include="LightClass.cpp" />
-    <ClCompile Include="ModelClass.cpp" />
-    <ClCompile Include="ShaderClass.cpp" />
-    <ClCompile Include="SystemClass.cpp" />
-    <ClCompile Include="TextureClass.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="cube.txt" />
-    <Text Include="shader-error.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="texture-fs.hlsl">
-      <FileType>Document</FileType>
-    </Text>
-    <Text Include="texture-vs.hlsl">
-      <FileType>Document</FileType>
-    </Text>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

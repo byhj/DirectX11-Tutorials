@@ -1,0 +1,41 @@
+
+cbuffer LightBuffer	 : register(b0)
+{
+  float4 ambientColor;
+  float4 diffuseColor;
+  float3 lightDirection;
+  float  specularPower;
+  float4 specularColor;
+
+};
+
+struct VS_OUTPUT 
+{
+    float4 Pos : SV_POSITION;
+   	float2 Tex : TEXCOORD0;
+	float3 Normal: NORMAL;
+	float  fogFactor : FOG;
+};
+
+Texture2D tex : register(t0);
+SamplerState texSample: register(s0);
+
+float4 PS(VS_OUTPUT ps_in) : SV_TARGET
+{
+
+  float4 ambient = ambientColor;
+  //Calc the diffuse light
+  float3 lightDir  = -lightDirection;
+  float  intensity = saturate( dot(ps_in.Normal, lightDir) ); 
+  float4 diffuse   = saturate(diffuseColor * intensity);
+
+  float4 result     = saturate(ambient + diffuse);
+   
+  float4 texColor = tex.Sample(texSample, ps_in.Tex);
+
+   // Set the color of the fog to grey.
+  float4 fogColor = float4(0.5f, 0.5f, 0.5f, 1.0f);
+  float4 pixelColor = ps_in.fogFactor * texColor  + (1.0 - ps_in.fogFactor) * fogColor;
+
+  return pixelColor;
+}
