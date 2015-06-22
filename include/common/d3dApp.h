@@ -49,7 +49,7 @@ public:
 	virtual void v_OnMouseDown(WPARAM btnState, int x, int y){ }
 	virtual void v_OnMouseUp(WPARAM btnState, int x, int y)  { }
 	virtual void v_OnMouseMove(WPARAM btnState, int x, int y){ }
-
+	virtual void v_OnMouseWheel(WPARAM btnState, int x, int y) { }
 protected:
 	int   m_ScreenWidth;
 	int   m_ScreenHeight;
@@ -184,7 +184,11 @@ LRESULT CALLBACK D3DApp::MessageHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 {
 	switch (uMsg)
 	{
-
+	case WM_KEYDOWN:
+		{
+	  	if(wParam == VK_ESCAPE)
+			PostMessage(GetHwnd(), WM_DESTROY, 0, 0);
+		}
 	case WM_LBUTTONDOWN:
 	case WM_MBUTTONDOWN:
 	case WM_RBUTTONDOWN:
@@ -198,7 +202,8 @@ LRESULT CALLBACK D3DApp::MessageHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 	case WM_MOUSEMOVE:
 		v_OnMouseMove(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 		return 0;
-
+	case WM_MOUSEWHEEL:
+		v_OnMouseWheel(wParam, GET_WHEEL_DELTA_WPARAM(wParam), GET_Y_LPARAM(lParam));
 	default:
 		{
 			return DefWindowProc(hWnd, uMsg, wParam, lParam);
