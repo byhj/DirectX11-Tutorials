@@ -18,6 +18,17 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="cube.psh" />
+    <None Include="cube.vsh" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ch16-Frustum-Culling.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\common\d3dFrustum.h" />
+    <ClInclude Include="cube.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{107F625F-AB33-4501-B252-D05F3F2F662E}</ProjectGuid>
     <RootNamespace>ch16FrustumCulling</RootNamespace>
@@ -76,68 +87,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="CameraClass.h" />
-    <ClInclude Include="CpuClass.h" />
-    <ClInclude Include="D3DClass.h" />
-    <ClInclude Include="FontClass.h" />
-    <ClInclude Include="FontShader.h" />
-    <ClInclude Include="FpsClass.h" />
-    <ClInclude Include="FrustumClass.h" />
-    <ClInclude Include="GraphicsClass.h" />
-    <ClInclude Include="InputClass.h" />
-    <ClInclude Include="LightClass.h" />
-    <ClInclude Include="ModelClass.h" />
-    <ClInclude Include="ModelListClass.h" />
-    <ClInclude Include="PositionClass.h" />
-    <ClInclude Include="ShaderClass.h" />
-    <ClInclude Include="SystemClass.h" />
-    <ClInclude Include="TextClass.h" />
-    <ClInclude Include="TextureClass.h" />
-    <ClInclude Include="TimerClass.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="fontdata.txt" />
-    <Text Include="shader-error.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="font-fs.hlsl">
-      <FileType>Document</FileType>
-    </Text>
-    <Text Include="font-vs.hlsl">
-      <FileType>Document</FileType>
-    </Text>
-    <Text Include="light-fs.hlsl">
-      <FileType>Document</FileType>
-    </Text>
-    <Text Include="light-vs.hlsl">
-      <FileType>Document</FileType>
-    </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="CameraClass.cpp" />
-    <ClCompile Include="ch16-Frustum-Culling.cpp" />
-    <ClCompile Include="CpuClass.cpp" />
-    <ClCompile Include="D3DClass.cpp" />
-    <ClCompile Include="FontClass.cpp" />
-    <ClCompile Include="FontShader.cpp" />
-    <ClCompile Include="FpsClass.cpp" />
-    <ClCompile Include="FrustumClass.cpp" />
-    <ClCompile Include="GraphicsClass.cpp" />
-    <ClCompile Include="InputClass.cpp" />
-    <ClCompile Include="LightClass.cpp" />
-    <ClCompile Include="ModelClass.cpp" />
-    <ClCompile Include="ModelListClass.cpp" />
-    <ClCompile Include="PositionClass.cpp" />
-    <ClCompile Include="ShaderClass.cpp" />
-    <ClCompile Include="SystemClass.cpp" />
-    <ClCompile Include="TextClass.cpp" />
-    <ClCompile Include="TextureClass.cpp" />
-    <ClCompile Include="TimerClass.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="font.dds" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

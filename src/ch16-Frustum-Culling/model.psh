@@ -1,0 +1,34 @@
+
+cbuffer Material :register(b0)
+{
+  float4 ambient;
+  float4 diffuse;
+  float4 specular;
+  float4 emissive;
+  float  shininess;
+};
+
+struct VS_OUT
+{
+    float4 Pos    : SV_POSITION;
+	float3 Normal : NORMAL;
+	float2 Tex    : TEXCOORD0;
+	float3 worldPos : POSITION;
+};
+
+Texture2D tex : register(t0);
+SamplerState texState : register(s0);
+
+float4 PS(VS_OUT ps_in) : SV_TARGET
+{
+
+   float4 texColor = tex.Sample(texState, ps_in.Tex);
+   float3 lightDir = float3(0.0f, 0.0f, 5.0f);
+
+   ps_in.Normal   = normalize(ps_in.Normal);
+   float intensity = dot(lightDir, ps_in.Normal);
+
+   float4 dif = max(intensity, 0.0f) * diffuse ;
+
+   return saturate(ambient + dif);
+}

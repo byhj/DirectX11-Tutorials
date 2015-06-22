@@ -22,7 +22,7 @@ class D3DModel
 public:
 	D3DModel(){}
 
-	void Render(ID3D11DeviceContext *pD3D11DeviceContext, XMMATRIX MVP)
+	void Render(ID3D11DeviceContext *pD3D11DeviceContext, XMMATRIX model, XMMATRIX view, XMMATRIX proj)
 	{
 		ModelShader.use(pD3D11DeviceContext);
 
@@ -37,7 +37,7 @@ public:
 	
 			pD3D11DeviceContext->UpdateSubresource(m_pMatBuffer, 0, NULL, &this->meshes[i].mat, 0, 0 );
 			pD3D11DeviceContext->PSSetConstantBuffers(0, 1, &m_pMatBuffer);
-			this->meshes[i].Render(pD3D11DeviceContext, MVP);
+			this->meshes[i].Render(pD3D11DeviceContext, model, view, proj);
 
 		   pD3D11DeviceContext->OMSetBlendState(0, 0, 0xffffffff);
 		}
