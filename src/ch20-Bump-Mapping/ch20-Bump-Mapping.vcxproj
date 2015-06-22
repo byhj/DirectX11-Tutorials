@@ -19,39 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CameraClass.h" />
-    <ClInclude Include="D3DClass.h" />
-    <ClInclude Include="GraphicsClass.h" />
-    <ClInclude Include="InputClass.h" />
-    <ClInclude Include="LightClass.h" />
-    <ClInclude Include="ModelClass.h" />
-    <ClInclude Include="ShaderClass.h" />
-    <ClInclude Include="SystemClass.h" />
-    <ClInclude Include="TextureClass.h" />
+    <None Include="cube.psh" />
+    <None Include="cube.vsh" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CameraClass.cpp" />
+    <ClInclude Include="cube.h" />
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="ch20-Bump-Mapping.cpp" />
-    <ClCompile Include="D3DClass.cpp" />
-    <ClCompile Include="GraphicsClass.cpp" />
-    <ClCompile Include="InputClass.cpp" />
-    <ClCompile Include="LightClass.cpp" />
-    <ClCompile Include="ModelClass.cpp" />
-    <ClCompile Include="ShaderClass.cpp" />
-    <ClCompile Include="SystemClass.cpp" />
-    <ClCompile Include="TextureClass.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="cube.txt" />
-    <Text Include="shader-error.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="texture-fs.hlsl">
-      <FileType>Document</FileType>
-    </Text>
-    <Text Include="texture-vs.hlsl">
-      <FileType>Document</FileType>
-    </Text>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E6458737-0D82-4131-ACE0-73881CFB65B3}</ProjectGuid>
