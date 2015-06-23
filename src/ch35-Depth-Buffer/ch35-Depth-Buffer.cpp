@@ -8,7 +8,7 @@
 #include "common/d3dFont.h"
 #include "common/d3dTimer.h"
 #include "common/d3dCamera.h"
-#include "SoundClass.h"
+
 
 #include "cube.h"
 
@@ -91,7 +91,6 @@ private:
 	int m_videoCardMemory;
 	WCHAR m_videoCardInfo[255];
 	float fps;
-	SoundClass sound;
 };
 
 CALL_MAIN(D3DRenderSystem);
@@ -136,7 +135,7 @@ void D3DRenderSystem::v_Render()
 	static float rot = 0.0f;
 	rot +=  timer.GetDeltaTime();
 	UpdateScene();
-	Model = XMMatrixIdentity();
+	Model = XMMatrixTranslation(0.0f, 0.0f, sinf(rot));
 	View  = camera.GetViewMatrix();
 	cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
 
@@ -318,7 +317,6 @@ void D3DRenderSystem::init_object()
 	cube.init_texture(m_pD3D11Device, L"../../media/textures/stone01.dds");
 	font.init(m_pD3D11Device);
 
-	sound.Init(GetHwnd(), "sound02.wav");
 	timer.Reset();
 }
 
