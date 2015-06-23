@@ -18,6 +18,18 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="cube.psh" />
+    <None Include="cube.vsh" />
+    <None Include="rtt.psh" />
+    <None Include="rtt.vsh" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ch22-RTT.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="cube.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{710A140E-91CF-434C-BC59-A9FEC89C411A}</ProjectGuid>
     <RootNamespace>ch27Reflection</RootNamespace>
@@ -76,47 +88,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="ReflectioShaderClass.cpp" />
-    <ClCompile Include="CameraClass.cpp" />
-    <ClCompile Include="ch27-Reflection.cpp" />
-    <ClCompile Include="D3DClass.cpp" />
-    <ClCompile Include="GraphicsClass.cpp" />
-    <ClCompile Include="InputClass.cpp" />
-    <ClCompile Include="LightClass.cpp" />
-    <ClCompile Include="ModelClass.cpp" />
-    <ClCompile Include="RenderTextureClass.cpp" />
-    <ClCompile Include="ShaderClass.cpp" />
-    <ClCompile Include="SystemClass.cpp" />
-    <ClCompile Include="TextureClass.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="ReflectioShaderClass.h" />
-    <ClInclude Include="CameraClass.h" />
-    <ClInclude Include="D3DClass.h" />
-    <ClInclude Include="GraphicsClass.h" />
-    <ClInclude Include="InputClass.h" />
-    <ClInclude Include="LightClass.h" />
-    <ClInclude Include="ModelClass.h" />
-    <ClInclude Include="RenderTextureClass.h" />
-    <ClInclude Include="ShaderClass.h" />
-    <ClInclude Include="SystemClass.h" />
-    <ClInclude Include="TextureClass.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="blend-ps.hlsl">
-      <FileType>Document</FileType>
-    </Text>
-    <Text Include="blend-vs.hlsl">
-      <FileType>Document</FileType>
-    </Text>
-    <Text Include="texture-fs.hlsl">
-      <FileType>Document</FileType>
-    </Text>
-    <Text Include="texture-vs.hlsl">
-      <FileType>Document</FileType>
-    </Text>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -18,6 +18,17 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="light.psh" />
+    <None Include="light.vsh" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ch30-Multi-Point-Light.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\common\d3dLight.h" />
+    <ClInclude Include="light.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{75747FCE-0B50-4A8B-BCC0-FDFC8F93B14C}</ProjectGuid>
     <RootNamespace>ch30MultiPointLight</RootNamespace>

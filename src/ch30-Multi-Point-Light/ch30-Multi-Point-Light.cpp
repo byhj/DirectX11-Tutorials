@@ -7,10 +7,9 @@
 #include "common/d3dApp.h"
 #include "common/d3dFont.h"
 #include "common/d3dTimer.h"
-#include "common/d3dRTT.h"
 #include "common/d3dCamera.h"
 
-#include "cube.h"
+#include "light.h"
 
 class D3DRenderSystem: public D3DApp
 {
@@ -91,7 +90,6 @@ private:
 	D3DFont font;
 	Cube cube;
 	D3DCamera camera;
-	D3DRTT d3dRtt;
 	D3DTimer timer;
 	int m_videoCardMemory;
 	WCHAR m_videoCardInfo[255];
@@ -182,39 +180,17 @@ bool D3DRenderSystem::v_InitD3D()
 
 void D3DRenderSystem::v_Render()
 {
+	BeginScene();
 
 	static float rot = 0.0f;
 	rot +=  timer.GetDeltaTime();
 	UpdateScene();
 	Model = XMMatrixIdentity();
 	View  = camera.GetViewMatrix();
-	//Proj  = camera.GetProjMatrix();
-	D3DXVECTOR4 bgColor = D3DXVECTOR4(0.5f, 0.5f, 0.5f, 1.0f);
-
-	m_pD3D11DeviceContext->OMSetRenderTargets(1, &pRenderTargetView, m_pDepthStencilView);
-	m_pD3D11DeviceContext->ClearRenderTargetView(pRenderTargetView, bgColor);
-	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-	
 	cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
-
-	//Set normal render target view
-	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
-
-	BeginScene();
-
-	cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
-
-	TurnZBufferOff();
-
-	// Create an orthographic projection matrix for 2D rendering. 
-	Model = XMMatrixScaling(0.001, 0.001, 0.001);
-	View = XMMatrixOrthographicLH((float)m_ScreenWidth, (float)m_ScreenHeight, 0.1f, 1000.0f);
-
-	d3dRtt.Render(m_pD3D11DeviceContext, pShaderResourceView, Model, View, Proj);
-	
-	TurnZBufferOn();
 
 	DrawMessage();
+
 	EndScene();
 }
 
@@ -389,10 +365,6 @@ void D3DRenderSystem::init_object()
 	cube.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
 	cube.init_shader(m_pD3D11Device, GetHwnd());
 	font.init(m_pD3D11Device);
-
-	d3dRtt.init_window(400, 1000, 600, 600);
-	d3dRtt.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-	d3dRtt.init_shader(m_pD3D11Device, GetHwnd());
 
 	timer.Reset();
 }
