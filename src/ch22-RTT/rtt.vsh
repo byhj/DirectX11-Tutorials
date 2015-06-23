@@ -24,9 +24,6 @@ VS_OUT VS(VS_IN vs_in)
    VS_OUT vs_out;
    // Make the position with mvp matrix
    vs_out.Pos = mul( vs_in.Pos, model);
-   vs_out.Pos = mul(vs_out.Pos, view);
-   vs_out.Pos = mul(vs_out.Pos, proj);
-   vs_out.Tex = vs_in.Tex;
- 
+   vs_out.Pos.z = 0.0f;
    return vs_out;
 }

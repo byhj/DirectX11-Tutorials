@@ -206,12 +206,21 @@ void D3DRenderSystem::v_Render()
 	static float rot = 0.0f;
 	rot +=  timer.GetDeltaTime();
 	update();
-	//View = XMLoadFloat4x4(&m_View);
+	Model = XMMatrixIdentity();
+	View = XMLoadFloat4x4(&m_View);
 	//Model = XMMatrixRotationY(rot);
 	cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
+	m_pD3D11DeviceContext->OMSetRenderTargets(1, &pRenderTargetView, pDepthStencilView);
 
+	cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
 	TurnZBufferOff();
-	d3dRtt.Render(m_pD3D11DeviceContext, Model, View, Proj);
+	
+	// Create an orthographic projection matrix for 2D rendering. 
+	Model = XMMatrixScaling(0.001, 0.001, 0.001);
+	View = XMMatrixOrthographicLH((float)m_ScreenWidth, (float)m_ScreenHeight, 0.1f, 1000.0f);
+
+	d3dRtt.Render(m_pD3D11DeviceContext, Model, View, Proj, cube.GetShaderResourceView());
+	
 	TurnZBufferOn();
 	DrawMessage();
 	EndScene();
@@ -389,7 +398,7 @@ void D3DRenderSystem::init_object()
 	cube.init_shader(m_pD3D11Device, GetHwnd());
 	font.init(m_pD3D11Device);
 
-	d3dRtt.init_window(400, 400, 400, 400);
+	d3dRtt.init_window(400, 1000, 600, 600);
 	d3dRtt.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
 	d3dRtt.init_shader(m_pD3D11Device, GetHwnd());
 
