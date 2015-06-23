@@ -206,7 +206,7 @@ void D3DRenderSystem::v_Render()
 	rot +=  timer.GetDeltaTime();
 	update();
 	View = XMLoadFloat4x4(&m_View);
-	//Model = XMMatrixRotationY(rot);
+	Model = XMMatrixRotationY(rot);
 	cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
 
 	DrawMessage();
@@ -370,7 +370,7 @@ void D3DRenderSystem::init_camera()
 	m_pD3D11DeviceContext->RSSetViewports(1, &vp);
 
 	//MVP Matrix
-	camPos    = XMVectorSet( 0.0f, 0.0f, -3.0f, 0.0f );
+	camPos    = XMVectorSet( 0.0f, 0.0f, -5.0f, 0.0f );
 	camTarget = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
 	camUp     = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
 	View      = XMMatrixLookAtLH( camPos, camTarget, camUp );

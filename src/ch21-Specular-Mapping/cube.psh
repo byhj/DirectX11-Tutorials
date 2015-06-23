@@ -42,21 +42,19 @@ float4 PS(VS_OUTPUT ps_in) : SV_TARGET
 
   //Calc the diffuse light
   float4 ambient = ambientColor;
-  float3 lightDir = -lightDirection;
+  float3 lightDir = float3(0.0f, 0.0f, -1.0f);
   float  intensity = saturate( dot(bumpNormal, lightDir) ); 
   float4 diffuse   = saturate(diffuseColor * intensity);
 
-   result  =  ambient + diffuse;
-  //Calc the specular light
-  if (intensity > 0.0f)
-  {
-     float4	specIntensity = specularTex.Sample(texSample, ps_in.tex);
-	 float3 reflection = normalize(2 * intensity * bumpNormal - lightDir);
-	 float4 specular = specIntensity * pow(saturate( dot(reflection, ps_in.viewDir) ), specularPower);
-    result += specular;
-  }
+   result  =  diffuse;
 
-  float4 pixelColor =  saturate(result * texColor);
+   float4  specIntensity = specularTex.Sample(texSample, ps_in.tex);
+   float3 reflection = normalize(2 * intensity * bumpNormal - lightDir);
+   float4 specular = specIntensity * pow(saturate( dot(reflection, ps_in.viewDir) ), specularPower);
+   result += specular;
+
+
+  float4 pixelColor =  saturate(result * texColor) ;
 
   return pixelColor;
 }

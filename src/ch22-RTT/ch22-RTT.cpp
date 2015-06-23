@@ -7,7 +7,7 @@
 #include "common/d3dApp.h"
 #include "common/d3dFont.h"
 #include "common/d3dTimer.h"
-//#include "common/d3dCamera.h"
+#include "common/d3dRTT.h"
 
 #include "cube.h"
 
@@ -21,7 +21,7 @@ float Clamp(const float& x, const float& low, const float& high)
 class D3DRenderSystem: public D3DApp
 {
 public:
-	D3DRenderSystem():m_Theta(1.5f * Pi), m_Phi(0.25f * Pi), m_Radius(5.0f) 
+	D3DRenderSystem():m_Theta(1.5f * Pi), m_Phi(0.25f * Pi), m_Radius(3.0f) 
 	{
 		m_AppName = L"DirectX11: ch12-Font";
 		m_pSwapChain          = NULL;
@@ -53,7 +53,7 @@ public:
 
 	void v_Shutdown()
 	{		
-		    ReleaseCOM(m_pSwapChain         )
+		ReleaseCOM(m_pSwapChain         )
 			ReleaseCOM(m_pD3D11Device       )
 			ReleaseCOM(m_pD3D11DeviceContext)
 			ReleaseCOM(m_pRenderTargetView  )
@@ -99,6 +99,7 @@ private:
 
 	D3DFont font;
 	Cube cube;
+	D3DRTT d3dRtt;
 	D3DTimer timer;
 	int m_videoCardMemory;
 	WCHAR m_videoCardInfo[255];
@@ -111,7 +112,9 @@ private:
 	float m_Theta;
 	float m_Phi;
 	float m_Radius;
+
 	POINT m_LastMousePos;
+
 };
 
 CALL_MAIN(D3DRenderSystem);
@@ -127,7 +130,6 @@ void D3DRenderSystem::update()
 	XMVECTOR pos    = XMVectorSet(x, y, z, 1.0f);
 	XMVECTOR target = XMVectorZero();
 	XMVECTOR up     = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	camPos = pos;
 
 	XMMATRIX V = XMMatrixLookAtLH(pos, target, up);
 	XMStoreFloat4x4(&m_View, V);
@@ -205,9 +207,12 @@ void D3DRenderSystem::v_Render()
 	rot +=  timer.GetDeltaTime();
 	update();
 	//View = XMLoadFloat4x4(&m_View);
-	Model = XMMatrixRotationY(rot);
-	cube.Render(m_pD3D11DeviceContext, Model, View, Proj, camPos);
+	//Model = XMMatrixRotationY(rot);
+	cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
 
+	TurnZBufferOff();
+	d3dRtt.Render(m_pD3D11DeviceContext, Model, View, Proj);
+	TurnZBufferOn();
 	DrawMessage();
 	EndScene();
 }
@@ -382,8 +387,11 @@ void D3DRenderSystem::init_object()
 
 	cube.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
 	cube.init_shader(m_pD3D11Device, GetHwnd());
-
 	font.init(m_pD3D11Device);
+
+	d3dRtt.init_window(400, 400, 400, 400);
+	d3dRtt.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
+	d3dRtt.init_shader(m_pD3D11Device, GetHwnd());
 
 	timer.Reset();
 }

@@ -18,6 +18,19 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="cube.psh" />
+    <None Include="cube.vsh" />
+    <None Include="rtt.psh" />
+    <None Include="rtt.vsh" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ch22-RTT.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\common\d3dRTT.h" />
+    <ClInclude Include="cube.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D033120D-38B6-4475-8E5F-24A9BC7B711C}</ProjectGuid>
     <RootNamespace>ch22RTT</RootNamespace>
