@@ -13,10 +13,9 @@ public:
 		m_pMVPBuffer          = NULL;
 		m_pVertexBuffer       = NULL;
 		m_pIndexBuffer        = NULL;
-		m_pTexture            = NULL;
 	}
 
-	void Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMMATRIX &Model,  
+	void Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView *pTexture,const XMMATRIX &Model,  
 		        const XMMATRIX &View, const XMMATRIX &Proj);
 
 	void shutdown()
@@ -52,7 +51,6 @@ private:
 	ID3D11Buffer             *m_pMVPBuffer;
 	ID3D11Buffer             *m_pVertexBuffer;
 	ID3D11Buffer             *m_pIndexBuffer;
-	ID3D11ShaderResourceView *m_pTexture;
 	ID3D11SamplerState       *m_pTexSamplerState;
 	ID3D11InputLayout        *m_pInputLayout;
 
@@ -76,7 +74,7 @@ void D3DRTT::init_window(int posX, int posY, int width, int height)
 	m_height = height;
 }
 
-void D3DRTT::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMMATRIX &Model,  
+void D3DRTT::Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView *pTexture, const XMMATRIX &Model,  
 				  const XMMATRIX &View, const XMMATRIX &Proj)
 {
 
@@ -94,7 +92,7 @@ void D3DRTT::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMMATRIX &Mo
 	pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
 	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//pD3D11DeviceContext->PSSetShaderResources(0, 2, m_pTextures);  
+	pD3D11DeviceContext->PSSetShaderResources(0, 1, &pTexture);  
 	pD3D11DeviceContext->PSSetSamplers( 0, 1, &m_pTexSamplerState );
 
 	D3DRTTShader.use(pD3D11DeviceContext);
