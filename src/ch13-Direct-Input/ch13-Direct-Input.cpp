@@ -108,8 +108,8 @@ void D3DRenderSystem::v_Render()
 	rot +=  timer.GetDeltaTime();
 
 	camera.DetectInput(GetHwnd(), timer.GetDeltaTime());
-	View = XMLoadFloat4x4(&camera.GetViewMatrix());
-
+	View = camera.GetViewMatrix();
+	Model = XMMatrixRotationX(-60.0f);
 	cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
 
 	EndScene();

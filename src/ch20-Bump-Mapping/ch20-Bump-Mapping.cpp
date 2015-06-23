@@ -7,7 +7,6 @@
 #include "common/d3dApp.h"
 #include "common/d3dFont.h"
 #include "common/d3dTimer.h"
-//#include "common/d3dCamera.h"
 
 #include "cube.h"
 
@@ -21,7 +20,7 @@ float Clamp(const float& x, const float& low, const float& high)
 class D3DRenderSystem: public D3DApp
 {
 public:
-	D3DRenderSystem():m_Theta(1.5f * Pi), m_Phi(0.25f * Pi), m_Radius(5.0f) 
+	D3DRenderSystem():m_Theta(1.5f * Pi), m_Phi(0.25f * Pi), m_Radius(3.0f) 
 	{
 		m_AppName = L"DirectX11: ch12-Font";
 		m_pSwapChain          = NULL;
@@ -113,6 +112,7 @@ private:
 	float m_Radius;
 
 	POINT m_LastMousePos;
+
 };
 
 CALL_MAIN(D3DRenderSystem);
@@ -201,11 +201,12 @@ void D3DRenderSystem::v_Render()
 
 	BeginScene();
 
+
 	static float rot = 0.0f;
 	rot +=  timer.GetDeltaTime();
 	update();
 	View = XMLoadFloat4x4(&m_View);
-
+	//Model = XMMatrixRotationY(rot);
 	cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
 
 	DrawMessage();
@@ -382,7 +383,6 @@ void D3DRenderSystem::init_object()
 
 	cube.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
 	cube.init_shader(m_pD3D11Device, GetHwnd());
-
 	font.init(m_pD3D11Device);
 
 	timer.Reset();

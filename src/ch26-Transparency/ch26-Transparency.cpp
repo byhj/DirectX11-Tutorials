@@ -73,6 +73,8 @@ private:
 	void EndScene();
 	void TurnZBufferOn();
 	void TurnZBufferOff();
+	void TurnOffAlphaBlending();
+	void TurnOnAlphaBlending();
 	void DrawFps();
 	void DrawMessage();
 
@@ -94,6 +96,8 @@ private:
 	ID3D11DepthStencilState  *m_pDepthDisabledStencilState;
 	ID3D11Buffer             *m_pMVPBuffer;
 	ID3D11RasterizerState    *m_pRasterState;
+	ID3D11BlendState         *m_pBlendEnable;
+	ID3D11BlendState         *m_pBlendDisable;
 
 	D3DFont font;
 	Cube cube1, cube2;
@@ -194,15 +198,23 @@ void D3DRenderSystem::v_Render()
 
 	BeginScene();
 
-	DrawMessage();
+	TurnOnAlphaBlending();
+
 	static float rot = 0.0f;
 	rot +=  timer.GetDeltaTime();
 	update();
 	View = XMLoadFloat4x4(&m_View);
 
+	//You should update this world matrix
+	Model = XMMatrixTranslation(0.0f, 0.0f, 0.0f);
 	cube1.Render(m_pD3D11DeviceContext, Model, View, Proj);
+
 	Model = XMMatrixTranslation(0.5f, 0.0f, 0.0f);
-	cube1.Render(m_pD3D11DeviceContext, Model, View, Proj);
+	cube2.Render(m_pD3D11DeviceContext, Model, View, Proj);
+
+	TurnOffAlphaBlending();
+
+	DrawMessage();
 	EndScene();
 }
 
@@ -333,6 +345,25 @@ bool D3DRenderSystem::init_device()
 	hr = m_pD3D11Device->CreateDepthStencilState(&depthDisabledStencilDesc, &m_pDepthDisabledStencilState);
 	DebugHR(hr);
 
+	///////////////////////////////////////////////////////////////////
+	D3D11_BLEND_DESC blendStateDesc;
+	ZeroMemory(&blendStateDesc, sizeof(D3D11_BLEND_DESC));
+	blendStateDesc.RenderTarget[0].BlendEnable = TRUE;
+	blendStateDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	blendStateDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendStateDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendStateDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendStateDesc.RenderTarget[0].RenderTargetWriteMask = 0x0f;
+	hr = m_pD3D11Device->CreateBlendState(&blendStateDesc, &m_pBlendEnable);
+	DebugHR(hr);
+
+	blendStateDesc.RenderTarget[0].BlendEnable = FALSE;
+	hr = m_pD3D11Device->CreateBlendState(&blendStateDesc, &m_pBlendDisable);
+	DebugHR(hr);
+
+	/////////////////////////////////////////////////////////////////////////////////////////////
 	unsigned int numModes, i, numerator, denominator, stringLength;
 	IDXGIFactory* factory;
 	IDXGIAdapter* adapter;
@@ -378,6 +409,9 @@ void D3DRenderSystem::init_object()
 	cube1.init_shader(m_pD3D11Device, GetHwnd());
 	cube1.init_texture(m_pD3D11Device, L"../../media/textures/stone01.dds");
 
+	cube2.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
+	cube2.init_shader(m_pD3D11Device, GetHwnd());
+	cube2.init_texture(m_pD3D11Device, L"../../media/textures/stone02.dds");
 	font.init(m_pD3D11Device);
 
 	timer.Reset();
@@ -395,6 +429,41 @@ void D3DRenderSystem::TurnZBufferOn()
 void D3DRenderSystem::TurnZBufferOff()
 {
 	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthDisabledStencilState, 1);
+	return;
+}
+
+void D3DRenderSystem::TurnOnAlphaBlending()
+{
+	float blendFactor[4];
+
+
+	// Setup the blend factor.
+	blendFactor[0] = 0.0f;
+	blendFactor[1] = 0.0f;
+	blendFactor[2] = 0.0f;
+	blendFactor[3] = 0.0f;
+
+	// Turn on the alpha blending.
+	m_pD3D11DeviceContext->OMSetBlendState(m_pBlendEnable, blendFactor, 0xffffffff);
+
+	return;
+}
+
+
+void D3DRenderSystem::TurnOffAlphaBlending()
+{
+	float blendFactor[4];
+
+
+	// Setup the blend factor.
+	blendFactor[0] = 0.0f;
+	blendFactor[1] = 0.0f;
+	blendFactor[2] = 0.0f;
+	blendFactor[3] = 0.0f;
+
+	// Turn off the alpha blending.
+	m_pD3D11DeviceContext->OMSetBlendState(m_pBlendDisable, blendFactor, 0xffffffff);
+
 	return;
 }
 

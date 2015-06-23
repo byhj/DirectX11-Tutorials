@@ -105,6 +105,7 @@ void D3DRenderSystem::v_Render()
 	rot +=  timer.GetDeltaTime();
 
 	Model = XMMatrixRotationY(rot);
+	//Model = XMMatrixRotationX(-60.0f);
 	cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
 
 	EndScene();

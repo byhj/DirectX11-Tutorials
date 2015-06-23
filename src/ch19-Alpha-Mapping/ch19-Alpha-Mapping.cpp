@@ -7,7 +7,6 @@
 #include "common/d3dApp.h"
 #include "common/d3dFont.h"
 #include "common/d3dTimer.h"
-//#include "common/d3dCamera.h"
 
 #include "cube.h"
 
@@ -54,13 +53,13 @@ public:
 	void v_Shutdown()
 	{		
 		ReleaseCOM(m_pSwapChain         )
-		ReleaseCOM(m_pD3D11Device       )
-		ReleaseCOM(m_pD3D11DeviceContext)
-		ReleaseCOM(m_pRenderTargetView  )
-		ReleaseCOM(m_pDepthStencilView  )
-		ReleaseCOM(m_pDepthStencilBuffer)
-		ReleaseCOM(m_pMVPBuffer         )
-		ReleaseCOM(m_pRasterState       )
+			ReleaseCOM(m_pD3D11Device       )
+			ReleaseCOM(m_pD3D11DeviceContext)
+			ReleaseCOM(m_pRenderTargetView  )
+			ReleaseCOM(m_pDepthStencilView  )
+			ReleaseCOM(m_pDepthStencilBuffer)
+			ReleaseCOM(m_pMVPBuffer         )
+			ReleaseCOM(m_pRasterState       )
 	}
 
 	ID3D11Device * GetDevice();
@@ -113,6 +112,7 @@ private:
 	float m_Radius;
 
 	POINT m_LastMousePos;
+
 };
 
 CALL_MAIN(D3DRenderSystem);
@@ -206,7 +206,7 @@ void D3DRenderSystem::v_Render()
 	rot +=  timer.GetDeltaTime();
 	update();
 	View = XMLoadFloat4x4(&m_View);
-
+	//Model = XMMatrixRotationY(rot);
 	cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
 
 	DrawMessage();
@@ -383,7 +383,6 @@ void D3DRenderSystem::init_object()
 
 	cube.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
 	cube.init_shader(m_pD3D11Device, GetHwnd());
-
 	font.init(m_pD3D11Device);
 
 	timer.Reset();

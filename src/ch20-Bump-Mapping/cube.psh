@@ -40,7 +40,7 @@ float4 PS(VS_OUTPUT ps_in) : SV_TARGET
   bumpNormal = normalize(bumpNormal);
 
   float4 ambient = ambientColor;
-  float3 lightDir = float3(0.0, 1.0f, 0.0f);// -lightDirection;
+  float3 lightDir = float3(0.0, 0.0f, 1.0f);// -lightDirection;
   float  intensity = saturate( dot(bumpNormal, lightDir) ); 
   float4 diffuse   = saturate(diffuseColor * intensity);
 

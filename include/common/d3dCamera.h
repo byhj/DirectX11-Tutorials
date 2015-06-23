@@ -24,25 +24,26 @@ public:
 		m_LastMousePos.y = 0;
 
 		XMMATRIX I = XMMatrixIdentity();
-		XMStoreFloat4x4(&m_World, I);
-		XMStoreFloat4x4(&m_View, I);
-		XMStoreFloat4x4(&m_Proj, I);
+		m_World =  I;
+		m_View  =  I;
+		m_Proj  =  I;
 	}
 
 	void update();
 	void DirectInput(float dt);
 	bool InitDirectInput(HWND hWnd,  HINSTANCE hInstance);
-	 XMFLOAT4X4 GetViewMatrix()
+    XMMATRIX GetViewMatrix()
 	{
 		return m_View;
 	}
+
 	void DetectInput(HWND hWnd, double time);
 
 private:
 
-	XMFLOAT4X4 m_World;
-	XMFLOAT4X4 m_View;
-	XMFLOAT4X4 m_Proj;
+	XMMATRIX m_World;
+	XMMATRIX m_View;
+	XMMATRIX m_Proj;
 
 	float m_Theta;
 	float m_Phi;
@@ -66,14 +67,12 @@ void D3DCamera::update()
 	float y = m_Radius * cosf(m_Phi);
 
 	// Build the view matrix.
-	XMVECTOR pos    = XMVectorSet(x, y, z, 1.0f);
+	XMVECTOR pos    = XMVectorSet(x, y, z, 0.0f);
 	XMVECTOR target = XMVectorZero();
 	XMVECTOR up     = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-
-	XMMATRIX V = XMMatrixLookAtLH(pos, target, up);
-	XMStoreFloat4x4(&m_View, V);
-
+	m_View = XMMatrixLookAtLH(pos, target, up);
 }
+
 
 bool D3DCamera::InitDirectInput(HWND hWnd, HINSTANCE hInstance)
 {

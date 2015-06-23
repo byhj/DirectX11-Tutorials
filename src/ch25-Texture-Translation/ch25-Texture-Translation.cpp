@@ -7,7 +7,6 @@
 #include "common/d3dApp.h"
 #include "common/d3dFont.h"
 #include "common/d3dTimer.h"
-//#include "common/d3dCamera.h"
 
 #include "cube.h"
 
@@ -47,6 +46,8 @@ public:
 	void v_OnMouseDown(WPARAM btnState, int x, int y);
 	void v_OnMouseMove(WPARAM btnState, int x, int y);
 	void v_OnMouseUp(WPARAM btnState, int x, int y);
+	void v_OnMouseWheel(WPARAM btnState, int x, int y);
+
 	void update();
 
 	void v_Shutdown()
@@ -111,6 +112,7 @@ private:
 	float m_Radius;
 
 	POINT m_LastMousePos;
+
 };
 
 CALL_MAIN(D3DRenderSystem);
@@ -131,6 +133,13 @@ void D3DRenderSystem::update()
 	XMStoreFloat4x4(&m_View, V);
 }
 
+void D3DRenderSystem::v_OnMouseWheel(WPARAM btnState, int x, int y)
+{
+	static float zoom = 45.0f;
+	zoom += x * 0.01f;
+	Proj   = XMMatrixPerspectiveFovLH( D3DXToRadian(zoom), GetAspect(), 1.0f, 1000.0f);
+}
+
 void D3DRenderSystem::v_OnMouseDown(WPARAM btnState, int x, int y)
 {
 	m_LastMousePos.x = x;
@@ -143,8 +152,6 @@ void D3DRenderSystem::v_OnMouseUp(WPARAM btnState, int x, int y)
 {
 	ReleaseCapture();
 }
-
-
 
 void D3DRenderSystem::v_OnMouseMove(WPARAM btnState, int x, int y)
 {
@@ -194,14 +201,16 @@ void D3DRenderSystem::v_Render()
 
 	BeginScene();
 
-	DrawMessage();
+
 	static float rot = 0.0f;
 	rot +=  timer.GetDeltaTime();
 	update();
-	View = XMLoadFloat4x4(&m_View);
-
+	//View = XMLoadFloat4x4(&m_View);
+	//Model = XMMatrixRotationY(rot);
 	cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
-
+	Model = XMMatrixTranslation(0.5f, 0.0f, 0.0f);
+	cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
+	DrawMessage();
 	EndScene();
 }
 
@@ -366,7 +375,7 @@ void D3DRenderSystem::init_camera()
 	camTarget = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
 	camUp     = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
 	View      = XMMatrixLookAtLH( camPos, camTarget, camUp );
-	Proj      = XMMatrixPerspectiveFovLH( 0.4f*3.14f, GetAspect(), 1.0f, 1000.0f);
+	Proj      = XMMatrixPerspectiveFovLH( D3DXToRadian(45.0f), GetAspect(), 1.0f, 1000.0f);
 	Model     = XMMatrixIdentity();
 }
 
@@ -375,8 +384,7 @@ void D3DRenderSystem::init_object()
 
 	cube.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
 	cube.init_shader(m_pD3D11Device, GetHwnd());
-	cube.init_texture(m_pD3D11Device, L"../../media/textures/stone01.dds");
-
+	cube.init_texture(m_pD3D11Device, L"../../media/textures/stone02.dds");
 	font.init(m_pD3D11Device);
 
 	timer.Reset();
@@ -402,6 +410,7 @@ void  D3DRenderSystem::BeginScene()
 	D3DXVECTOR4 bgColor = D3DXVECTOR4(0.2f, 0.3f, 0.4f, 1.0f);
 
 	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
+	m_pD3D11DeviceContext->OMSetBlendState(NULL, NULL, 0XFFFFFFFF);
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 

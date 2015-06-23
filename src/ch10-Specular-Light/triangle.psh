@@ -24,6 +24,7 @@ float4 PS(VS_OUTPUT ps_in) : SV_TARGET
 {
 
   float4 ambient = ambientColor;
+
   //Calc the diffuse light
   float3 lightDir  = -lightDirection;
   float  intensity = saturate( dot(ps_in.Normal, lightDir) ); 

@@ -256,7 +256,7 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 
 	dataPtr2->ambientColor   = D3DXVECTOR4(0.35f, 0.35f, 0.35f, 0.15f);
 	dataPtr2->diffuseColor   = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f);
-	dataPtr2->lightDirection = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+	dataPtr2->lightDirection = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	dataPtr2->specularPower  = 32.0f;
 	dataPtr2->specularColor  = D3DXVECTOR4(0.0f, 0.0f, 1.0f, 1.0f);
 
