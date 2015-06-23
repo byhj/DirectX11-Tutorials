@@ -8,20 +8,14 @@
 #include "common/d3dFont.h"
 #include "common/d3dTimer.h"
 #include "common/d3dRTT.h"
+#include "common/d3dCamera.h"
 
 #include "cube.h"
-
-const float Pi = 3.1415926535f;
-
-float Clamp(const float& x, const float& low, const float& high)
-{
-	return x < low ? low : (x > high ? high : x); 
-}
 
 class D3DRenderSystem: public D3DApp
 {
 public:
-	D3DRenderSystem():m_Theta(1.5f * Pi), m_Phi(0.25f * Pi), m_Radius(3.0f) 
+	D3DRenderSystem()
 	{
 		m_AppName = L"DirectX11: ch12-Font";
 		m_pSwapChain          = NULL;
@@ -33,13 +27,6 @@ public:
 		m_pMVPBuffer          = NULL;
 		m_pRasterState        = NULL;
 		fps = 0.0f;
-		m_LastMousePos.x = 0;
-		m_LastMousePos.y = 0;
-
-		XMMATRIX I = XMMatrixIdentity();
-		XMStoreFloat4x4(&m_World, I);
-		XMStoreFloat4x4(&m_View, I);
-		XMStoreFloat4x4(&m_Proj, I);
 	}
 
 	bool v_InitD3D();
@@ -49,18 +36,18 @@ public:
 	void v_OnMouseUp(WPARAM btnState, int x, int y);
 	void v_OnMouseWheel(WPARAM btnState, int x, int y);
 
-	void update();
+	void UpdateScene();
 
 	void v_Shutdown()
 	{		
 		ReleaseCOM(m_pSwapChain         )
-			ReleaseCOM(m_pD3D11Device       )
-			ReleaseCOM(m_pD3D11DeviceContext)
-			ReleaseCOM(m_pRenderTargetView  )
-			ReleaseCOM(m_pDepthStencilView  )
-			ReleaseCOM(m_pDepthStencilBuffer)
-			ReleaseCOM(m_pMVPBuffer         )
-			ReleaseCOM(m_pRasterState       )
+		ReleaseCOM(m_pD3D11Device       )
+		ReleaseCOM(m_pD3D11DeviceContext)
+		ReleaseCOM(m_pRenderTargetView  )
+		ReleaseCOM(m_pDepthStencilView  )
+		ReleaseCOM(m_pDepthStencilBuffer)
+		ReleaseCOM(m_pMVPBuffer         )
+		ReleaseCOM(m_pRasterState       )
 	}
 
 	ID3D11Device * GetDevice();
@@ -103,93 +90,37 @@ private:
 
 	D3DFont font;
 	Cube cube;
+	D3DCamera camera;
 	D3DRTT d3dRtt;
 	D3DTimer timer;
 	int m_videoCardMemory;
 	WCHAR m_videoCardInfo[255];
 	float fps;
-
-	XMFLOAT4X4 m_World;
-	XMFLOAT4X4 m_View;
-	XMFLOAT4X4 m_Proj;
-
-	float m_Theta;
-	float m_Phi;
-	float m_Radius;
-
-	POINT m_LastMousePos;
-
 };
 
 CALL_MAIN(D3DRenderSystem);
 
-void D3DRenderSystem::update()
+void D3DRenderSystem::UpdateScene()
 {
-	// Convert Spherical to Cartesian coordinates.
-	float x = m_Radius * sinf(m_Phi) * cosf(m_Theta);
-	float z = m_Radius * sinf(m_Phi) * sinf(m_Theta);
-	float y = m_Radius * cosf(m_Phi);
-
-	// Build the view matrix.
-	XMVECTOR pos    = XMVectorSet(x, y, z, 1.0f);
-	XMVECTOR target = XMVectorZero();
-	XMVECTOR up     = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-
-	XMMATRIX V = XMMatrixLookAtLH(pos, target, up);
-	XMStoreFloat4x4(&m_View, V);
+	camera.update();
+}
+void  D3DRenderSystem::v_OnMouseDown(WPARAM btnState, int x, int y)
+{
+	camera.OnMouseDown(btnState, x, y, GetHwnd());
 }
 
-void D3DRenderSystem::v_OnMouseWheel(WPARAM btnState, int x, int y)
+void  D3DRenderSystem::v_OnMouseMove(WPARAM btnState, int x, int y)
 {
-	static float zoom = 45.0f;
-	zoom += x * 0.01f;
-	Proj   = XMMatrixPerspectiveFovLH( D3DXToRadian(zoom), GetAspect(), 1.0f, 1000.0f);
+	camera.OnMouseMove(btnState, x, y);
 }
 
-void D3DRenderSystem::v_OnMouseDown(WPARAM btnState, int x, int y)
+void  D3DRenderSystem::v_OnMouseUp(WPARAM btnState, int x, int y)
 {
-	m_LastMousePos.x = x;
-	m_LastMousePos.y = y;
-
-	SetCapture( GetHwnd() );
+	camera.OnMouseUp(btnState, x, y);
 }
-
-void D3DRenderSystem::v_OnMouseUp(WPARAM btnState, int x, int y)
+void  D3DRenderSystem::v_OnMouseWheel(WPARAM btnState, int x, int y)
 {
-	ReleaseCapture();
-}
-
-void D3DRenderSystem::v_OnMouseMove(WPARAM btnState, int x, int y)
-{
-	if( (btnState & MK_LBUTTON) != 0 )
-	{
-		// Make each pixel correspond to a quarter of a degree.
-		float dx = XMConvertToRadians(0.25f*static_cast<float>(x - m_LastMousePos.x));
-		float dy = XMConvertToRadians(0.25f*static_cast<float>(y - m_LastMousePos.y));
-
-		// Update angles based on input to orbit camera around box.
-		m_Theta += dx;
-		m_Phi   += dy;
-
-		// Restrict the angle mPhi.
-		m_Phi = Clamp(m_Phi, 0.1f, Pi-0.1f);
-	}
-
-	else if( (btnState & MK_RBUTTON) != 0 )
-	{
-		// Make each pixel correspond to 0.005 unit in the scene.
-		float dx = 0.005f*static_cast<float>(x - m_LastMousePos.x);
-		float dy = 0.005f*static_cast<float>(y - m_LastMousePos.y);
-
-		// Update the camera radius based on input.
-		m_Radius += dx - dy;
-
-		// Restrict the radius.
-		m_Radius = Clamp(m_Radius, 3.0f, 15.0f);
-	}
-
-	m_LastMousePos.x = x;
-	m_LastMousePos.y = y;
+	camera.OnMouseWheel(btnState, x, y, GetAspect());
 }
 
 bool D3DRenderSystem::v_InitD3D()
@@ -254,10 +185,10 @@ void D3DRenderSystem::v_Render()
 
 	static float rot = 0.0f;
 	rot +=  timer.GetDeltaTime();
-	update();
+	UpdateScene();
 	Model = XMMatrixIdentity();
-	View = XMLoadFloat4x4(&m_View);
-
+	View  = camera.GetViewMatrix();
+	//Proj  = camera.GetProjMatrix();
 	D3DXVECTOR4 bgColor = D3DXVECTOR4(0.5f, 0.5f, 0.5f, 1.0f);
 
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, &pRenderTargetView, m_pDepthStencilView);

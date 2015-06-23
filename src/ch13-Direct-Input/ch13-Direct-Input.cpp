@@ -7,7 +7,7 @@
 #include "common/d3dApp.h"
 #include "common/d3dFont.h"
 #include "common/d3dTimer.h"
-#include "common/d3dCamera.h"
+#include "common/d3dInput.h"
 
 #include "cube.h"
 

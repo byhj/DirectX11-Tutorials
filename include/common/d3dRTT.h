@@ -29,7 +29,7 @@ public:
 	void init_window(int ScreenWidth , int ScreenHeight, int BitmapWidth, int BitmapHeight);
 	bool init_buffer (ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext);
 	bool init_shader (ID3D11Device *pD3D11Device, HWND hWnd);
-	void init_texture(ID3D11Device *pD3D11Device, LPCWSTR texFile, ID3D11ShaderResourceView *m_pTexture);
+
 private:
 
 	struct MatrixBuffer
