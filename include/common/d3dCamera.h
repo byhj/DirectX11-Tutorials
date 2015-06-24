@@ -15,7 +15,7 @@ float Clamp(const float& x, const float& low, const float& high)
 class D3DCamera
 {
 public:
-    D3DCamera():m_Theta(1.5f * Pi), m_Phi(0.25f * Pi), m_Radius(3.0f)
+    D3DCamera():m_Theta(1.5f * Pi), m_Phi(0.25f * Pi), m_Radius(15.0f)
 	{
 		m_LastMousePos.x = 0;
 		m_LastMousePos.y = 0;
