@@ -23,10 +23,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cube.h">
+    <ClInclude Include="plane.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
-    <ClInclude Include="plane.h">
+    <ClInclude Include="cube.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
   </ItemGroup>

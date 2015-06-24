@@ -23,11 +23,11 @@
     <None Include="light.vsh" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ch44-Projected-Light.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="cube.h" />
     <ClInclude Include="plane.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ch44-Projected-Light.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E81DF7FD-0D25-45C2-9C48-84E40409B550}</ProjectGuid>

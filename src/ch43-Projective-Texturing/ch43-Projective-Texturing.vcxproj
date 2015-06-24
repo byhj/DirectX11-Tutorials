@@ -18,6 +18,17 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="light.psh" />
+    <None Include="light.vsh" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="cube.h" />
+    <ClInclude Include="plane.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ch43-Projective-Texturing.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0A01440C-FCF7-48E5-8A33-8D43ABF594E3}</ProjectGuid>
     <RootNamespace>ch43ProjectiveTexturing</RootNamespace>

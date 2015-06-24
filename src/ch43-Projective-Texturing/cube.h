@@ -292,7 +292,7 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/ice.dds", NULL,NULL, &m_pTextures[0], NULL);
 	DebugHR(hr);
 
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/grate.dds", NULL,NULL, &m_pTextures[1], NULL);
+	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/dx11.dds", NULL,NULL, &m_pTextures[1], NULL);
 	DebugHR(hr);
 	return true;
 }

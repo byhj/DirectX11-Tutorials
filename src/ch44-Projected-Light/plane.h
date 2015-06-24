@@ -44,7 +44,8 @@ private:
 		XMMATRIX  model;
 		XMMATRIX  view;
 		XMMATRIX  proj;
-
+		XMMATRIX  view2;
+		XMMATRIX  proj2;
 	};
 	MatrixBuffer cbMatrix;
 
@@ -94,9 +95,16 @@ void Plane::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMMATRIX &Mod
 				  const XMMATRIX &View, const XMMATRIX &Proj)
 {
 
+
 	cbMatrix.model  = XMMatrixTranspose(Model);
 	cbMatrix.view   = XMMatrixTranspose(View);
 	cbMatrix.proj   = XMMatrixTranspose(Proj);
+	XMVECTOR pos    = XMVectorSet(2.0f, 5.0f, -8.0f, 1.0f);
+	XMVECTOR target = XMVectorZero();
+	XMVECTOR up     = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	cbMatrix.view2  = XMMatrixTranspose ( XMMatrixLookAtLH(pos, target, up) );
+	cbMatrix.proj2  = XMMatrixTranspose (XMMatrixPerspectiveFovLH(D3DXToRadian(45.0f), 1.0f, 1.0f, 1000.0f) );
+
 	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
 	pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
 
@@ -281,9 +289,9 @@ bool Plane::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 	hr = pD3D11Device->CreateSamplerState(&samplerDesc, &m_pTexSamplerState);
 	DebugHR(hr);
 
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/stone01.dds", NULL,NULL, &m_pTextures[0], NULL);
+	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/metal001.dds", NULL,NULL, &m_pTextures[0], NULL);
 	DebugHR(hr);
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/dx11.dds", NULL,NULL, &m_pTextures[1], NULL);
+	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/grate.dds", NULL,NULL, &m_pTextures[1], NULL);
 	DebugHR(hr);
 	return true;
 }

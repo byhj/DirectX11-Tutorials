@@ -3,10 +3,10 @@
 #include <common/d3dShader.h>
 #include "common/d3dLight.h"
 
-class Cube
+class Plane
 {
 public:
-	Cube()
+	Plane()
 	{
 		m_pInputLayout        = NULL;
 		m_pMVPBuffer          = NULL;
@@ -16,15 +16,15 @@ public:
 	}
 
 	void Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMMATRIX &Model,  
-		const XMMATRIX &View, const XMMATRIX &Proj);
+		                             const XMMATRIX &View, const XMMATRIX &Proj);
 
 	void shutdown()
 	{
-		ReleaseCOM(m_pRenderTargetView  )
-		ReleaseCOM(m_pMVPBuffer         )
-		ReleaseCOM(m_pLightBuffer       )
-		ReleaseCOM(m_pVertexBuffer      )
-		ReleaseCOM(m_pIndexBuffer       )
+			ReleaseCOM(m_pRenderTargetView  )
+			ReleaseCOM(m_pMVPBuffer         )
+			ReleaseCOM(m_pLightBuffer       )
+			ReleaseCOM(m_pVertexBuffer      )
+			ReleaseCOM(m_pIndexBuffer       )
 	}
 
 	bool LoadModel(char *modelFile);
@@ -86,19 +86,19 @@ private:
 	int m_VertexCount;
 	int m_IndexCount;
 
-	Shader CubeShader;
+	Shader PlaneShader;
 	std::vector<D3DPointLight> pointLights;
 };
 
 
-void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMMATRIX &Model,  
+void Plane::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMMATRIX &Model,  
 				  const XMMATRIX &View, const XMMATRIX &Proj)
 {
+
 
 	cbMatrix.model  = XMMatrixTranspose(Model);
 	cbMatrix.view   = XMMatrixTranspose(View);
 	cbMatrix.proj   = XMMatrixTranspose(Proj);
-
 	XMVECTOR pos    = XMVectorSet(2.0f, 5.0f, -8.0f, 1.0f);
 	XMVECTOR target = XMVectorZero();
 	XMVECTOR up     = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
@@ -116,20 +116,20 @@ void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMMATRIX &Mode
 	pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
 	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	pD3D11DeviceContext->PSSetShaderResources(0, 2, m_pTextures);  
+    pD3D11DeviceContext->PSSetShaderResources(0, 2, m_pTextures);  
 	pD3D11DeviceContext->PSSetSamplers( 0, 1, &m_pTexSamplerState );
 
-	CubeShader.use(pD3D11DeviceContext);
+	PlaneShader.use(pD3D11DeviceContext);
 	pD3D11DeviceContext->DrawIndexed(m_IndexCount, 0, 0);
 
 }
 
-bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext)
+bool Plane::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext)
 {
 	HRESULT hr;
 
 	///////////////////////////Index Buffer ////////////////////////////////
-	LoadModel("../../media/objects/cube.txt");
+	LoadModel("../../media/objects/floor.txt");
 
 
 	Vertex *VertexData = new Vertex[m_VertexCount];
@@ -289,16 +289,15 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	hr = pD3D11Device->CreateSamplerState(&samplerDesc, &m_pTexSamplerState);
 	DebugHR(hr);
 
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/ice.dds", NULL,NULL, &m_pTextures[0], NULL);
+	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/stone01.dds", NULL,NULL, &m_pTextures[0], NULL);
 	DebugHR(hr);
-
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/grate.dds", NULL,NULL, &m_pTextures[1], NULL);
+	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/dx11.dds", NULL,NULL, &m_pTextures[1], NULL);
 	DebugHR(hr);
 	return true;
 }
 
 
-bool Cube::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
+bool Plane::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 {
 	HRESULT result;
 
@@ -329,15 +328,15 @@ bool Cube::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 
 	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
 
-	CubeShader.init(pD3D11Device, hWnd);
-	CubeShader.attachVS(L"light.vsh", pInputLayoutDesc, numElements);
-	CubeShader.attachPS(L"light.psh");
-	CubeShader.end();
+	PlaneShader.init(pD3D11Device, hWnd);
+	PlaneShader.attachVS(L"light.vsh", pInputLayoutDesc, numElements);
+	PlaneShader.attachPS(L"light.psh");
+	PlaneShader.end();
 
 	return true;
 }
 
-bool Cube::LoadModel(char *modelFile)
+bool Plane::LoadModel(char *modelFile)
 {
 	std::ifstream fin;
 	char ch;
