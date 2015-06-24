@@ -26,6 +26,7 @@ Texture2D noiseTex : register(t1);
 Texture2D alphaTex : register(t2);
 
 SamplerState texSample : register(s0);
+SamplerState texSample1 : register(s1);
 
 float4 PS(VS_OUTPUT ps_in) : SV_TARGET
 {    
@@ -57,12 +58,12 @@ float4 PS(VS_OUTPUT ps_in) : SV_TARGET
 
 	    // Sample the color from the fire texture using the perturbed and distorted texture sampling coordinates.
     // Use the clamping sample state instead of the wrap sample state to prevent flames wrapping around.
-    float4 fireColor = fireTex.Sample(texSample, noiseCoords);
+    float4 fireColor = fireTex.Sample(texSample, noiseCoords.xy);
 
     // Sample the alpha value from the alpha texture using the perturbed and distorted texture sampling coordinates.
     // This will be used for transparency of the fire.
     // Use the clamping sample state instead of the wrap sample state to prevent flames wrapping around.
-    float4 alphaColor = alphaTex.Sample(texSample, noiseCoords);
+    float4 alphaColor = alphaTex.Sample(texSample1, noiseCoords.xy);
 
 	    // Set the alpha blending of the fire to the perturbed and distored alpha texture value.
     fireColor.a = alphaColor;

@@ -77,6 +77,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="cube.psh" />
+    <None Include="cube.vsh" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ch45-Multi-Shader.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\common\d3dShaderManage.h" />
+    <ClInclude Include="cube.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

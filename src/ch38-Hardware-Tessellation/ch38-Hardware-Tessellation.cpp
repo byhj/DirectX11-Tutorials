@@ -9,7 +9,7 @@
 #include "common/d3dTimer.h"
 #include "common/d3dCamera.h"
 
-#include "object.h"
+#include "light.h"
 
 class D3DRenderSystem: public D3DApp
 {
@@ -53,7 +53,6 @@ public:
 	ID3D11DeviceContext *GetDeviceContext();
 
 private:
-
 	bool init_device();
 	void init_camera();
 	void init_object();
@@ -62,8 +61,6 @@ private:
 	void EndScene();
 	void TurnZBufferOn();
 	void TurnZBufferOff();
-	void TurnOnAlphaBlending();
-	void TurnOffAlphaBlending();
 	void DrawFps();
 	void DrawMessage();
 
@@ -90,10 +87,8 @@ private:
 	ID3D11RenderTargetView   *pRenderTargetView;
 	ID3D11ShaderResourceView *pShaderResourceView;
 
-	ID3D11BlendState         *m_pAlphaEnableState;
-	ID3D11BlendState         *m_pAlphaDisableState;
 	D3DFont font;
-	Object object;
+	Cube cube;
 	D3DCamera camera;
 	D3DTimer timer;
 	int m_videoCardMemory;
@@ -187,16 +182,12 @@ void D3DRenderSystem::v_Render()
 {
 	BeginScene();
 
-	TurnOnAlphaBlending();
-
 	static float rot = 0.0f;
 	rot +=  timer.GetDeltaTime();
 	UpdateScene();
 	Model = XMMatrixIdentity();
 	View  = camera.GetViewMatrix();
-	object.Render(m_pD3D11DeviceContext, Model, View, Proj);
-
-	TurnOffAlphaBlending();
+	cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
 
 	DrawMessage();
 
@@ -329,29 +320,7 @@ bool D3DRenderSystem::init_device()
 	// Create the state using the device.
 	hr = m_pD3D11Device->CreateDepthStencilState(&depthDisabledStencilDesc, &m_pDepthDisabledStencilState);
 	DebugHR(hr);
-	///////////////////////////////////////////////////////////////////////////////////
-	
-	
-	D3D11_BLEND_DESC blendStateDescription;
-	ZeroMemory(&blendStateDescription, sizeof(D3D11_BLEND_DESC));
-	blendStateDescription.RenderTarget[0].BlendEnable = TRUE;
-	blendStateDescription.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-	blendStateDescription.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-	blendStateDescription.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-	blendStateDescription.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-	blendStateDescription.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-	blendStateDescription.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-	blendStateDescription.RenderTarget[0].RenderTargetWriteMask = 0x0f;
 
-	hr = m_pD3D11Device->CreateBlendState(&blendStateDescription, &m_pAlphaEnableState);
-	DebugHR(hr);
-
-	// Modify the description to create an alpha disabled blend state description.
-	blendStateDescription.RenderTarget[0].BlendEnable = FALSE;
-	hr = m_pD3D11Device->CreateBlendState(&blendStateDescription, &m_pAlphaDisableState);
-	DebugHR(hr);
-
-	////////////////////////////////////////////////////////////////////////////////////
 	unsigned int numModes, i, numerator, denominator, stringLength;
 	IDXGIFactory* factory;
 	IDXGIAdapter* adapter;
@@ -393,8 +362,8 @@ void D3DRenderSystem::init_camera()
 void D3DRenderSystem::init_object()
 {
 
-	object.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-	object.init_shader(m_pD3D11Device, GetHwnd());
+	cube.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
+	cube.init_shader(m_pD3D11Device, GetHwnd());
 	font.init(m_pD3D11Device);
 
 	timer.Reset();
@@ -417,47 +386,17 @@ void D3DRenderSystem::TurnZBufferOff()
 
 void  D3DRenderSystem::BeginScene()
 {
-	D3DXVECTOR4 bgColor = D3DXVECTOR4(0.0f, 0.0f, 0.0f, 1.0f);
+	D3DXVECTOR4 bgColor = D3DXVECTOR4(0.2f, 0.3f, 0.4f, 1.0f);
 
 	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
-	//m_pD3D11DeviceContext->OMSetBlendState(NULL, NULL, 0XFFFFFFFF);
+	m_pD3D11DeviceContext->OMSetBlendState(NULL, NULL, 0XFFFFFFFF);
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 	return;
 }
 
-void D3DRenderSystem::TurnOnAlphaBlending()
-{
-	float blendFactor[4];
 
-
-	// Setup the blend factor.
-	blendFactor[0] = 0.0f;
-	blendFactor[1] = 0.0f;
-	blendFactor[2] = 0.0f;
-	blendFactor[3] = 0.0f;
-
-	// Turn on the alpha blending.
-	m_pD3D11DeviceContext->OMSetBlendState(m_pAlphaEnableState, blendFactor, 0xffffffff);
-
-}
-
-
-void D3DRenderSystem::TurnOffAlphaBlending()
-{
-	float blendFactor[4];
-
-	// Setup the blend factor.
-	blendFactor[0] = 0.0f;
-	blendFactor[1] = 0.0f;
-	blendFactor[2] = 0.0f;
-	blendFactor[3] = 0.0f;
-
-	// Turn off the alpha blending.
-	m_pD3D11DeviceContext->OMSetBlendState(m_pAlphaDisableState, blendFactor, 0xffffffff);
-
-}
 void D3DRenderSystem::EndScene()
 {
 

@@ -46,9 +46,11 @@ VS_OUT VS(VS_IN vs_in)
 {	
  
    VS_OUT vs_out;
+   vs_out.Pos.w = 1.0f;
    vs_out.Pos = mul(vs_in.Pos,  cbMatrix.model);
    vs_out.Pos = mul(vs_out.Pos, cbMatrix.view);
    vs_out.Pos = mul(vs_out.Pos, cbMatrix.proj);
+
 
 	// Compute texture coordinates for first noise texture using the first scale and upward scrolling speed values.
    vs_out.Tex1 = (vs_in.Tex * cbNoise.scales.x);
@@ -61,6 +63,8 @@ VS_OUT VS(VS_IN vs_in)
    // Compute texture coordinates for third noise texture using the third scale and upward scrolling speed values.
    vs_out.Tex3 = (vs_in.Tex * cbNoise.scales.z);
    vs_out.Tex3.y = vs_out.Tex3.y + (cbNoise.frameTime * cbNoise.scrollSpeeds.z);
-   
+   	
+   vs_out.Tex = vs_in.Tex;
+
    return vs_out;
 }

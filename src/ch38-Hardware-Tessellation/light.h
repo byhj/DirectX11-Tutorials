@@ -3,13 +3,14 @@
 #include <common/d3dShader.h>
 #include "common/d3dLight.h"
 
-class Object
+class Cube
 {
 public:
-	Object()
+	Cube()
 	{
 		m_pInputLayout        = NULL;
 		m_pMVPBuffer          = NULL;
+		m_pLightBuffer        = NULL;
 		m_pVertexBuffer       = NULL;
 		m_pIndexBuffer        = NULL;
 	}
@@ -21,6 +22,7 @@ public:
 	{
 			ReleaseCOM(m_pRenderTargetView  )
 			ReleaseCOM(m_pMVPBuffer         )
+			ReleaseCOM(m_pLightBuffer       )
 			ReleaseCOM(m_pVertexBuffer      )
 			ReleaseCOM(m_pIndexBuffer       )
 	}
@@ -31,6 +33,12 @@ public:
 	void init_texture(ID3D11Device *pD3D11Device, LPCWSTR texFile, ID3D11ShaderResourceView *m_pTexture);
 private:
 
+	struct CameraBuffer
+	{
+		D3DXVECTOR3 camPos;
+		float padding;
+	};
+
 	struct MatrixBuffer
 	{
 		XMMATRIX  model;
@@ -40,24 +48,15 @@ private:
 	};
 	MatrixBuffer cbMatrix;
 
-	struct DistortionBuffer
-	{    
-		XMFLOAT2 distortion1;
-		XMFLOAT2 distortion2;
-		XMFLOAT2 distortion3;
-		float  distortionScale;
-		float  distortionBias;
-	};
-	DistortionBuffer cbDistortion;
-
-	struct NoiseBuffer
+	struct LightBuffer
 	{
-		float   frameTime;
-		XMFLOAT3 scrollSpeeds;
-		XMFLOAT3 scales;
-		float    padding;
+		D3DXVECTOR4 ambientColor;
+		D3DXVECTOR4 diffuseColor;
+		D3DXVECTOR3 lightDirection;
+		float specularPower;
+		D3DXVECTOR4 specularColor;
 	};
-	NoiseBuffer cbNoise;
+	LightBuffer cbLight;
 
 	struct Vertex
 	{
@@ -75,24 +74,23 @@ private:
 
 	ID3D11RenderTargetView   *m_pRenderTargetView;
 	ID3D11Buffer             *m_pMVPBuffer;
-	ID3D11Buffer             *m_pNoiseBuffer;
-	ID3D11Buffer             *m_pDistortBuffer;
+	ID3D11Buffer             *m_pLightBuffer;
+	ID3D11Buffer             *m_CameraBuffer;
 	ID3D11Buffer             *m_pVertexBuffer;
 	ID3D11Buffer             *m_pIndexBuffer;
-	ID3D11ShaderResourceView *m_pTextures[3];
+	ID3D11ShaderResourceView *m_pTexture;
 	ID3D11SamplerState       *m_pTexSamplerState;
-	ID3D11SamplerState       *m_pTexSamplerState1;
 	ID3D11InputLayout        *m_pInputLayout;
 
 	int m_VertexCount;
 	int m_IndexCount;
 
-	Shader ObjectShader;
+	Shader CubeShader;
 	std::vector<D3DPointLight> pointLights;
 };
 
 
-void Object::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMMATRIX &Model,  
+void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMMATRIX &Model,  
 				  const XMMATRIX &View, const XMMATRIX &Proj)
 {
 
@@ -100,25 +98,8 @@ void Object::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMMATRIX &Mo
 	cbMatrix.view   = XMMatrixTranspose(View);
 	cbMatrix.proj   = XMMatrixTranspose(Proj);
 	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
-	pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
+	pD3D11DeviceContext->DSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
 
-
-	//////////////////////////////////////////////////////////////////////////////
-	static float frameTime = 0.0f;
-	// Increment the frame time counter.
-	frameTime += 0.001f;
-	if(frameTime > 1000.0f)
-	{
-		frameTime = 0.0f;
-	}
-	cbNoise.frameTime = frameTime;
-	cbNoise.scrollSpeeds = XMFLOAT3(1.3f, 2.1f, 2.3f);
-	cbNoise.scales       = XMFLOAT3(1.0f, 2.0f, 3.0f);
-	cbNoise.padding = 0.0f;
-	pD3D11DeviceContext->UpdateSubresource(m_pNoiseBuffer, 0, NULL, &cbNoise, 0, 0 );
-	pD3D11DeviceContext->VSSetConstantBuffers(1, 1, &m_pNoiseBuffer);
-
-	///////////////////////////////////////////////////////////////////////////////
 	unsigned int stride;
 	unsigned int offset;
 	stride = sizeof(Vertex); 
@@ -127,15 +108,15 @@ void Object::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMMATRIX &Mo
 	pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
 	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    pD3D11DeviceContext->PSSetShaderResources(0, 3, m_pTextures);  
+    pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pTexture);  
 	pD3D11DeviceContext->PSSetSamplers( 0, 1, &m_pTexSamplerState );
-	pD3D11DeviceContext->PSSetSamplers( 1, 1, &m_pTexSamplerState1 );
-	ObjectShader.use(pD3D11DeviceContext);
+
+	CubeShader.use(pD3D11DeviceContext);
 	pD3D11DeviceContext->DrawIndexed(m_IndexCount, 0, 0);
 
 }
 
-bool Object::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext)
+bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext)
 {
 	HRESULT hr;
 
@@ -206,44 +187,6 @@ bool Object::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11
 	hr = pD3D11Device->CreateBuffer(&mvpBufferDesc, NULL, &m_pMVPBuffer);
 	DebugHR(hr);
 
-	///////////////////////////////////////Light buffer////////////////////////////////////////
-
-	D3D11_BUFFER_DESC noiseBufferDesc;	
-	ZeroMemory(&noiseBufferDesc, sizeof(D3D11_BUFFER_DESC));
-	noiseBufferDesc.Usage          = D3D11_USAGE_DEFAULT;
-	noiseBufferDesc.ByteWidth      = sizeof(NoiseBuffer);
-	noiseBufferDesc.BindFlags      = D3D11_BIND_CONSTANT_BUFFER;
-	noiseBufferDesc.CPUAccessFlags = 0;
-	noiseBufferDesc.MiscFlags      = 0;
-
-	hr = pD3D11Device->CreateBuffer(&noiseBufferDesc, NULL, &m_pNoiseBuffer);
-
-	//////////////////////////////////////////////////////////////////////////
-	D3D11_BUFFER_DESC distortBufferDesc;	
-	ZeroMemory(&distortBufferDesc, sizeof(D3D11_BUFFER_DESC));
-	distortBufferDesc.Usage          = D3D11_USAGE_DEFAULT;
-	distortBufferDesc.ByteWidth      = sizeof(DistortionBuffer);
-	distortBufferDesc.BindFlags      = D3D11_BIND_CONSTANT_BUFFER;
-	distortBufferDesc.CPUAccessFlags = 0;
-	distortBufferDesc.MiscFlags      = 0;
-
-	cbDistortion.distortion1 = XMFLOAT2(0.1f, 0.2f);
-	cbDistortion.distortion2 = XMFLOAT2(0.1f, 0.3f);
-	cbDistortion.distortion3 = XMFLOAT2(0.1f, 0.1f);
-	cbDistortion.distortionScale = 0.8f;
-	cbDistortion.distortionBias  = 0.5f;
-
-	// Give the subresource structure a pointer to the index data.
-	D3D11_SUBRESOURCE_DATA distortSub;
-	distortSub.pSysMem          = &cbDistortion;
-	distortSub.SysMemPitch      = 0;
-	distortSub.SysMemSlicePitch = 0;
-	hr = pD3D11Device->CreateBuffer(&distortBufferDesc, &distortSub, &m_pDistortBuffer);
-	DebugHR(hr);
-	int lightSlot = 0;
-	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, &m_pNoiseBuffer);
-
-
 	// Create a texture sampler state description.
 	D3D11_SAMPLER_DESC samplerDesc;
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -264,35 +207,14 @@ bool Object::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11
 	hr = pD3D11Device->CreateSamplerState(&samplerDesc, &m_pTexSamplerState);
 	DebugHR(hr);
 
-
-	D3D11_SAMPLER_DESC samplerDesc2;
-	samplerDesc2.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	samplerDesc2.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-	samplerDesc2.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-	samplerDesc2.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-	samplerDesc2.MipLODBias = 0.0f;
-	samplerDesc2.MaxAnisotropy = 1;
-	samplerDesc2.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	samplerDesc2.BorderColor[0] = 0;
-	samplerDesc2.BorderColor[1] = 0;
-	samplerDesc2.BorderColor[2] = 0;
-	samplerDesc2.BorderColor[3] = 0;
-	samplerDesc2.MinLOD = 0;
-	samplerDesc2.MaxLOD = D3D11_FLOAT32_MAX;
-	hr = pD3D11Device->CreateSamplerState(&samplerDesc2, &m_pTexSamplerState1);
-
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/fire01.dds", NULL,NULL, &m_pTextures[0], NULL);
+	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/stone01.dds", NULL,NULL, &m_pTexture, NULL);
 	DebugHR(hr);
 
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/noise01.dds", NULL,NULL, &m_pTextures[1], NULL);
-	DebugHR(hr);
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/alpha01.dds", NULL,NULL, &m_pTextures[2], NULL);
-	DebugHR(hr);
 	return true;
 }
 
 
-bool Object::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
+bool Cube::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 {
 	HRESULT result;
 
@@ -323,15 +245,17 @@ bool Object::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 
 	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
 
-	ObjectShader.init(pD3D11Device, hWnd);
-	ObjectShader.attachVS(L"light.vsh", pInputLayoutDesc, numElements);
-	ObjectShader.attachPS(L"light.psh");
-	ObjectShader.end();
+	CubeShader.init(pD3D11Device, hWnd);
+	CubeShader.attachVS(L"light.vsh", pInputLayoutDesc, numElements);
+	CubeShader.attachHS(L"light.hsh");
+	CubeShader.attachDS(L"light.dsh");
+	CubeShader.attachPS(L"light.psh");
+	CubeShader.end();
 
 	return true;
 }
 
-bool Object::LoadModel(char *modelFile)
+bool Cube::LoadModel(char *modelFile)
 {
 	std::ifstream fin;
 	char ch;
