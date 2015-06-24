@@ -18,6 +18,17 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="light.psh" />
+    <None Include="light.vsh" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ch34-Bilboarding.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="light.h" />
+    <ClInclude Include="square.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{094E7E62-273E-4E06-B4B5-1154F44AC208}</ProjectGuid>
     <RootNamespace>ch34Bilboarding</RootNamespace>
@@ -76,41 +87,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="CameraClass.cpp" />
-    <ClCompile Include="ch35-Depth-Buffer.cpp" />
-    <ClCompile Include="D3DClass.cpp" />
-    <ClCompile Include="GraphicsClass.cpp" />
-    <ClCompile Include="InputClass.cpp" />
-    <ClCompile Include="LightClass.cpp" />
-    <ClCompile Include="ModelClass.cpp" />
-    <ClCompile Include="PositionClass.cpp" />
-    <ClCompile Include="ShaderClass.cpp" />
-    <ClCompile Include="SystemClass.cpp" />
-    <ClCompile Include="TextureClass.cpp" />
-    <ClCompile Include="TimerClass.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="CameraClass.h" />
-    <ClInclude Include="D3DClass.h" />
-    <ClInclude Include="GraphicsClass.h" />
-    <ClInclude Include="InputClass.h" />
-    <ClInclude Include="LightClass.h" />
-    <ClInclude Include="ModelClass.h" />
-    <ClInclude Include="PositionClass.h" />
-    <ClInclude Include="ShaderClass.h" />
-    <ClInclude Include="SystemClass.h" />
-    <ClInclude Include="TextureClass.h" />
-    <ClInclude Include="TimerClass.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="light-fs.hlsl">
-      <FileType>Document</FileType>
-    </Text>
-    <Text Include="light-vs.hlsl">
-      <FileType>Document</FileType>
-    </Text>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

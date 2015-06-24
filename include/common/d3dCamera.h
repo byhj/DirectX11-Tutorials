@@ -34,6 +34,10 @@ public:
 	{
 		return m_Proj;
 	}
+	XMFLOAT3 GetPos()
+	{
+		return pos;
+	}
 	void OnMouseDown(WPARAM btnState, int x, int y, HWND hWnd);
 	void OnMouseMove(WPARAM btnState, int x, int y);
 	void OnMouseUp(WPARAM btnState, int x, int y);
@@ -49,6 +53,8 @@ private:
 	XMMATRIX m_World;
 	XMMATRIX m_View;
 	XMMATRIX m_Proj;
+	XMFLOAT3 pos;
+	XMFLOAT3 target;
 };
 
 void D3DCamera::update()
@@ -62,6 +68,9 @@ void D3DCamera::update()
 	XMVECTOR pos    = XMVectorSet(x, y, z, 1.0f);
 	XMVECTOR target = XMVectorZero();
 	XMVECTOR up     = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+	XMStoreFloat3(&this->pos, pos);
+	XMStoreFloat3(&this->target, target);
 
 	m_View = XMMatrixLookAtLH(pos, target, up);
 	//m_Proj  = XMMatrixPerspectiveFovLH( D3DXToRadian(45.0f), aspect, 1.0f, 1000.0f);
