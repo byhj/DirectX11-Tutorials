@@ -1,5 +1,5 @@
 
-#include <common/d3dShader.h>
+#include <d3d/d3dShader.h>
 
 class Bitmap
 {

@@ -25,10 +25,6 @@
     <None Include="triangle.psh" />
     <None Include="triangle.vsh" />
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\include\common\d3dCamera.h" />
-    <ClInclude Include="..\..\include\common\d3dShader.h" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{4AA5E349-F018-4AB9-BB68-08B269FF091E}</ProjectGuid>
     <RootNamespace>ch04BufferShader</RootNamespace>

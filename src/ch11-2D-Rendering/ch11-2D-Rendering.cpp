@@ -4,7 +4,7 @@
 #define _XM_NO_INTRINSICS_
 #endif 
 
-#include "common/d3dApp.h"
+#include "d3d/d3dApp.h"
 #include "bitmap.h"
 #include "cube.h"
 
