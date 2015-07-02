@@ -20,7 +20,7 @@ float Clamp(const float& x, const float& low, const float& high)
 class D3DRenderSystem: public D3DApp
 {
 public:
-	D3DRenderSystem():m_Theta(1.5f * Pi), m_Phi(0.25f * Pi), m_Radius(3.0f) 
+	D3DRenderSystem():m_Theta(1.5f * Pi), m_Phi(0.25f * Pi), m_Radius(5.0f) 
 	{
 		m_AppName = L"DirectX11: ch12-Font";
 		m_pSwapChain          = NULL;

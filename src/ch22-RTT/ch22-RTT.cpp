@@ -186,7 +186,7 @@ void D3DRenderSystem::v_Render()
 	static float rot = 0.0f;
 	rot +=  timer.GetDeltaTime();
 	UpdateScene();
-	Model = XMMatrixIdentity();
+	Model = XMMatrixRotationY(rot);
 	View  = camera.GetViewMatrix();
 	//Proj  = camera.GetProjMatrix();
 	D3DXVECTOR4 bgColor = D3DXVECTOR4(0.5f, 0.5f, 0.5f, 1.0f);
@@ -393,6 +393,8 @@ void D3DRenderSystem::init_object()
 	d3dRtt.init_window(400, 1000, 600, 600);
 	d3dRtt.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
 	d3dRtt.init_shader(m_pD3D11Device, GetHwnd());
+
+	camera.SetRadius(5.0f);
 
 	timer.Reset();
 }

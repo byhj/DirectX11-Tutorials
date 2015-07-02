@@ -568,7 +568,6 @@ void Cube::CalculateNormal(VectorType tangent, VectorType binormal, VectorType& 
 {
 	float length;
 
-
 	// Calculate the cross product of the tangent and binormal which will give the normal vector.
 	normal.x = (tangent.y * binormal.z) - (tangent.z * binormal.y);
 	normal.y = (tangent.z * binormal.x) - (tangent.x * binormal.z);

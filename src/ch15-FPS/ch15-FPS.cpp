@@ -201,7 +201,6 @@ void D3DRenderSystem::v_Render()
 
 	BeginScene();
 
-
 	static float rot = 0.0f;
 	rot +=  timer.GetDeltaTime();
 	update();

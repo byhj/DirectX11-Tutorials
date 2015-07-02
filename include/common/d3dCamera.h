@@ -38,6 +38,10 @@ public:
 	{
 		return pos;
 	}
+	void SetRadius(float r)
+	{
+		m_Radius = r;
+	}
 	void OnMouseDown(WPARAM btnState, int x, int y, HWND hWnd);
 	void OnMouseMove(WPARAM btnState, int x, int y);
 	void OnMouseUp(WPARAM btnState, int x, int y);
