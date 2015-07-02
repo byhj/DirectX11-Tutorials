@@ -4,10 +4,10 @@
 #define _XM_NO_INTRINSICS_
 #endif 
 
-#include "common/d3dApp.h"
-#include "common/d3dFont.h"
-#include "common/d3dTimer.h"
-#include "common/d3dCamera.h"
+#include "d3d/d3dApp.h"
+#include "d3d/d3dFont.h"
+#include "d3d/d3dTimer.h"
+#include "d3d/d3dCamera.h"
 #include "SoundClass.h"
 
 #include "cube.h"
@@ -317,6 +317,8 @@ void D3DRenderSystem::init_object()
 	cube.init_shader(m_pD3D11Device, GetHwnd());
 	cube.init_texture(m_pD3D11Device, L"../../media/textures/stone01.dds");
 	font.init(m_pD3D11Device);
+
+	camera.SetRadius(3.0f);
 
 	sound.Init(GetHwnd(), "sound02.wav");
 	timer.Reset();

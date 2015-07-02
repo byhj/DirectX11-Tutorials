@@ -1,8 +1,8 @@
 #ifndef D3DRTT_H
 #define D3DRTT_H
 
-#include "common/d3dApp.h"
-#include <common/d3dShader.h>
+#include "d3d/d3dApp.h"
+#include <d3d/d3dShader.h>
 
 class D3DRTT
 {
