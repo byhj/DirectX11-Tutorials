@@ -21,21 +21,24 @@
     <None Include="cube.vsh">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="rtt.psh">
+    <None Include="reflect.vsh">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="rtt.vsh">
+    <None Include="reflect.psh">
       <Filter>Resource Files</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="ch22-RTT.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cube.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="reflect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ch27-Reflection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

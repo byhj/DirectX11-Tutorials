@@ -21,14 +21,15 @@
   <ItemGroup>
     <None Include="cube.psh" />
     <None Include="cube.vsh" />
-    <None Include="rtt.psh" />
-    <None Include="rtt.vsh" />
+    <None Include="reflect.psh" />
+    <None Include="reflect.vsh" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ch22-RTT.cpp" />
+    <ClCompile Include="ch27-Reflection.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cube.h" />
+    <ClInclude Include="reflect.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{710A140E-91CF-434C-BC59-A9FEC89C411A}</ProjectGuid>
