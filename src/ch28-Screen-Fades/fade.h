@@ -1,43 +1,36 @@
+#ifndef Fade_H
+#define Fade_H
 
 #include "d3d/d3dApp.h"
 #include <d3d/d3dShader.h>
-#include "d3d/d3dLight.h"
 
-class Cube
+class Fade
 {
 public:
-	Cube()
+	Fade()
 	{
 		m_pInputLayout        = NULL;
 		m_pMVPBuffer          = NULL;
-		m_pLightBuffer        = NULL;
 		m_pVertexBuffer       = NULL;
 		m_pIndexBuffer        = NULL;
 	}
 
-	void Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMMATRIX &Model,  
-		                             const XMMATRIX &View, const XMMATRIX &Proj);
+	void Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView *pTexture,const XMMATRIX &Model,  
+		        const XMMATRIX &View, const XMMATRIX &Proj);
 
 	void shutdown()
 	{
-			ReleaseCOM(m_pRenderTargetView  )
+		    ReleaseCOM(m_pRenderTargetView  )
 			ReleaseCOM(m_pMVPBuffer         )
-			ReleaseCOM(m_pLightBuffer       )
 			ReleaseCOM(m_pVertexBuffer      )
 			ReleaseCOM(m_pIndexBuffer       )
 	}
 
-	bool LoadModel(char *modelFile);
+	void init_window(int ScreenWidth , int ScreenHeight, int BitmapWidth, int BitmapHeight);
 	bool init_buffer (ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext);
 	bool init_shader (ID3D11Device *pD3D11Device, HWND hWnd);
-	void init_texture(ID3D11Device *pD3D11Device, LPCWSTR texFile, ID3D11ShaderResourceView *m_pTexture);
-private:
 
-	struct CameraBuffer
-	{
-		D3DXVECTOR3 camPos;
-		float padding;
-	};
+private:
 
 	struct MatrixBuffer
 	{
@@ -48,48 +41,40 @@ private:
 	};
 	MatrixBuffer cbMatrix;
 
-	struct LightBuffer
-	{
-		D3DXVECTOR4 ambientColor;
-		D3DXVECTOR4 diffuseColor;
-		D3DXVECTOR3 lightDirection;
-		float specularPower;
-		D3DXVECTOR4 specularColor;
-	};
-	LightBuffer cbLight;
-
-	struct Vertex
+	struct  Vertex
 	{
 		D3DXVECTOR3 Pos;
-		D3DXVECTOR4 Color;
+		D3DXVECTOR2 Tex;
 	};
-	struct ModelVertex
-	{
-		float x, y , z;
-		float u, v;
-		float nx, ny, nz;
-	};
-	ModelVertex  *m_pModelVertex;
 
 	ID3D11RenderTargetView   *m_pRenderTargetView;
 	ID3D11Buffer             *m_pMVPBuffer;
-	ID3D11Buffer             *m_pLightBuffer;
-	ID3D11Buffer             *m_CameraBuffer;
 	ID3D11Buffer             *m_pVertexBuffer;
 	ID3D11Buffer             *m_pIndexBuffer;
-	ID3D11ShaderResourceView *m_pTexture;
 	ID3D11SamplerState       *m_pTexSamplerState;
 	ID3D11InputLayout        *m_pInputLayout;
+
 
 	int m_VertexCount;
 	int m_IndexCount;
 
-	Shader CubeShader;
-	std::vector<D3DPointLight> pointLights;
+    int m_posX  ;
+	int m_posY  ; 
+	int m_width ; 
+	int m_height;
+
+	Shader FadeShader;
 };
 
+void Fade::init_window(int posX, int posY, int width, int height)
+{
+    m_posX  = posX;
+	m_posY  = posY;
+	m_width = width; 
+	m_height = height;
+}
 
-void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMMATRIX &Model,  
+void Fade::Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView *pTexture, const XMMATRIX &Model,  
 				  const XMMATRIX &View, const XMMATRIX &Proj)
 {
 
@@ -97,7 +82,7 @@ void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMMATRIX &Mode
 	cbMatrix.view   = XMMatrixTranspose(View);
 	cbMatrix.proj   = XMMatrixTranspose(Proj);
 	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
-	pD3D11DeviceContext->DSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
+	pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
 
 	unsigned int stride;
 	unsigned int offset;
@@ -107,39 +92,63 @@ void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMMATRIX &Mode
 	pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
 	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pTexture);  
+	pD3D11DeviceContext->PSSetShaderResources(0, 1, &pTexture);  
 	pD3D11DeviceContext->PSSetSamplers( 0, 1, &m_pTexSamplerState );
 
-	CubeShader.use(pD3D11DeviceContext);
+	FadeShader.use(pD3D11DeviceContext);
 	pD3D11DeviceContext->DrawIndexed(m_IndexCount, 0, 0);
 
 }
 
-bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext)
+bool Fade::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext)
 {
 	HRESULT hr;
 
+	Vertex *VertexData;
+	unsigned long *IndexData;
+	m_VertexCount = 6;
+	m_IndexCount = 6;
+
+	VertexData = new Vertex[m_VertexCount];
+	if (!VertexData)
+	{
+		return false;
+	}
+
+	IndexData = new unsigned long[m_IndexCount];
+	if (!IndexData)
+	{
+		return false;
+	}
+
+	memset(VertexData, 0, sizeof(Vertex) * m_VertexCount);
+
+	for (int i = 0; i != m_IndexCount; ++i)
+	{
+		IndexData[i] = i;
+	}
+
+	// First triangle.
+	VertexData[0].Pos = D3DXVECTOR3(m_posX, m_posY, 0.0f);  // Top left.
+	VertexData[0].Tex = D3DXVECTOR2(0.0f, 0.0f);
+
+	VertexData[1].Pos = D3DXVECTOR3(m_posX + m_width / 2.0f, m_posY, 0.0f);  // Bottom right.
+	VertexData[1].Tex = D3DXVECTOR2(1.0f, 0.0f);
+
+	VertexData[2].Pos = D3DXVECTOR3(m_posX + m_width / 2.0f, m_posY - m_height / 2.0f, 0.0f);  // Bottom left.
+	VertexData[2].Tex = D3DXVECTOR2(1.0f, 1.0f);
+
+	// Second triangle.
+	VertexData[3].Pos = D3DXVECTOR3(m_posX + m_width / 2.0f, m_posY - m_height / 2.0f, 0.0f);  // Bottom left.
+	VertexData[3].Tex = D3DXVECTOR2(1.0f, 1.0f);
+
+	VertexData[4].Pos = D3DXVECTOR3(m_posX, m_posY - m_height / 2.0f, 0.0f); // Top right.
+	VertexData[4].Tex = D3DXVECTOR2(0.0f, 1.0f);
+
+	VertexData[5].Pos = D3DXVECTOR3(m_posX, m_posY, 0.0f);  // Top left.
+	VertexData[5].Tex = D3DXVECTOR2(0.0f, 0.0f);
+
 	///////////////////////////Index Buffer ////////////////////////////////
-	//LoadModel("../../media/objects/square.txt");
-
-	m_VertexCount = 3;
-	m_IndexCount  = 3;
-	Vertex *VertexData = new Vertex[m_VertexCount];
-	unsigned long * IndexData = new unsigned long[m_IndexCount];
-
-	// Load the vertex array with data.
-	VertexData[0].Pos = D3DXVECTOR3(-1.0f, -1.0f, 0.0f);  // Bottom left.
-	VertexData[1].Pos = D3DXVECTOR3(0.0f, 1.0f, 0.0f);  // Top middle.
-	VertexData[2].Pos = D3DXVECTOR3(1.0f, -1.0f, 0.0f);  // Bottom right.
-	
-	VertexData[0].Color = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
-	VertexData[1].Color = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
-	VertexData[2].Color = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
-
-	// Load the index array with data.
-	IndexData[0] = 0;  // Bottom left.
-	IndexData[1] = 1;  // Top middle.
-	IndexData[2] = 2;  // Bottom right.
 
 	// Set up the description of the static vertex buffer.
 	D3D11_BUFFER_DESC VertexBufferDesc;
@@ -180,7 +189,6 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	hr = pD3D11Device->CreateBuffer(&IndexBufferDesc, &IBO, &m_pIndexBuffer);
 	DebugHR(hr);
 
-
 	////////////////////////////////MVP Buffer//////////////////////////////////////
 
 	D3D11_BUFFER_DESC mvpBufferDesc;	
@@ -213,14 +221,11 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	hr = pD3D11Device->CreateSamplerState(&samplerDesc, &m_pTexSamplerState);
 	DebugHR(hr);
 
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/stone01.dds", NULL,NULL, &m_pTexture, NULL);
-	DebugHR(hr);
-
 	return true;
 }
 
 
-bool Cube::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
+bool Fade::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 {
 	HRESULT result;
 
@@ -235,7 +240,7 @@ bool Cube::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 
 	pInputLayoutDesc[1].SemanticName = "TEXCOORD";
 	pInputLayoutDesc[1].SemanticIndex = 0;
-	pInputLayoutDesc[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	pInputLayoutDesc[1].Format = DXGI_FORMAT_R32G32_FLOAT;
 	pInputLayoutDesc[1].InputSlot = 0;
 	pInputLayoutDesc[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 	pInputLayoutDesc[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
@@ -243,59 +248,13 @@ bool Cube::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 
 	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
 
-	CubeShader.init(pD3D11Device, hWnd);
-	CubeShader.attachVS(L"light.vsh", pInputLayoutDesc, numElements);
-	CubeShader.attachHS(L"light.hsh");
-	CubeShader.attachDS(L"light.dsh");
-	CubeShader.attachPS(L"light.psh");
-	CubeShader.end();
+	FadeShader.init(pD3D11Device, hWnd);
+	FadeShader.attachVS(L"rtt.vsh", pInputLayoutDesc, numElements);
+	FadeShader.attachPS(L"rtt.psh");
+	FadeShader.end();
 
 	return true;
 }
 
-bool Cube::LoadModel(char *modelFile)
-{
-	std::ifstream fin;
-	char ch;
-	int i;
-	fin.open(modelFile);
 
-	if (fin.fail())
-	{
-		return false;
-	}
-	// Read up to the value of vertex count.
-	fin.get(ch);
-	while(ch != ':')
-	{
-		fin.get(ch);
-	}
-
-	// Read in the vertex count.
-	fin >> m_VertexCount;
-	m_IndexCount = m_VertexCount;
-
-	m_pModelVertex  = new ModelVertex[m_VertexCount];
-	if (!m_pModelVertex)
-	{
-		return false;
-	}
-
-	//Read up the beginning of the data
-	fin.get(ch);
-	while (ch != ':')
-	{
-		fin.get(ch);
-	}
-
-	for (int i = 0; i != m_VertexCount; ++i)
-	{
-		fin >> m_pModelVertex[i].x  >> m_pModelVertex[i].y >> m_pModelVertex[i].z;
-		fin >> m_pModelVertex[i].u  >> m_pModelVertex[i].v;
-		fin >> m_pModelVertex[i].nx >> m_pModelVertex[i].ny >> m_pModelVertex[i].nz;
-	}
-	fin.close();
-
-	return true;
-
-}
+#endif

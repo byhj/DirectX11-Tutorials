@@ -26,9 +26,6 @@
     <ClInclude Include="cube.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\common\d3dShaderManage.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ch45-Multi-Shader.cpp">

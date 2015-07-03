@@ -1,13 +1,13 @@
 struct VS_OUT
 {
-    float4 Pos : SV_POSITION;
-    float2 Tex : TEXCOORD0;
+    float4 Pos    : POSITION;
+    float4 Color  : TEXCOORD;
 };
 
 struct HS_OUT
 {
-    float4 Pos : SV_POSITION;
-    float2 Tex : TEXCOORD0;
+    float4 Pos    : POSITION;
+    float4 Color  : TEXCOORD;
 };
 
 struct HS_CONST_OUT
@@ -42,8 +42,8 @@ HS_OUT HS(InputPatch<VS_OUT, 3> patch, uint pointId : SV_OutputControlPointID, u
     HS_OUT hs_out;
 
 	// Set the position for this control point as the output position.
-    hs_out.Pos = patch[pointId].Pos;
-    hs_out.Tex = patch[pointId].Tex;
+    hs_out.Pos   = patch[pointId].Pos;
+    hs_out.Color = patch[pointId].Color;
 
     return hs_out;
 }

@@ -2,6 +2,7 @@
 #define D3DFONT_H
 
 #include "d3dDebug.h"
+
 #include <FW1FontWrapper.h>
 #pragma  comment(lib, "FW1FontWrapper.lib")
 

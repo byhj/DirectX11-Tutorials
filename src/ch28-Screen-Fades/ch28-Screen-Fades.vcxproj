@@ -18,6 +18,19 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="cube.psh" />
+    <None Include="cube.vsh" />
+    <None Include="fade.psh" />
+    <None Include="fade.vsh" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ch28-Screen-Fades.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="cube.h" />
+    <ClInclude Include="fade.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{CA42D8ED-3645-4F40-803D-4E4BEEBE4239}</ProjectGuid>
     <RootNamespace>ch28ScreenFades</RootNamespace>
@@ -77,49 +90,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <Text Include="blend-ps.hlsl">
-      <FileType>Document</FileType>
-    </Text>
-    <Text Include="blend-vs.hlsl">
-      <FileType>Document</FileType>
-    </Text>
-    <Text Include="texture-fs.hlsl">
-      <FileType>Document</FileType>
-    </Text>
-    <Text Include="texture-vs.hlsl">
-      <FileType>Document</FileType>
-    </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="BitmapClass.cpp" />
-    <ClCompile Include="CameraClass.cpp" />
-    <ClCompile Include="ch27-Reflection.cpp" />
-    <ClCompile Include="D3DClass.cpp" />
-    <ClCompile Include="GraphicsClass.cpp" />
-    <ClCompile Include="InputClass.cpp" />
-    <ClCompile Include="LightClass.cpp" />
-    <ClCompile Include="ModelClass.cpp" />
-    <ClCompile Include="ReflectioShaderClass.cpp" />
-    <ClCompile Include="RenderTextureClass.cpp" />
-    <ClCompile Include="ShaderClass.cpp" />
-    <ClCompile Include="SystemClass.cpp" />
-    <ClCompile Include="TextureClass.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="BitmapClass.h" />
-    <ClInclude Include="CameraClass.h" />
-    <ClInclude Include="D3DClass.h" />
-    <ClInclude Include="GraphicsClass.h" />
-    <ClInclude Include="InputClass.h" />
-    <ClInclude Include="LightClass.h" />
-    <ClInclude Include="ModelClass.h" />
-    <ClInclude Include="ReflectioShaderClass.h" />
-    <ClInclude Include="RenderTextureClass.h" />
-    <ClInclude Include="ShaderClass.h" />
-    <ClInclude Include="SystemClass.h" />
-    <ClInclude Include="TextureClass.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
