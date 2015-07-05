@@ -18,6 +18,33 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="cube.psh" />
+    <None Include="cube.vsh" />
+    <None Include="rtt.psh" />
+    <None Include="rtt.vsh" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\include\d3d\d3dApp.cpp" />
+    <ClCompile Include="..\..\include\d3d\d3dCamera.cpp" />
+    <ClCompile Include="..\..\include\d3d\d3dFont.cpp" />
+    <ClCompile Include="..\..\include\d3d\d3dFrustum.cpp" />
+    <ClCompile Include="..\..\include\d3d\d3dRTT.cpp" />
+    <ClCompile Include="..\..\include\d3d\d3dShader.cpp" />
+    <ClCompile Include="..\..\include\d3d\d3dTimer.cpp" />
+    <ClCompile Include="ch40-Shadow-Mapping.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\d3d\d3dApp.h" />
+    <ClInclude Include="..\..\include\d3d\d3dCamera.h" />
+    <ClInclude Include="..\..\include\d3d\d3dDebug.h" />
+    <ClInclude Include="..\..\include\d3d\d3dFont.h" />
+    <ClInclude Include="..\..\include\d3d\d3dFrustum.h" />
+    <ClInclude Include="..\..\include\d3d\d3dRTT.h" />
+    <ClInclude Include="..\..\include\d3d\d3dShader.h" />
+    <ClInclude Include="..\..\include\d3d\d3dTimer.h" />
+    <ClInclude Include="cube.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{CF906315-D5AD-42A4-8ECC-3CE8B909357C}</ProjectGuid>
     <RootNamespace>ch40ShadowMapping</RootNamespace>

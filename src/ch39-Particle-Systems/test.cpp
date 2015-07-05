@@ -1,4 +1,4 @@
-#include "particle.h"
+#include "test.h"
 
 bool Particle::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext)
 {
@@ -49,17 +49,23 @@ bool Particle::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D
 	m_IndexCount = m_VertexCount;
 	///////////////////////Index Buffer ////////////////////////////////
 
+	m_vertices = new Vertex[m_VertexCount];
+	memset(m_vertices, 0, (sizeof(Vertex) * m_VertexCount));
+
 	// Set up the description of the static vertex buffer.
 	D3D11_BUFFER_DESC VertexBufferDesc;
-	VertexBufferDesc.Usage               = D3D11_USAGE_DEFAULT;
+	VertexBufferDesc.Usage               = D3D11_USAGE_DYNAMIC;
 	VertexBufferDesc.ByteWidth           = sizeof(Vertex) * m_VertexCount;
 	VertexBufferDesc.BindFlags           = D3D11_BIND_VERTEX_BUFFER;
-	VertexBufferDesc.CPUAccessFlags      = 0;
+	VertexBufferDesc.CPUAccessFlags      = D3D11_CPU_ACCESS_WRITE;
 	VertexBufferDesc.MiscFlags           = 0;
 	VertexBufferDesc.StructureByteStride = 0;
 
-	// Now create the vertex buffer.
-	hr = pD3D11Device->CreateBuffer(&VertexBufferDesc, NULL, &m_pVertexBuffer);
+	D3D11_SUBRESOURCE_DATA VBO;
+	VBO.pSysMem = m_vertices;
+	VBO.SysMemPitch = 0;
+	VBO.SysMemSlicePitch = 0;
+	hr = pD3D11Device->CreateBuffer(&VertexBufferDesc, &VBO, &m_pVertexBuffer);
 	DebugHR(hr);
 
 	/////////////////////////////////Index Buffer ///////////////////////////////////////
@@ -80,7 +86,7 @@ bool Particle::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D
 
 	// Give the subresource structure a pointer to the index data.
 	D3D11_SUBRESOURCE_DATA IBO;
-	IBO.pSysMem          = &indices;
+	IBO.pSysMem          = indices;
 	IBO.SysMemPitch      = 0;
 	IBO.SysMemSlicePitch = 0;
 
@@ -204,7 +210,7 @@ void Particle::EmitParticles(float frameTime)
 		m_accumulatedTime = 0.0f;
 		emitParticle = true;
 	}
-
+	std::cout << m_accumulatedTime << std::endl;
 	// If there are particles to emit then emit one per frame.
 	if((emitParticle == true) && (m_currentParticleCount < (m_maxParticles - 1)))
 	{

@@ -23,7 +23,14 @@
     <None Include="triangle.vsh" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\include\d3d\d3dApp.cpp" />
+    <ClCompile Include="..\..\include\d3d\d3dShader.cpp" />
     <ClCompile Include="ch09-Ambient-Light.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\d3d\d3dApp.h" />
+    <ClInclude Include="..\..\include\d3d\d3dDebug.h" />
+    <ClInclude Include="..\..\include\d3d\d3dShader.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DA95B1E6-66C9-4610-91D9-0F9AFD594B49}</ProjectGuid>

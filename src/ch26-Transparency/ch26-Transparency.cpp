@@ -13,7 +13,7 @@
 
 const float Pi = 3.1415926535f;
 
-float Clamp(const float& x, const float& low, const float& high)
+static float Clamp(const float& x, const float& low, const float& high)
 {
 	return x < low ? low : (x > high ? high : x); 
 }

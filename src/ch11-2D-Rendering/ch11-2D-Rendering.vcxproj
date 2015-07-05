@@ -31,9 +31,14 @@
     <None Include="triangle.vsh" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\include\d3d\d3dApp.cpp" />
+    <ClCompile Include="..\..\include\d3d\d3dShader.cpp" />
     <ClCompile Include="ch11-2D-Rendering.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\d3d\d3dApp.h" />
+    <ClInclude Include="..\..\include\d3d\d3dDebug.h" />
+    <ClInclude Include="..\..\include\d3d\d3dShader.h" />
     <ClInclude Include="bitmap.h" />
     <ClInclude Include="cube.h" />
   </ItemGroup>

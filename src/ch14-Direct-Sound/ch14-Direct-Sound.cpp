@@ -14,11 +14,6 @@
 
 const float Pi = 3.1415926535f;
 
-float Clamp(const float& x, const float& low, const float& high)
-{
-	return x < low ? low : (x > high ? high : x); 
-}
-
 class D3DRenderSystem: public D3DApp
 {
 public:
@@ -118,6 +113,12 @@ private:
 };
 
 CALL_MAIN(D3DRenderSystem);
+
+static float Clamp(const float& x, const float& low, const float& high)
+{
+	return x < low ? low : (x > high ? high : x); 
+}
+
 
 void D3DRenderSystem::update()
 {

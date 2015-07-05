@@ -77,11 +77,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="particle.psh" />
-    <None Include="particle.vsh" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="ch39-Particle-Systems.cpp" />
+    <ClCompile Include="test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="test.h" />

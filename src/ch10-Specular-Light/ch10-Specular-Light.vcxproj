@@ -23,7 +23,14 @@
     <None Include="triangle.vsh" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\include\d3d\d3dApp.cpp" />
+    <ClCompile Include="..\..\include\d3d\d3dShader.cpp" />
     <ClCompile Include="ch10-Specular-Light.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\d3d\d3dApp.h" />
+    <ClInclude Include="..\..\include\d3d\d3dDebug.h" />
+    <ClInclude Include="..\..\include\d3d\d3dShader.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B33031EC-FFA0-46EF-B7B7-1D66BA9E6585}</ProjectGuid>

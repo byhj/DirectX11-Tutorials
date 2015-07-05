@@ -19,11 +19,18 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\include\d3d\d3dApp.cpp" />
+    <ClCompile Include="..\..\include\d3d\d3dShader.cpp" />
     <ClCompile Include="ch04-Buffer-Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="triangle.psh" />
     <None Include="triangle.vsh" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\d3d\d3dApp.h" />
+    <ClInclude Include="..\..\include\d3d\d3dDebug.h" />
+    <ClInclude Include="..\..\include\d3d\d3dShader.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{4AA5E349-F018-4AB9-BB68-08B269FF091E}</ProjectGuid>
