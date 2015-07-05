@@ -128,6 +128,9 @@ void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMMATRIX &Mode
 	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
 	pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
 
+	int lightSlot = 0;
+	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, &m_pLightBuffer);
+
 	unsigned int stride;
 	unsigned int offset;
 	stride = sizeof(VertexType); 
@@ -260,9 +263,6 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	dataPtr2->specularColor  = D3DXVECTOR4(0.0f, 0.0f, 1.0f, 1.0f);
 
 	pD3D11DeviceContext->Unmap(m_pLightBuffer, 0);
-
-	int lightSlot = 0;
-	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, &m_pLightBuffer);
 
 
 	D3D11_BUFFER_DESC cameraBufferDesc;

@@ -48,7 +48,7 @@ public:
 
 		//render to texture
 		XMFLOAT3 camPos = camera.GetPos();
-		camPos.y =  -camPos.y - 3.0f;
+		camPos.y =  -camPos.y ;
 		XMVECTOR pos    = XMLoadFloat3(&camPos);
 		XMVECTOR target = XMVectorZero();
 		XMVECTOR up     = XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);

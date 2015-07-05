@@ -16,7 +16,7 @@ public:
 	}
 
 	void Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView *pTexture,const XMMATRIX &Model,  
-		        const XMMATRIX &View, const XMMATRIX &Proj);
+		        const XMMATRIX &View, const XMMATRIX &Proj, float fadeAmount);
 
 	void shutdown()
 	{
@@ -26,7 +26,7 @@ public:
 			ReleaseCOM(m_pIndexBuffer       )
 	}
 
-	void init_window(int ScreenWidth , int ScreenHeight, int BitmapWidth, int BitmapHeight);
+	void init_window(float posX, float posY, float width, float height);
 	bool init_buffer (ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext);
 	bool init_shader (ID3D11Device *pD3D11Device, HWND hWnd);
 
@@ -47,26 +47,33 @@ private:
 		D3DXVECTOR2 Tex;
 	};
 
+	struct  FadeBuffer
+	{
+		float fadeAmount;
+		float padding[3];
+	};
+	FadeBuffer cbFade;
+
 	ID3D11RenderTargetView   *m_pRenderTargetView;
 	ID3D11Buffer             *m_pMVPBuffer;
 	ID3D11Buffer             *m_pVertexBuffer;
 	ID3D11Buffer             *m_pIndexBuffer;
 	ID3D11SamplerState       *m_pTexSamplerState;
 	ID3D11InputLayout        *m_pInputLayout;
-
+	ID3D11Buffer             *m_pFadeBuffer;
 
 	int m_VertexCount;
 	int m_IndexCount;
 
-    int m_posX  ;
-	int m_posY  ; 
-	int m_width ; 
-	int m_height;
+    float m_posX  ;
+	float m_posY  ; 
+	float m_width ; 
+	float m_height;
 
 	Shader FadeShader;
 };
 
-void Fade::init_window(int posX, int posY, int width, int height)
+void Fade::init_window(float posX, float posY, float width, float height)
 {
     m_posX  = posX;
 	m_posY  = posY;
@@ -75,7 +82,7 @@ void Fade::init_window(int posX, int posY, int width, int height)
 }
 
 void Fade::Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView *pTexture, const XMMATRIX &Model,  
-				  const XMMATRIX &View, const XMMATRIX &Proj)
+				  const XMMATRIX &View, const XMMATRIX &Proj, float fadeAmount)
 {
 
 	cbMatrix.model  = XMMatrixTranspose(Model);
@@ -83,6 +90,13 @@ void Fade::Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResource
 	cbMatrix.proj   = XMMatrixTranspose(Proj);
 	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
 	pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
+
+	cbFade.fadeAmount = fadeAmount;
+	cbFade.padding[0] = 0.0f;
+	cbFade.padding[1] = 0.0f;
+	cbFade.padding[2] = 0.0f;
+	pD3D11DeviceContext->UpdateSubresource(m_pFadeBuffer, 0, NULL, &cbFade, 0, 0 );
+	pD3D11DeviceContext->PSSetConstantBuffers( 0, 1, &m_pFadeBuffer);
 
 	unsigned int stride;
 	unsigned int offset;
@@ -132,20 +146,20 @@ bool Fade::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	VertexData[0].Pos = D3DXVECTOR3(m_posX, m_posY, 0.0f);  // Top left.
 	VertexData[0].Tex = D3DXVECTOR2(0.0f, 0.0f);
 
-	VertexData[1].Pos = D3DXVECTOR3(m_posX + m_width / 2.0f, m_posY, 0.0f);  // Bottom right.
+	VertexData[1].Pos = D3DXVECTOR3(m_posX + m_width, m_posY, 0.0f);  
 	VertexData[1].Tex = D3DXVECTOR2(1.0f, 0.0f);
 
-	VertexData[2].Pos = D3DXVECTOR3(m_posX + m_width / 2.0f, m_posY - m_height / 2.0f, 0.0f);  // Bottom left.
+	VertexData[2].Pos = D3DXVECTOR3(m_posX + m_width, m_posY - m_height, 0.0f);   //Bottom right
 	VertexData[2].Tex = D3DXVECTOR2(1.0f, 1.0f);
 
 	// Second triangle.
-	VertexData[3].Pos = D3DXVECTOR3(m_posX + m_width / 2.0f, m_posY - m_height / 2.0f, 0.0f);  // Bottom left.
+	VertexData[3].Pos = D3DXVECTOR3(m_posX + m_width, m_posY - m_height, 0.0f);   
 	VertexData[3].Tex = D3DXVECTOR2(1.0f, 1.0f);
 
-	VertexData[4].Pos = D3DXVECTOR3(m_posX, m_posY - m_height / 2.0f, 0.0f); // Top right.
+	VertexData[4].Pos = D3DXVECTOR3(m_posX, m_posY - m_height, 0.0f); 
 	VertexData[4].Tex = D3DXVECTOR2(0.0f, 1.0f);
 
-	VertexData[5].Pos = D3DXVECTOR3(m_posX, m_posY, 0.0f);  // Top left.
+	VertexData[5].Pos = D3DXVECTOR3(m_posX, m_posY, 0.0f); 
 	VertexData[5].Tex = D3DXVECTOR2(0.0f, 0.0f);
 
 	///////////////////////////Index Buffer ////////////////////////////////
@@ -201,6 +215,16 @@ bool Fade::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	hr = pD3D11Device->CreateBuffer(&mvpBufferDesc, NULL, &m_pMVPBuffer);
 	DebugHR(hr);
 
+	D3D11_BUFFER_DESC fadeBufferDesc;	
+	ZeroMemory(&fadeBufferDesc, sizeof(D3D11_BUFFER_DESC));
+	fadeBufferDesc.Usage          = D3D11_USAGE_DEFAULT;
+	fadeBufferDesc.ByteWidth      = sizeof(FadeBuffer);
+	fadeBufferDesc.BindFlags      = D3D11_BIND_CONSTANT_BUFFER;
+	fadeBufferDesc.CPUAccessFlags = 0;
+	fadeBufferDesc.MiscFlags      = 0;
+	hr = pD3D11Device->CreateBuffer(&fadeBufferDesc, NULL, &m_pFadeBuffer);
+	DebugHR(hr);
+
 	// Create a texture sampler state description.
 	D3D11_SAMPLER_DESC samplerDesc;
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -249,8 +273,8 @@ bool Fade::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
 
 	FadeShader.init(pD3D11Device, hWnd);
-	FadeShader.attachVS(L"rtt.vsh", pInputLayoutDesc, numElements);
-	FadeShader.attachPS(L"rtt.psh");
+	FadeShader.attachVS(L"fade.vsh", pInputLayoutDesc, numElements);
+	FadeShader.attachPS(L"fade.psh");
 	FadeShader.end();
 
 	return true;
