@@ -1,8 +1,8 @@
 
 struct VS_OUT
 {
-  float4 Pos        :SV_POSITION;
-  float2 Tex        :TEXCOORD;
+  float4 Pos        : SV_POSITION;
+  float2 Tex        : TEXCOORD;
   float4 ReflectPos : TEXCOORD1;
 };
 
@@ -19,10 +19,11 @@ float4 PS(VS_OUT ps_in) : SV_TARGET
 	 reflectTexCoord.x = ( ps_in.ReflectPos.x / ps_in.ReflectPos.w / 2.0f ) + 0.5f;
 	 reflectTexCoord.y = -(ps_in.ReflectPos.y / ps_in.ReflectPos.w / 2.0f ) + 0.5f;
 
-	 float reflectTexColor = reflectTex.Sample( texState, reflectTexCoord ); 
+	 float4 reflectTexColor = reflectTex.Sample( texState, reflectTexCoord ); 
 
 	 //Finally we blend the texture from the floor with the reflection texture 
-	 float pixelColor = lerp(texColor, reflectTexColor, 0.5f);
 
-	 return pixelColor;
+	 float4 pixelColor = lerp(texColor, reflectTexColor, 0.35f);
+	
+	 return pixelColor ;
 }

@@ -106,9 +106,7 @@ void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMMATRIX &Mode
 
 	pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
 	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pTexture);  
-	pD3D11DeviceContext->PSSetSamplers( 0, 1, &m_pTexSamplerState );
+	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
 
 	CubeShader.use(pD3D11DeviceContext);
 	pD3D11DeviceContext->DrawIndexed(m_IndexCount, 0, 0);
@@ -211,9 +209,6 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 
 	// Create the texture sampler state.
 	hr = pD3D11Device->CreateSamplerState(&samplerDesc, &m_pTexSamplerState);
-	DebugHR(hr);
-
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/stone01.dds", NULL,NULL, &m_pTexture, NULL);
 	DebugHR(hr);
 
 	return true;

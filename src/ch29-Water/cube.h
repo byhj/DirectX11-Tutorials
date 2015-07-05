@@ -1,3 +1,6 @@
+#ifdef _WIN32
+#define _XM_NO_INTRINSICS_
+#endif 
 
 #include "d3d/d3dApp.h"
 #include <d3d/d3dShader.h>

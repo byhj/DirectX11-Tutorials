@@ -194,6 +194,7 @@ void D3DRenderSystem::v_Render()
 	UpdateScene();
 	Model = XMMatrixIdentity();
 	View  = camera.GetViewMatrix();
+	m_pD3D11DeviceContext->RSSetState(m_pRasterState);
 	object.Render(m_pD3D11DeviceContext, Model, View, Proj);
 
 	TurnOffAlphaBlending();
@@ -350,6 +351,25 @@ bool D3DRenderSystem::init_device()
 	blendStateDescription.RenderTarget[0].BlendEnable = FALSE;
 	hr = m_pD3D11Device->CreateBlendState(&blendStateDescription, &m_pAlphaDisableState);
 	DebugHR(hr);
+
+
+	//////////////////////////////////////////////////////////////////////////////////
+	// Setup the raster description which will determine how and what polygons will be drawn.
+	D3D11_RASTERIZER_DESC rasterDesc;
+	rasterDesc.AntialiasedLineEnable = false;
+	rasterDesc.CullMode = D3D11_CULL_BACK;
+	rasterDesc.DepthBias = 0;
+	rasterDesc.DepthBiasClamp = 0.0f;
+	rasterDesc.DepthClipEnable = true;
+	rasterDesc.FillMode = D3D11_FILL_WIREFRAME;
+	rasterDesc.FrontCounterClockwise = false;
+	rasterDesc.MultisampleEnable = false;
+	rasterDesc.ScissorEnable = false;
+	rasterDesc.SlopeScaledDepthBias = 0.0f;
+
+	// Create the rasterizer state from the description we just filled out.
+	hr = m_pD3D11Device->CreateRasterizerState(&rasterDesc, &m_pRasterState);
+    DebugHR(hr);
 
 	////////////////////////////////////////////////////////////////////////////////////
 	unsigned int numModes, i, numerator, denominator, stringLength;

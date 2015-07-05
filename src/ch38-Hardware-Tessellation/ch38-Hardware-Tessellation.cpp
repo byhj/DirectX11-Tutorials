@@ -187,6 +187,7 @@ void D3DRenderSystem::v_Render()
 	UpdateScene();
 	Model = XMMatrixIdentity();
 	View  = camera.GetViewMatrix();
+		m_pD3D11DeviceContext->RSSetState(m_pRasterState);
 	cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
 
 	DrawMessage();
@@ -321,6 +322,24 @@ bool D3DRenderSystem::init_device()
 	hr = m_pD3D11Device->CreateDepthStencilState(&depthDisabledStencilDesc, &m_pDepthDisabledStencilState);
 	DebugHR(hr);
 
+	//////////////////////////////////////////////////////////////////
+	// Setup the raster description which will determine how and what polygons will be drawn.
+	D3D11_RASTERIZER_DESC rasterDesc;
+	rasterDesc.AntialiasedLineEnable = false;
+	rasterDesc.CullMode = D3D11_CULL_BACK;
+	rasterDesc.DepthBias = 0;
+	rasterDesc.DepthBiasClamp = 0.0f;
+	rasterDesc.DepthClipEnable = true;
+	rasterDesc.FillMode = D3D11_FILL_WIREFRAME;
+	rasterDesc.FrontCounterClockwise = false;
+	rasterDesc.MultisampleEnable = false;
+	rasterDesc.ScissorEnable = false;
+	rasterDesc.SlopeScaledDepthBias = 0.0f;
+
+	// Create the rasterizer state from the description we just filled out.
+	hr = m_pD3D11Device->CreateRasterizerState(&rasterDesc, &m_pRasterState);
+	DebugHR(hr)
+		/////////////////////////////////////////////////////////////////
 	unsigned int numModes, i, numerator, denominator, stringLength;
 	IDXGIFactory* factory;
 	IDXGIAdapter* adapter;
@@ -366,6 +385,7 @@ void D3DRenderSystem::init_object()
 	cube.init_shader(m_pD3D11Device, GetHwnd());
 	font.init(m_pD3D11Device);
 
+	camera.SetRadius(3.0f);
 	timer.Reset();
 }
 

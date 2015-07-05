@@ -39,28 +39,30 @@ public:
 		UpdateScene();
 		Model = XMMatrixIdentity();
 		View  = camera.GetViewMatrix();
-		//Proj  = camera.GetProjMatrix();
-		D3DXVECTOR4 bgColor = D3DXVECTOR4(0.5f, 0.5f, 0.5f, 1.0f);
+
+
+
+		D3DXVECTOR4 bgColor = D3DXVECTOR4(0.0f, 0.0f, 0.0f, 1.0f);
 		m_pD3D11DeviceContext->ClearRenderTargetView(pRenderTargetView, bgColor);
 		m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 		//render to texture
+		XMFLOAT3 camPos = camera.GetPos();
+		camPos.y =  -camPos.y ;
+		XMVECTOR pos    = XMLoadFloat3(&camPos);
+		XMVECTOR target = XMVectorZero();
+		XMVECTOR up     = XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);
+		XMMATRIX reflectMat = XMMatrixLookAtLH(pos, target, up);
+
 		m_pD3D11DeviceContext->OMSetRenderTargets(1, &pRenderTargetView, m_pDepthStencilView);
-		cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
-
-
+		cube.Render(m_pD3D11DeviceContext, Model, reflectMat, Proj);
 
 		BeginScene();
 
 		//Set normal render target view
 		m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
 		cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
-		XMFLOAT3 camPos = camera.GetPos();
-		camPos.y = -camPos.y;
-		XMVECTOR pos    = XMLoadFloat3(&camPos);
-		XMVECTOR target = XMVectorZero();
-		XMVECTOR up     = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-		XMMATRIX reflectMat = XMMatrixLookAtLH(pos, target, up);
+
         reflect.Render(m_pD3D11DeviceContext, pShaderResourceView, Model, View, Proj, reflectMat);
 
 		DrawMessage();
@@ -362,8 +364,8 @@ void D3DRenderSystem::init_rtt()
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
 
 	ZeroMemory(&textureDesc, sizeof(textureDesc));
-	textureDesc.Width            = 600;
-	textureDesc.Height           = 600;
+	textureDesc.Width            = m_ScreenWidth;
+	textureDesc.Height           = m_ScreenHeight;
 	textureDesc.MipLevels        = 1;
 	textureDesc.ArraySize        = 1;
 	textureDesc.Format           = DXGI_FORMAT_R32G32B32A32_FLOAT;
@@ -407,7 +409,7 @@ void D3DRenderSystem::TurnZBufferOff()
 
 void  D3DRenderSystem::BeginScene()
 {
-	D3DXVECTOR4 bgColor = D3DXVECTOR4(0.2f, 0.3f, 0.4f, 1.0f);
+	D3DXVECTOR4 bgColor = D3DXVECTOR4(0.0f, 0.0f, 0.0f, 1.0f);
 
 	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
 	m_pD3D11DeviceContext->OMSetBlendState(NULL, NULL, 0XFFFFFFFF);
