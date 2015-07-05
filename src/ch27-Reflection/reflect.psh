@@ -22,7 +22,8 @@ float4 PS(VS_OUT ps_in) : SV_TARGET
 	 float4 reflectTexColor = reflectTex.Sample( texState, reflectTexCoord ); 
 
 	 //Finally we blend the texture from the floor with the reflection texture 
-	 float pixelColor = lerp(texColor, reflectTexColor, 0.5f);
 
-	 return pixelColor;
+	 float4 pixelColor = lerp(texColor, reflectTexColor, 0.35f);
+	
+	 return pixelColor ;
 }
