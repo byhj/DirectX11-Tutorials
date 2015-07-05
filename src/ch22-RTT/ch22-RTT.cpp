@@ -135,8 +135,8 @@ bool D3DRenderSystem::v_InitD3D()
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
 
 	ZeroMemory(&textureDesc, sizeof(textureDesc));
-	textureDesc.Width = 600;
-	textureDesc.Height = 600;
+	textureDesc.Width = m_ScreenWidth;
+	textureDesc.Height = m_ScreenHeight;
 	textureDesc.MipLevels  = 1;
 	textureDesc.ArraySize = 1;
 	textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
@@ -188,7 +188,7 @@ void D3DRenderSystem::v_Render()
 	UpdateScene();
 	Model = XMMatrixRotationY(rot);
 	View  = camera.GetViewMatrix();
-	//Proj  = camera.GetProjMatrix();
+
 	D3DXVECTOR4 bgColor = D3DXVECTOR4(0.5f, 0.5f, 0.5f, 1.0f);
 
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, &pRenderTargetView, m_pDepthStencilView);
@@ -207,10 +207,10 @@ void D3DRenderSystem::v_Render()
 	TurnZBufferOff();
 
 	// Create an orthographic projection matrix for 2D rendering. 
-	Model = XMMatrixScaling(0.001, 0.001, 0.001);
-	View = XMMatrixOrthographicLH((float)m_ScreenWidth, (float)m_ScreenHeight, 0.1f, 1000.0f);
+	Model = XMMatrixIdentity();
+	XMMATRIX tProj = XMMatrixOrthographicLH(m_ScreenWidth, m_ScreenHeight, 1.0f, 1000.0f);
 
-	d3dRtt.Render(m_pD3D11DeviceContext, pShaderResourceView, Model, View, Proj);
+	d3dRtt.Render(m_pD3D11DeviceContext, pShaderResourceView, Model, View, tProj);
 	
 	TurnZBufferOn();
 
@@ -390,10 +390,10 @@ void D3DRenderSystem::init_object()
 	cube.init_shader(m_pD3D11Device, GetHwnd());
 	font.init(m_pD3D11Device);
 
-	d3dRtt.init_window(400, 1000, 600, 600);
+	d3dRtt.init_window(400.0f / m_ScreenWidth * 2.0f, 400.0f / m_ScreenHeight * 2.0f,
+		               200.0f * GetAspect() / m_ScreenWidth * 2.0f, 200.0f / m_ScreenHeight * 2.0f, GetAspect());
 	d3dRtt.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
 	d3dRtt.init_shader(m_pD3D11Device, GetHwnd());
-	camera.SetRadius(5.0f);
 
 	camera.SetRadius(5.0f);
 

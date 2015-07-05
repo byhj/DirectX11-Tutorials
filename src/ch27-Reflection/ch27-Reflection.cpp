@@ -56,10 +56,10 @@ public:
 		m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
 		cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
 		XMFLOAT3 camPos = camera.GetPos();
-		camPos.y = -camPos.y;
+
 		XMVECTOR pos    = XMLoadFloat3(&camPos);
 		XMVECTOR target = XMVectorZero();
-		XMVECTOR up     = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+		XMVECTOR up     = XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);
 		XMMATRIX reflectMat = XMMatrixLookAtLH(pos, target, up);
         reflect.Render(m_pD3D11DeviceContext, pShaderResourceView, Model, View, Proj, reflectMat);
 

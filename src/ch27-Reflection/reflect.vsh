@@ -9,15 +9,15 @@ cbuffer MatrixBuffer : register(b0)
 
 struct VS_IN
 {
-   float4 Pos    :POSITION;
-   float2 Tex    :TEXCOORD;
-   float3 Normal :NORMAL;
+   float4 Pos    : POSITION;
+   float2 Tex    : TEXCOORD;
+   float3 Normal : NORMAL;
 };
 
 struct VS_OUT
 {
-  float4 Pos        :SV_POSITION;
-  float2 Tex        :TEXCOORD;
+  float4 Pos        : SV_POSITION;
+  float2 Tex        : TEXCOORD;
   float4 ReflectPos : TEXCOORD1;
 };
 

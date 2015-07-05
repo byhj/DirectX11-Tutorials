@@ -28,7 +28,7 @@ public:
 			ReleaseCOM(m_pIndexBuffer       )
 	}
 
-	void init_window(int ScreenWidth , int ScreenHeight, int BitmapWidth, int BitmapHeight);
+	void init_window(float posX, float posY, float width, float height, float aspect);
 	bool init_buffer (ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext);
 	bool init_shader (ID3D11Device *pD3D11Device, HWND hWnd);
 
@@ -60,11 +60,11 @@ private:
 	int m_VertexCount;
 	int m_IndexCount;
 
-    int m_posX  ;
-	int m_posY  ; 
-	int m_width ; 
-	int m_height;
-
+    float m_posX  ;
+	float m_posY  ; 
+	float m_width ; 
+	float m_height;
+	float m_aspect;
 	Shader D3DRTTShader;
 };
 
