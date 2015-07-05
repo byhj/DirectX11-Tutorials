@@ -1,5 +1,4 @@
 
-#include "d3d/d3dApp.h"
 #include <d3d/d3dShader.h>
 
 class Cube

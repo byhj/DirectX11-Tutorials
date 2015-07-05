@@ -361,7 +361,7 @@ bool D3DRenderSystem::init_device()
 	rasterDesc.DepthBias = 0;
 	rasterDesc.DepthBiasClamp = 0.0f;
 	rasterDesc.DepthClipEnable = true;
-	rasterDesc.FillMode = D3D11_FILL_WIREFRAME;
+	rasterDesc.FillMode = D3D11_FILL_SOLID;
 	rasterDesc.FrontCounterClockwise = false;
 	rasterDesc.MultisampleEnable = false;
 	rasterDesc.ScissorEnable = false;
@@ -417,6 +417,7 @@ void D3DRenderSystem::init_object()
 	object.init_shader(m_pD3D11Device, GetHwnd());
 	font.init(m_pD3D11Device);
 
+	camera.SetRadius(3.0f);
 	timer.Reset();
 }
 
@@ -439,10 +440,10 @@ void  D3DRenderSystem::BeginScene()
 {
 	D3DXVECTOR4 bgColor = D3DXVECTOR4(0.0f, 0.0f, 0.0f, 1.0f);
 
-	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
+	//m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
 	//m_pD3D11DeviceContext->OMSetBlendState(NULL, NULL, 0XFFFFFFFF);
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
-	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	//m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 	return;
 }

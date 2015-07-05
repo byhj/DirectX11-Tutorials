@@ -2,7 +2,7 @@
 #define PARTICLE_H
 
 #include "d3d/d3dApp.h"
-#include "D3DShader.h"
+#include "d3d/d3dShader.h"
 
 class Particle
 {

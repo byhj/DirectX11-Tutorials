@@ -283,7 +283,6 @@ bool Object::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11
 
 	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/fire01.dds", NULL,NULL, &m_pTextures[0], NULL);
 	DebugHR(hr);
-
 	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/noise01.dds", NULL,NULL, &m_pTextures[1], NULL);
 	DebugHR(hr);
 	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/alpha01.dds", NULL,NULL, &m_pTextures[2], NULL);
