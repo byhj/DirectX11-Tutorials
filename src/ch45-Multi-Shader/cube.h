@@ -1,6 +1,8 @@
 
-#include "d3d/d3dApp.h"
-#include <d3d/d3dShader.h>
+#include "d3d/d3dShader.h"
+#include "d3d/d3dDebug.h"
+#include <vector>
+#include <xnamath.h>
 
 class Cube
 {
@@ -12,8 +14,7 @@ public:
 		m_pLightBuffer        = NULL;
 		m_pVertexBuffer       = NULL;
 		m_pIndexBuffer        = NULL;
-		m_pTextures[0]        = NULL;
-		m_pTextures[1]        = NULL;
+		m_pTexture            = NULL;
 	}
 
 	void Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMMATRIX &Model,  
@@ -28,12 +29,13 @@ public:
 			ReleaseCOM(m_pIndexBuffer       )
 	}
 
-	bool LoadModel(char *modelFile);
+	bool load_model(char *modelFile);
+	bool load_obj(char *objFile);
 	bool init_buffer (ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext);
 	bool init_shader (ID3D11Device *pD3D11Device, HWND hWnd);
-	void init_texture(ID3D11Device *pD3D11Device, LPCWSTR texFile, ID3D11ShaderResourceView *m_pTexture);
-private:
+	void init_texture(ID3D11Device *pD3D11Device, LPCWSTR texFile);
 
+private:
 	struct CameraBuffer
 	{
 		D3DXVECTOR3 camPos;
@@ -59,35 +61,13 @@ private:
 	};
 	LightBuffer cbLight;
 
-	struct VertexType
+	struct  Vertex
 	{
-		D3DXVECTOR3 position;
-		D3DXVECTOR2 texture;
-		D3DXVECTOR3 normal;
-		D3DXVECTOR3 tangent;
-		D3DXVECTOR3 binormal;
+		D3DXVECTOR3 Position;
+		D3DXVECTOR2 TexCoord;
+		D3DXVECTOR3 Normal;
 	};
 
-	struct ModelType
-	{
-		float x, y, z;
-		float tu, tv;
-		float nx, ny, nz;
-		float tx, ty, tz;
-		float bx, by, bz;
-	};
-
-	struct TempVertexType
-	{
-		float x, y, z;
-		float tu, tv;
-		float nx, ny, nz;
-	};
-
-	struct VectorType
-	{
-		float x, y, z;
-	};
 	struct ModelVertex
 	{
 		float x, y , z;
@@ -102,20 +82,17 @@ private:
 	ID3D11Buffer             *m_CameraBuffer;
 	ID3D11Buffer             *m_pVertexBuffer;
 	ID3D11Buffer             *m_pIndexBuffer;
-	ID3D11ShaderResourceView *m_pTextures[2];
+	ID3D11ShaderResourceView *m_pTexture;
 	ID3D11SamplerState       *m_pTexSamplerState;
 	ID3D11InputLayout        *m_pInputLayout;
 
 
 	int m_VertexCount;
 	int m_IndexCount;
-	ModelType  *pModelVertex;
+	std::vector<Vertex> VertexData;
+	std::vector<unsigned int> IndexData;
+
 	Shader CubeShader;
-
-	void CalculateModelVectors();
-	void CalculateTangentBinormal(TempVertexType, TempVertexType, TempVertexType, VectorType&, VectorType&);
-	void CalculateNormal(VectorType, VectorType, VectorType&);
-
 };
 
 
@@ -131,13 +108,13 @@ void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMMATRIX &Mode
 
 	unsigned int stride;
 	unsigned int offset;
-	stride = sizeof(VertexType); 
+	stride = sizeof(Vertex); 
 	offset = 0;
 
 	pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
 	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    pD3D11DeviceContext->PSSetShaderResources(0, 2, m_pTextures);  
+	pD3D11DeviceContext->PSSetShaderResources( 0, 1, &m_pTexture );
 	pD3D11DeviceContext->PSSetSamplers( 0, 1, &m_pTexSamplerState );
 
 	CubeShader.use(pD3D11DeviceContext);
@@ -150,42 +127,12 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	HRESULT hr;
 
 	///////////////////////////Index Buffer ////////////////////////////////
-	LoadModel("../../media/objects/cube.txt");
-	CalculateModelVectors();
-
-	VertexType *VertexData;
-	unsigned long *IndexData;
-	HRESULT result;
-	int VertexCount = 36;
-	int IndexCount = 36;
-
-	VertexData = new VertexType[VertexCount];
-	if (!VertexData)
-	{
-		return false;
-	}
-
-	IndexData = new unsigned long[IndexCount];
-	if (!IndexData)
-	{
-		return false;
-	}
-
-	for (int i = 0; i != VertexCount; ++i)
-	{
-		VertexData[i].position = D3DXVECTOR3(pModelVertex[i].x, pModelVertex[i].y, pModelVertex[i].z);
-		VertexData[i].texture = D3DXVECTOR2(pModelVertex[i].tu, pModelVertex[i].tv);
-		VertexData[i].normal = D3DXVECTOR3(pModelVertex[i].nx, pModelVertex[i].ny, pModelVertex[i].nz);
-		VertexData[i].tangent = D3DXVECTOR3(pModelVertex[i].tx, pModelVertex[i].ty, pModelVertex[i].tz);
-		VertexData[i].binormal = D3DXVECTOR3(pModelVertex[i].bx, pModelVertex[i].by, pModelVertex[i].bz);
-
- 		IndexData[i] = i;
-	}
+	load_obj("../../media/objects/cube.obj");
 
 	// Set up the description of the static vertex buffer.
 	D3D11_BUFFER_DESC VertexBufferDesc;
 	VertexBufferDesc.Usage               = D3D11_USAGE_DEFAULT;
-	VertexBufferDesc.ByteWidth           = sizeof(VertexType) * VertexCount;
+	VertexBufferDesc.ByteWidth           = sizeof(Vertex) * m_VertexCount;
 	VertexBufferDesc.BindFlags           = D3D11_BIND_VERTEX_BUFFER;
 	VertexBufferDesc.CPUAccessFlags      = 0;
 	VertexBufferDesc.MiscFlags           = 0;
@@ -193,7 +140,7 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 
 	// Give the subresource structure a pointer to the vertex data.
 	D3D11_SUBRESOURCE_DATA VBO;
-	VBO.pSysMem          = VertexData;
+	VBO.pSysMem          = &VertexData[0];
 	VBO.SysMemPitch      = 0;
 	VBO.SysMemSlicePitch = 0;
 
@@ -206,7 +153,7 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	// Set up the description of the static index buffer.
 	D3D11_BUFFER_DESC IndexBufferDesc;
 	IndexBufferDesc.Usage               = D3D11_USAGE_DEFAULT;
-	IndexBufferDesc.ByteWidth           = sizeof(unsigned long) * IndexCount;
+	IndexBufferDesc.ByteWidth           = sizeof(unsigned long) * m_IndexCount;
 	IndexBufferDesc.BindFlags           = D3D11_BIND_INDEX_BUFFER;
 	IndexBufferDesc.CPUAccessFlags      = 0;
 	IndexBufferDesc.MiscFlags           = 0;
@@ -214,7 +161,7 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 
 	// Give the subresource structure a pointer to the index data.
 	D3D11_SUBRESOURCE_DATA IBO;
-	IBO.pSysMem          = IndexData;
+	IBO.pSysMem          = &IndexData[0];
 	IBO.SysMemPitch      = 0;
 	IBO.SysMemSlicePitch = 0;
 
@@ -254,9 +201,9 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	// Get a pointer to the data in the constant buffer.
 	LightBuffer *dataPtr2 = (LightBuffer*)mappedResource.pData;
 
-	dataPtr2->ambientColor   = D3DXVECTOR4(0.35f, 0.35f, 0.35f, 0.15f);
+	dataPtr2->ambientColor   = D3DXVECTOR4(0.75f, 0.75f, 0.75f, 1.0f);
 	dataPtr2->diffuseColor   = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f);
-	dataPtr2->lightDirection = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	dataPtr2->lightDirection = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
 	dataPtr2->specularPower  = 32.0f;
 	dataPtr2->specularColor  = D3DXVECTOR4(0.0f, 0.0f, 1.0f, 1.0f);
 
@@ -265,31 +212,54 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	int lightSlot = 0;
 	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, &m_pLightBuffer);
 
+	return true;
+}
 
-	D3D11_BUFFER_DESC cameraBufferDesc;
-	cameraBufferDesc.Usage               = D3D11_USAGE_DYNAMIC;
-	cameraBufferDesc.ByteWidth           = sizeof(CameraBuffer);
-	cameraBufferDesc.BindFlags           = D3D11_BIND_CONSTANT_BUFFER;
-	cameraBufferDesc.CPUAccessFlags      = D3D11_CPU_ACCESS_WRITE;
-	cameraBufferDesc.MiscFlags           = 0;
-	cameraBufferDesc.StructureByteStride = 0;
 
-	// Create the camera constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-	hr = pD3D11Device->CreateBuffer(&cameraBufferDesc, NULL, &m_CameraBuffer);
+bool Cube::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
+{
+	HRESULT result;
+
+	D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc[3];
+	pInputLayoutDesc[0].SemanticName         = "POSITION";
+	pInputLayoutDesc[0].SemanticIndex        = 0;
+	pInputLayoutDesc[0].Format               = DXGI_FORMAT_R32G32B32_FLOAT;
+	pInputLayoutDesc[0].InputSlot            = 0;
+	pInputLayoutDesc[0].AlignedByteOffset    = 0;
+	pInputLayoutDesc[0].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc[0].InstanceDataStepRate = 0;
+
+	pInputLayoutDesc[1].SemanticName         = "TEXCOORD";
+	pInputLayoutDesc[1].SemanticIndex        = 0;
+	pInputLayoutDesc[1].Format               = DXGI_FORMAT_R32G32_FLOAT;
+	pInputLayoutDesc[1].InputSlot            = 0;
+	pInputLayoutDesc[1].AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
+	pInputLayoutDesc[1].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc[1].InstanceDataStepRate = 0;
+
+	pInputLayoutDesc[2].SemanticName         = "NORMAL";
+	pInputLayoutDesc[2].SemanticIndex        = 0;
+	pInputLayoutDesc[2].Format               = DXGI_FORMAT_R32G32B32_FLOAT;
+	pInputLayoutDesc[2].InputSlot            = 0;
+	pInputLayoutDesc[2].AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
+	pInputLayoutDesc[2].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc[2].InstanceDataStepRate = 0;
+
+	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
+
+	CubeShader.init(pD3D11Device, hWnd);
+	CubeShader.attachVS(L"cube.vsh", pInputLayoutDesc, numElements);
+	CubeShader.attachPS(L"cube.psh");
+	CubeShader.end();
+
+	return true;
+}
+
+void Cube::init_texture(ID3D11Device *pD3D11Device, LPCWSTR texFile)
+{
+	HRESULT hr;
+	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, texFile, NULL,NULL, &m_pTexture, NULL);
 	DebugHR(hr);
-
-	// Lock the camera constant buffer so it can be written to.
-	hr = pD3D11DeviceContext->Map(m_CameraBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	DebugHR(hr);
-
-	// Get a pointer to the data in the constant buffer.
-	CameraBuffer *dataPtr3 = (CameraBuffer*)mappedResource.pData;
-	dataPtr3->camPos = D3DXVECTOR3(0.0f, 0.0f, -3.0f);
-	dataPtr3->padding = 0.0f;
-	pD3D11DeviceContext->Unmap(m_CameraBuffer, 0);
-
-	int bufferSlot = 1;
-	pD3D11DeviceContext->VSSetConstantBuffers( bufferSlot, 1, &m_CameraBuffer);
 
 	// Create a texture sampler state description.
 	D3D11_SAMPLER_DESC samplerDesc;
@@ -311,71 +281,9 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	hr = pD3D11Device->CreateSamplerState(&samplerDesc, &m_pTexSamplerState);
 	DebugHR(hr);
 
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/stone01.dds", NULL,NULL, &m_pTextures[0], NULL);
-	DebugHR(hr);
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/bump01.dds", NULL,NULL, &m_pTextures[1], NULL);
-	DebugHR(hr);
-
-	return true;
 }
 
-
-bool Cube::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
-{
-	HRESULT result;
-
-	D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc[5];
-	pInputLayoutDesc[0].SemanticName = "POSITION";
-	pInputLayoutDesc[0].SemanticIndex = 0;
-	pInputLayoutDesc[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	pInputLayoutDesc[0].InputSlot = 0;
-	pInputLayoutDesc[0].AlignedByteOffset = 0;
-	pInputLayoutDesc[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[0].InstanceDataStepRate = 0;
-
-	pInputLayoutDesc[1].SemanticName = "TEXCOORD";
-	pInputLayoutDesc[1].SemanticIndex = 0;
-	pInputLayoutDesc[1].Format = DXGI_FORMAT_R32G32_FLOAT;
-	pInputLayoutDesc[1].InputSlot = 0;
-	pInputLayoutDesc[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	pInputLayoutDesc[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[1].InstanceDataStepRate = 0;
-
-	pInputLayoutDesc[2].SemanticName = "NORMAL";
-	pInputLayoutDesc[2].SemanticIndex = 0;
-	pInputLayoutDesc[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	pInputLayoutDesc[2].InputSlot = 0;
-	pInputLayoutDesc[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	pInputLayoutDesc[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[2].InstanceDataStepRate = 0;
-
-	pInputLayoutDesc[3].SemanticName = "TANGENT";
-	pInputLayoutDesc[3].SemanticIndex = 0;
-	pInputLayoutDesc[3].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	pInputLayoutDesc[3].InputSlot = 0;
-	pInputLayoutDesc[3].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	pInputLayoutDesc[3].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[3].InstanceDataStepRate = 0;
-
-	pInputLayoutDesc[4].SemanticName = "BINORMAL";
-	pInputLayoutDesc[4].SemanticIndex = 0;
-	pInputLayoutDesc[4].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	pInputLayoutDesc[4].InputSlot = 0;
-	pInputLayoutDesc[4].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	pInputLayoutDesc[4].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[4].InstanceDataStepRate = 0;
-
-	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
-
-	CubeShader.init(pD3D11Device, hWnd);
-	CubeShader.attachVS(L"cube.vsh", pInputLayoutDesc, numElements);
-	CubeShader.attachPS(L"cube.psh");
-	CubeShader.end();
-
-	return true;
-}
-
-bool Cube::LoadModel(char *modelFile)
+bool Cube::load_model(char *modelFile)
 {
 	std::ifstream fin;
 	char ch;
@@ -397,8 +305,8 @@ bool Cube::LoadModel(char *modelFile)
 	fin >> m_VertexCount;
 	m_IndexCount = m_VertexCount;
 
-	pModelVertex  = new ModelType[m_VertexCount];
-	if (!pModelVertex)
+	m_pModelVertex  = new ModelVertex[m_VertexCount];
+	if (!m_pModelVertex)
 	{
 		return false;
 	}
@@ -412,175 +320,108 @@ bool Cube::LoadModel(char *modelFile)
 
 	for (int i = 0; i != m_VertexCount; ++i)
 	{
-		fin >> pModelVertex[i].x  >> pModelVertex[i].y >> pModelVertex[i].z;
-		fin >> pModelVertex[i].tu  >> pModelVertex[i].tv;
-		fin >> pModelVertex[i].nx >> pModelVertex[i].ny >> pModelVertex[i].nz;
+		fin >> m_pModelVertex[i].x  >> m_pModelVertex[i].y >> m_pModelVertex[i].z;
+		fin >> m_pModelVertex[i].u  >> m_pModelVertex[i].v;
+		fin >> m_pModelVertex[i].nx >> m_pModelVertex[i].ny >> m_pModelVertex[i].nz;
 	}
 	fin.close();
 
 	return true;
-
 }
 
-void Cube::CalculateModelVectors()
+bool Cube::load_obj(char *objFile)
 {
-	int faceCount, i, index;
-	TempVertexType vertex1, vertex2, vertex3;
-	VectorType tangent, binormal, normal;
+	std::ifstream fin;
+	char ch;
+	fin.open(objFile);
 
-
-	// Calculate the number of faces in the model.
-	faceCount = m_VertexCount / 3;
-
-	// Initialize the index to the model data.
-	index = 0;
-
-	// Go through all the faces and calculate the the tangent, binormal, and normal vectors.
-	for(i=0; i<faceCount; i++)
+	if (fin.fail())
 	{
-		// Get the three vertices for this face from the model.
-		vertex1.x  = pModelVertex[index].x;
-		vertex1.y  = pModelVertex[index].y;
-		vertex1.z  = pModelVertex[index].z;
-		vertex1.tu = pModelVertex[index].tu;
-		vertex1.tv = pModelVertex[index].tv;
-		vertex1.nx = pModelVertex[index].nx;
-		vertex1.ny = pModelVertex[index].ny;
-		vertex1.nz = pModelVertex[index].nz;
-		index++;
-
-		vertex2.x = pModelVertex[index].x;
-		vertex2.y = pModelVertex[index].y;
-		vertex2.z = pModelVertex[index].z;
-		vertex2.tu = pModelVertex[index].tu;
-		vertex2.tv = pModelVertex[index].tv;
-		vertex2.nx = pModelVertex[index].nx;
-		vertex2.ny = pModelVertex[index].ny;
-		vertex2.nz = pModelVertex[index].nz;
-		index++;
-
-		vertex3.x = pModelVertex[index].x;
-		vertex3.y = pModelVertex[index].y;
-		vertex3.z = pModelVertex[index].z;
-		vertex3.tu = pModelVertex[index].tu;
-		vertex3.tv = pModelVertex[index].tv;
-		vertex3.nx = pModelVertex[index].nx;
-		vertex3.ny = pModelVertex[index].ny;
-		vertex3.nz = pModelVertex[index].nz;
-		index++;
-
-		// Calculate the tangent and binormal of that face.
-		CalculateTangentBinormal(vertex1, vertex2, vertex3, tangent, binormal);
-
-		// Calculate the new normal using the tangent and binormal.
-		CalculateNormal(tangent, binormal, normal);
-
-		// Store the normal, tangent, and binormal for this face back in the model structure.
-		pModelVertex[index-1].nx = normal.x;
-		pModelVertex[index-1].ny = normal.y;
-		pModelVertex[index-1].nz = normal.z;
-		pModelVertex[index-1].tx = tangent.x;
-		pModelVertex[index-1].ty = tangent.y;
-		pModelVertex[index-1].tz = tangent.z;
-		pModelVertex[index-1].bx = binormal.x;
-		pModelVertex[index-1].by = binormal.y;
-		pModelVertex[index-1].bz = binormal.z;
-
-		pModelVertex[index-2].nx = normal.x;
-		pModelVertex[index-2].ny = normal.y;
-		pModelVertex[index-2].nz = normal.z;
-		pModelVertex[index-2].tx = tangent.x;
-		pModelVertex[index-2].ty = tangent.y;
-		pModelVertex[index-2].tz = tangent.z;
-		pModelVertex[index-2].bx = binormal.x;
-		pModelVertex[index-2].by = binormal.y;
-		pModelVertex[index-2].bz = binormal.z;
-
-		pModelVertex[index-3].nx = normal.x;
-		pModelVertex[index-3].ny = normal.y;
-		pModelVertex[index-3].nz = normal.z;
-		pModelVertex[index-3].tx = tangent.x;
-		pModelVertex[index-3].ty = tangent.y;
-		pModelVertex[index-3].tz = tangent.z;
-		pModelVertex[index-3].bx = binormal.x;
-		pModelVertex[index-3].by = binormal.y;
-		pModelVertex[index-3].bz = binormal.z;
+		MessageBox(NULL, L"Can not open the Model File", L"Error", MB_OK | MB_ICONERROR);
 	}
 
-	return;
-}
-void Cube::CalculateTangentBinormal(TempVertexType vertex1, TempVertexType vertex2, TempVertexType vertex3,
-										  VectorType& tangent, VectorType& binormal)
-{
-	float vector1[3], vector2[3];
-	float tuVector[2], tvVector[2];
-	float den;
-	float length;
+	// Read in the vertices, texture coordinates, and normals into the data structures.
+	// Important: Also convert to left hand coordinate system since Maya uses right hand coordinate system.
+	fin.get(ch);
+	Vertex vt;
+	D3DXVECTOR3 Pos;
+	D3DXVECTOR2 Tex;
+	D3DXVECTOR3 Normal;
+	std::vector<D3DXVECTOR3> vPos;
+	std::vector<D3DXVECTOR2> vTex;
+	std::vector<D3DXVECTOR3> vNormal;
+	std::vector<unsigned int> vPosIndex;
+	std::vector<unsigned int> vTexIndex;
+	std::vector<unsigned int> vNormalIndex;
+	unsigned int a[3], b[3], c[3];
+	char ct;
 
+	while ( !fin.eof() )
+	{
+		if (ch == 'v')
+		{
+			fin.get(ch);
+			if (ch == ' ')
+			{
+				fin >> Pos.x >> Pos.y >> Pos.z;
+				Pos.z *= -1.0f;
+				vPos.push_back(Pos);
+			}
+			if (ch == 't')
+			{
+				fin >> Tex.x >> Tex.y;
+				Tex.y = 1.0f - Tex.y;
+				vTex.push_back(Tex);
+			}
+			if (ch == 'n')
+			{
+				fin >> Normal.x >> Normal.y >> Normal.z;
+				//obj is right hand, convert to lefe hand
+				Normal.z *= -1.0f;
+				vNormal.push_back(Normal);
+			}
+		}
+		if (ch == 'f')
+		{
+			fin.get(ch);
+			if (ch == ' ')
+			{
+				for (int i = 0; i != 3; ++i)
+				{
+					fin >> a[i] >> ct >> b[i] >> ct >> c[i];
+				}
+				//After convert, Triangle mode is CCW, so is not show!!
+				//So, we should convert the index order too!!
+				for (int i = 2; i >= 0; --i)
+				{
+					vPosIndex.push_back(a[i]);
+					vTexIndex.push_back(b[i]);
+					vNormalIndex.push_back(c[i]);
+				}
 
-	// Calculate the two vectors for this face.
-	vector1[0] = vertex2.x - vertex1.x;
-	vector1[1] = vertex2.y - vertex1.y;
-	vector1[2] = vertex2.z - vertex1.z;
+			}
+		}
+		// Read in the remainder of the line.
+		while(ch != '\n')
+		{
+			fin.get(ch);
+		}
 
-	vector2[0] = vertex3.x - vertex1.x;
-	vector2[1] = vertex3.y - vertex1.y;
-	vector2[2] = vertex3.z - vertex1.z;
+		// Start reading the beginning of the next line.
+		fin.get(ch);
+	}//While
+	fin.close();
 
-	// Calculate the tu and tv texture space vectors.
-	tuVector[0] = vertex2.tu - vertex1.tu;
-	tvVector[0] = vertex2.tv - vertex1.tv;
+	for (int i = 0; i != vPosIndex.size(); ++i)
+	{
+		vt.Position = vPos[vPosIndex[i] - 1];
+		vt.TexCoord = vTex[vTexIndex[i] - 1];
+		vt.Normal   = vNormal[vNormalIndex[i] - 1];
+		VertexData.push_back(vt);
+		IndexData.push_back(i);
+	}
+	m_VertexCount = VertexData.size();
+	m_IndexCount = IndexData.size();
 
-	tuVector[1] = vertex3.tu - vertex1.tu;
-	tvVector[1] = vertex3.tv - vertex1.tv;
-
-	// Calculate the denominator of the tangent/binormal equation.
-	den = 1.0f / (tuVector[0] * tvVector[1] - tuVector[1] * tvVector[0]);
-
-	// Calculate the cross products and multiply by the coefficient to get the tangent and binormal.
-	tangent.x = (tvVector[1] * vector1[0] - tvVector[0] * vector2[0]) * den;
-	tangent.y = (tvVector[1] * vector1[1] - tvVector[0] * vector2[1]) * den;
-	tangent.z = (tvVector[1] * vector1[2] - tvVector[0] * vector2[2]) * den;
-
-	binormal.x = (tuVector[0] * vector2[0] - tuVector[1] * vector1[0]) * den;
-	binormal.y = (tuVector[0] * vector2[1] - tuVector[1] * vector1[1]) * den;
-	binormal.z = (tuVector[0] * vector2[2] - tuVector[1] * vector1[2]) * den;
-
-	// Calculate the length of this normal.
-	length = sqrt((tangent.x * tangent.x) + (tangent.y * tangent.y) + (tangent.z * tangent.z));
-
-	// Normalize the normal and then store it
-	tangent.x = tangent.x / length;
-	tangent.y = tangent.y / length;
-	tangent.z = tangent.z / length;
-
-	// Calculate the length of this normal.
-	length = sqrt((binormal.x * binormal.x) + (binormal.y * binormal.y) + (binormal.z * binormal.z));
-
-	// Normalize the normal and then store it
-	binormal.x = binormal.x / length;
-	binormal.y = binormal.y / length;
-	binormal.z = binormal.z / length;
-
-	return;
-}
-void Cube::CalculateNormal(VectorType tangent, VectorType binormal, VectorType& normal)
-{
-	float length;
-
-
-	// Calculate the cross product of the tangent and binormal which will give the normal vector.
-	normal.x = (tangent.y * binormal.z) - (tangent.z * binormal.y);
-	normal.y = (tangent.z * binormal.x) - (tangent.x * binormal.z);
-	normal.z = (tangent.x * binormal.y) - (tangent.y * binormal.x);
-
-	// Calculate the length of the normal.
-	length = sqrt((normal.x * normal.x) + (normal.y * normal.y) + (normal.z * normal.z));
-
-	// Normalize the normal.
-	normal.x = normal.x / length;
-	normal.y = normal.y / length;
-	normal.z = normal.z / length;
-
-	return;
+	return true;
 }

@@ -9,8 +9,8 @@
 #include "d3d/d3dTimer.h"
 #include "d3d/d3dCamera.h"
 
+#include "fade.h"
 #include "cube.h"
-#include "NormalCube.h"
 
 class D3DRenderSystem: public D3DApp
 {
@@ -88,10 +88,10 @@ private:
 	ID3D11RenderTargetView   *pRenderTargetView;
 	ID3D11ShaderResourceView *pShaderResourceView;
 
-	D3DFont font;
 	Cube cube;
-	NormalCube normalCube;
+	Fade fade;
 
+	D3DFont font;
 	D3DCamera camera;
 	D3DTimer timer;
 	int m_videoCardMemory;
@@ -183,23 +183,57 @@ bool D3DRenderSystem::v_InitD3D()
 
 void D3DRenderSystem::v_Render()
 {
-
 	static float rot = 0.0f;
 	rot +=  timer.GetDeltaTime();
 	UpdateScene();
 	Model = XMMatrixRotationY(rot);
 	View  = camera.GetViewMatrix();
 
-	BeginScene();
+	D3DXVECTOR4 bgColor = D3DXVECTOR4(0.2f, 0.3f, 0.4f, 1.0f);
 
-	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
+	m_pD3D11DeviceContext->OMSetRenderTargets(1, &pRenderTargetView, m_pDepthStencilView);
+	m_pD3D11DeviceContext->ClearRenderTargetView(pRenderTargetView, bgColor);
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-
-	Model = XMMatrixTranslation(-3.0f, 0.0f, 0.0f);
+	
 	cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
-	Model = XMMatrixTranslation(0.0f, 0.0f, 0.0f);
 
-	normalCube.Render(m_pD3D11DeviceContext, Model, View, Proj);
+	//Set normal render target view
+	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
+
+
+	static float fadeInTime = 3.0f;
+	static float accumulatedTime = 0.0f;
+	static float fadePercentage = 0.0f;
+	static bool fadeDone = false;
+
+	BeginScene();
+	if (fadeDone)
+	{
+	   cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
+	}
+	else 
+	{
+		TurnZBufferOff();
+
+		// Create an orthographic projection matrix for 2D rendering. 
+		Model =XMMatrixIdentity();
+		XMMATRIX TProj = XMMatrixOrthographicLH((float)m_ScreenWidth, (float)m_ScreenHeight, 0.1f, 1000.0f);
+
+		fade.Render(m_pD3D11DeviceContext, pShaderResourceView, Model, View, TProj, fadePercentage);
+
+		TurnZBufferOn();
+
+		accumulatedTime += timer.GetDeltaTime();
+		// While the time goes on increase the fade in amount by the time that is passing each frame.
+		if(accumulatedTime < fadeInTime)
+			fadePercentage = accumulatedTime / fadeInTime;
+		else
+		{
+			fadeDone = true;
+			// Set the percentage to 100%.
+			fadePercentage = 1.0f;
+		}
+	}
 	DrawMessage();
 	EndScene();
 }
@@ -374,14 +408,14 @@ void D3DRenderSystem::init_object()
 
 	cube.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
 	cube.init_shader(m_pD3D11Device, GetHwnd());
-	cube.init_texture(m_pD3D11Device, L"../../media/textures/ice.dds");
-
-	normalCube.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-	normalCube.init_shader(m_pD3D11Device, GetHwnd());
-
 	font.init(m_pD3D11Device);
 
-	camera.SetRadius(10.0f);
+	fade.init_window(-1.0f, 1.0f, 2.0f, 2.0f);
+
+	fade.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
+	fade.init_shader(m_pD3D11Device, GetHwnd());
+
+	camera.SetRadius(7.0f);
 
 	timer.Reset();
 }

@@ -79,6 +79,8 @@
   <ItemGroup>
     <None Include="cube.psh" />
     <None Include="cube.vsh" />
+    <None Include="normalCube.psh" />
+    <None Include="normalCube.vsh" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\include\d3d\d3dApp.cpp" />
@@ -100,6 +102,7 @@
     <ClInclude Include="..\..\include\d3d\d3dShader.h" />
     <ClInclude Include="..\..\include\d3d\d3dTimer.h" />
     <ClInclude Include="cube.h" />
+    <ClInclude Include="NormalCube.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

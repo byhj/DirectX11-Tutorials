@@ -24,11 +24,14 @@
     <None Include="cube.vsh">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="normalCube.psh">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="normalCube.vsh">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cube.h">
-      <Filter>Resource Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\d3d\d3dApp.h">
       <Filter>Framework</Filter>
     </ClInclude>
@@ -53,11 +56,14 @@
     <ClInclude Include="..\..\include\d3d\d3dRTT.h">
       <Filter>Framework</Filter>
     </ClInclude>
+    <ClInclude Include="NormalCube.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cube.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ch45-Multi-Shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\include\d3d\d3dApp.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
@@ -78,6 +84,9 @@
     </ClCompile>
     <ClCompile Include="..\..\include\d3d\d3dRTT.cpp">
       <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="ch45-Multi-Shader.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
