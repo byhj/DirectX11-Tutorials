@@ -35,16 +35,18 @@
     <ClInclude Include="..\..\include\d3d\d3dFrustum.h" />
     <ClInclude Include="..\..\include\d3d\d3dShader.h" />
     <ClInclude Include="..\..\include\d3d\d3dTimer.h" />
-    <ClInclude Include="cube.h" />
-    <ClInclude Include="reflect.h" />
+    <ClInclude Include="bath.h" />
+    <ClInclude Include="ground.h" />
+    <ClInclude Include="wall.h" />
+    <ClInclude Include="water.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="cube.psh" />
-    <None Include="cube.vsh" />
+    <None Include="light.psh" />
+    <None Include="light.vsh" />
     <None Include="reflect.psh" />
     <None Include="reflect.vsh" />
-    <None Include="rtt.psh" />
-    <None Include="rtt.vsh" />
+    <None Include="water.psh" />
+    <None Include="water.vsh" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A7FCD5BC-F4EF-43C6-8AD8-D378CE38E41F}</ProjectGuid>

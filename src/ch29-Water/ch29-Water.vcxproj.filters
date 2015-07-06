@@ -39,11 +39,17 @@
     <ClInclude Include="..\..\include\d3d\d3dCamera.h">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="reflect.h">
-      <Filter>Resource Files</Filter>
+    <ClInclude Include="wall.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="cube.h">
-      <Filter>Resource Files</Filter>
+    <ClInclude Include="bath.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="water.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ground.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -70,22 +76,22 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="cube.psh">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="cube.vsh">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="reflect.psh">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="reflect.vsh">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="rtt.psh">
+    <None Include="light.vsh">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="rtt.vsh">
+    <None Include="light.psh">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="water.vsh">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="water.psh">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

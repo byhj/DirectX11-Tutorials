@@ -10,8 +10,10 @@
 #include "d3d/d3dRTT.h"
 #include "d3d/d3dCamera.h"
 
-#include "cube.h"
-#include "reflect.h"
+#include "bath.h"
+#include "ground.h"
+#include "wall.h"
+#include "water.h"
 
 class D3DRenderSystem: public D3DApp
 {
@@ -37,34 +39,26 @@ public:
 		static float rot = 0.0f;
 		rot +=  timer.GetDeltaTime();
 		UpdateScene();
-		Model = XMMatrixIdentity();
 		View  = camera.GetViewMatrix();
-
-
-
-		D3DXVECTOR4 bgColor = D3DXVECTOR4(0.0f, 0.0f, 0.0f, 1.0f);
-		m_pD3D11DeviceContext->ClearRenderTargetView(pRenderTargetView, bgColor);
-		m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-
-		//render to texture
-		XMFLOAT3 camPos = camera.GetPos();
-		camPos.y =  -camPos.y ;
-		XMVECTOR pos    = XMLoadFloat3(&camPos);
-		XMVECTOR target = XMVectorZero();
-		XMVECTOR up     = XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);
-		XMMATRIX reflectMat = XMMatrixLookAtLH(pos, target, up);
-
-		m_pD3D11DeviceContext->OMSetRenderTargets(1, &pRenderTargetView, m_pDepthStencilView);
-		cube.Render(m_pD3D11DeviceContext, Model, reflectMat, Proj);
-
 		BeginScene();
 
-		//Set normal render target view
 		m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
-		cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
+		m_pD3D11DeviceContext->RSSetState(m_pRasterState);
 
-        reflect.Render(m_pD3D11DeviceContext, pShaderResourceView, Model, View, Proj, reflectMat);
+		/////////////////////Render the scene Model//////////////////////////////
+		Model = XMMatrixTranslation(0.0f, 1.0f, 0.0f);
+		groundModel.Render(m_pD3D11DeviceContext, Model, View, Proj);
+		
+		Model = XMMatrixTranslation(0.0f, 6.0f, 8.0f);
+		wallModel.Render(m_pD3D11DeviceContext, Model, View, Proj);
+		
+		Model = XMMatrixTranslation(0.0f, 2.0f, 0.0f);
+		bathModel.Render(m_pD3D11DeviceContext, Model, View, Proj);
 
+		Model = XMMatrixTranslation(0.0f, 2.75f, 0.0f);
+		waterModel.Render(m_pD3D11DeviceContext, Model, View, Proj);
+
+		/////////////////////////////////////////////////////////////////////////////
 		DrawMessage();
 		EndScene();
 	}
@@ -128,11 +122,15 @@ private:
 	ID3D11ShaderResourceView *pShaderResourceView;
 
 	D3DFont font;
-	Cube cube;
-	Reflect reflect;
 	D3DCamera camera;
 	D3DRTT d3dRtt;
 	D3DTimer timer;
+
+	Bath   bathModel;
+	Ground groundModel;
+	Wall   wallModel;
+	Water  waterModel;
+
 	int m_videoCardMemory;
 	WCHAR m_videoCardInfo[255];
 	float fps;
@@ -239,10 +237,9 @@ bool D3DRenderSystem::init_device()
 	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
 	ZeroMemory(&depthStencilDesc, sizeof(depthStencilDesc));
 
-	// Set up the description of the stencil state.
 	depthStencilDesc.DepthEnable      = true;
 	depthStencilDesc.DepthWriteMask   = D3D11_DEPTH_WRITE_MASK_ALL;
-	depthStencilDesc.DepthFunc        = D3D11_COMPARISON_LESS;
+	depthStencilDesc.DepthFunc        = D3D11_COMPARISON_LESS_EQUAL;
 	depthStencilDesc.StencilEnable    = true;
 	depthStencilDesc.StencilReadMask  = 0xFF;
 	depthStencilDesc.StencilWriteMask = 0xFF;
@@ -261,23 +258,19 @@ bool D3DRenderSystem::init_device()
 
 	// Create the depth stencil state.
 	hr = m_pD3D11Device->CreateDepthStencilState(&depthStencilDesc, &m_pDepthStencilState);
-	// Set the depth stencil state.
-
 	DebugHR(hr);
 
-	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 	// Initialize the depth stencil view.
+	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 	ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
-
-	// Set up the depth stencil view description.
-	depthStencilViewDesc.Format =  DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	depthStencilViewDesc.Format             =  DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilViewDesc.ViewDimension      = D3D11_DSV_DIMENSION_TEXTURE2D;
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
 
-	// Create the depth stencil view.
 	hr = m_pD3D11Device->CreateDepthStencilView(m_pDepthStencilBuffer, &depthStencilViewDesc, &m_pDepthStencilView);
 	DebugHR(hr);
 
+	/*
 	// ////////////Clear the second depth stencil state before setting the parameters.//////////////////////
 	D3D11_DEPTH_STENCIL_DESC depthDisabledStencilDesc;
 	ZeroMemory(&depthDisabledStencilDesc, sizeof(depthDisabledStencilDesc));
@@ -302,6 +295,21 @@ bool D3DRenderSystem::init_device()
 	hr = m_pD3D11Device->CreateDepthStencilState(&depthDisabledStencilDesc, &m_pDepthDisabledStencilState);
 	DebugHR(hr);
 
+	*/
+	///////////////////////////////////////////////////////////////////////////////////////////
+	D3D11_RASTERIZER_DESC rasterDesc;
+	rasterDesc.AntialiasedLineEnable = false;
+	rasterDesc.CullMode = D3D11_CULL_BACK;
+	rasterDesc.DepthBias = 0;
+	rasterDesc.DepthBiasClamp = 0.0f;
+	rasterDesc.DepthClipEnable = true;
+	rasterDesc.FillMode = D3D11_FILL_SOLID;
+	rasterDesc.FrontCounterClockwise = false;
+	rasterDesc.MultisampleEnable = false;
+	rasterDesc.ScissorEnable = false;
+	rasterDesc.SlopeScaledDepthBias = 0.0f;
+
+	//////////////////////////////////////////////////////////////////////////////////////////////
 	unsigned int numModes, i, numerator, denominator, stringLength;
 	IDXGIFactory* factory;
 	IDXGIAdapter* adapter;
@@ -342,16 +350,23 @@ void D3DRenderSystem::init_camera()
 
 void D3DRenderSystem::init_object()
 {
+	bathModel.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
+	bathModel.init_shader(m_pD3D11Device, GetHwnd());
+	bathModel.init_texture(m_pD3D11Device, L"../../media/textures/marble01.dds");
 
-	cube.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-	cube.init_shader(m_pD3D11Device, GetHwnd());
+	groundModel.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
+	groundModel.init_shader(m_pD3D11Device, GetHwnd());
+	groundModel.init_texture(m_pD3D11Device, L"../../media/textures/ground01.dds");
+
+	wallModel.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
+	wallModel.init_shader(m_pD3D11Device, GetHwnd());
+	wallModel.init_texture(m_pD3D11Device, L"../../media/textures/wall01.dds");
+
+	waterModel.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
+	waterModel.init_shader(m_pD3D11Device, GetHwnd());
 
 	font.init(m_pD3D11Device);
-
-	reflect.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-	reflect.init_shader(m_pD3D11Device, GetHwnd());
-
-	camera.SetRadius(10.0f);
+	camera.SetRadius(30.0f);
 	timer.Reset();
 }
 
@@ -409,7 +424,7 @@ void D3DRenderSystem::TurnZBufferOff()
 
 void  D3DRenderSystem::BeginScene()
 {
-	D3DXVECTOR4 bgColor = D3DXVECTOR4(0.0f, 0.0f, 0.0f, 1.0f);
+	D3DXVECTOR4 bgColor = D3DXVECTOR4(0.2f, 0.3f, 0.4f, 1.0f);
 
 	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
 	m_pD3D11DeviceContext->OMSetBlendState(NULL, NULL, 0XFFFFFFFF);
