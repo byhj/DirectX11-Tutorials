@@ -1,0 +1,23 @@
+
+struct VS_OUTPUT 
+{
+    float4 Pos : SV_POSITION;
+   	float2 Tex : TEXCOORD0;
+};
+
+Texture2D colorTex  : register(t0);
+Texture2D normalTex : register(t1);
+
+SamplerState texSample : register(s0);
+
+float4 PS(VS_OUTPUT ps_in) : SV_TARGET
+{
+  float4 color  = colorTex.Sample(texSample, ps_in.Tex);
+  float4 normal = normalTex.Sample(texSample, ps_in.Tex);
+  float3 lightDir = float3(0.0f, 0.0f, 1.0f);
+  float  lightIntensity = saturate( dot(normal.xyz, -lightDir) );
+
+  float4 pixelColor = saturate(color * lightIntensity);
+
+  return color ;
+}
