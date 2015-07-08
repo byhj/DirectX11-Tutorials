@@ -2,8 +2,13 @@
 #pragma comment( linker, "/subsystem:\"console\" /entry:\"WinMainCRTStartup\"")
 #endif
 
+#ifdef _WIN32
+#define _XM_NO_INTRINSICS_
+#endif 
+
+
 #include "d3d/d3dApp.h"
-#include <d3d/d3dShader.h>
+#include "d3d/d3dShader.h"
 
 class D3DInitApp: public D3DApp
 {
@@ -53,16 +58,16 @@ private:
 
 private:
 
-	struct cbPerObject
+	struct MatrixBuffer
 	{
-		XMMATRIX  MVP;
+		XMFLOAT4X4  MVP;
 	};
-	cbPerObject cbPerObj;
+	MatrixBuffer cbMatrix;
 
 	struct  Vertex
 	{
-		D3DXVECTOR3 Position;
-		D3DXVECTOR4 Color;
+		XMFLOAT3 Position;
+		XMFLOAT4 Color;
 	};
 
 	ID3D11InputLayout       *m_pInputLayout;
@@ -108,12 +113,13 @@ void D3DInitApp::v_Render()
 {
 	//Render scene 
 
-	D3DXCOLOR bgColor( 0.0f, 0.0f, 0.0f, 1.0f );
+	float bgColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	Model = XMMatrixIdentity();
 	MVP = (Model * View * Proj);
-	cbPerObj.MVP = XMMatrixTranspose(MVP);	
-
-	m_pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbPerObj, 0, 0 );
+	MVP = XMMatrixTranspose(MVP);	
+	XMStoreFloat4x4(&cbMatrix.MVP, MVP);
+	
+	m_pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
 	m_pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
 	m_pD3D11DeviceContext->OMSetRenderTargets( 1, &m_pRenderTargetView, m_pDepthStencilView );
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
@@ -195,12 +201,12 @@ bool D3DInitApp::init_buffer()
 	m_VertexCount = 3;
 	Vertex *VertexData = new Vertex[m_VertexCount];
 
-	VertexData[0].Position = D3DXVECTOR3(-1.0f, -1.0f, 0.0f);  // Bottom left.
-	VertexData[0].Color    = D3DXVECTOR4(1.0f, 0.0f, 0.0f, 1.0f);
-	VertexData[1].Position = D3DXVECTOR3(0.0f, 1.0f, 0.0f);  // Top middle.
-	VertexData[1].Color    = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
-	VertexData[2].Position = D3DXVECTOR3(1.0f, -1.0f, 0.0f);  // Bottom right.
-	VertexData[2].Color    = D3DXVECTOR4(0.0f, 0.0f, 1.0f, 1.0f);
+	VertexData[0].Position = XMFLOAT3(-1.0f, -1.0f, 0.0f);  // Bottom left.
+	VertexData[0].Color    = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+	VertexData[1].Position = XMFLOAT3(0.0f, 1.0f, 0.0f);  // Top middle.
+	VertexData[1].Color    = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+	VertexData[2].Position = XMFLOAT3(1.0f, -1.0f, 0.0f);  // Bottom right.
+	VertexData[2].Color    = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
 
 	// Set up the description of the static vertex buffer.
 	D3D11_BUFFER_DESC VertexBufferDesc;
@@ -267,7 +273,7 @@ bool D3DInitApp::init_buffer()
 	D3D11_BUFFER_DESC mvpDesc;	
 	ZeroMemory(&mvpDesc, sizeof(D3D11_BUFFER_DESC));
 	mvpDesc.Usage          = D3D11_USAGE_DEFAULT;
-	mvpDesc.ByteWidth      = sizeof(XMMATRIX);
+	mvpDesc.ByteWidth      = sizeof(MatrixBuffer);
 	mvpDesc.BindFlags      = D3D11_BIND_CONSTANT_BUFFER;
 	mvpDesc.CPUAccessFlags = 0;
 	mvpDesc.MiscFlags      = 0;

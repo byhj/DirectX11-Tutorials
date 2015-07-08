@@ -57,16 +57,16 @@ private:
 
 private:
 
-	struct cbPerObject
+	struct MatrixBuffer
 	{
-		XMMATRIX  MVP;
+		XMFLOAT4X4 MVP;
 	};
-	cbPerObject cbPerObj;
+	MatrixBuffer cbMatrix;
 
 	struct  Vertex
 	{
-		D3DXVECTOR3 Position;
-		D3DXVECTOR2 TexCoord;
+		XMFLOAT3 Position;
+		XMFLOAT2 TexCoord;
 	};
 
 	ID3D11InputLayout       *m_pInputLayout;
@@ -116,12 +116,13 @@ void D3DInitApp::v_Render()
 {
 	//Render scene 
 
-	D3DXCOLOR bgColor( 0.0f, 0.0f, 0.0f, 1.0f );
+	float bgColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	Model = XMMatrixIdentity();
 	MVP = (Model * View * Proj);
-	cbPerObj.MVP = XMMatrixTranspose(MVP);	
+	MVP = XMMatrixTranspose(MVP);	
+	XMStoreFloat4x4(&cbMatrix.MVP, MVP);
 
-	m_pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbPerObj, 0, 0 );
+	m_pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
 	m_pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
 	m_pD3D11DeviceContext->PSSetShaderResources( 0, 1, &m_pTexture );
 	m_pD3D11DeviceContext->PSSetSamplers( 0, 1, &m_pTexSamplerState );
@@ -206,13 +207,13 @@ bool D3DInitApp::init_buffer()
 	m_VertexCount = 3;
 	Vertex *VertexData = new Vertex[m_VertexCount];
 
-	VertexData[0].Position = D3DXVECTOR3(-1.0f, -1.0f, 0.0f);  // Bottom left.
-	VertexData[1].Position = D3DXVECTOR3(0.0f, 1.0f, 0.0f);    // Top middle.
-	VertexData[2].Position = D3DXVECTOR3(1.0f, -1.0f, 0.0f);   // Bottom right.
+	VertexData[0].Position = XMFLOAT3(-1.0f, -1.0f, 0.0f);  // Bottom left.
+	VertexData[1].Position = XMFLOAT3(0.0f, 1.0f, 0.0f);    // Top middle.
+	VertexData[2].Position = XMFLOAT3(1.0f, -1.0f, 0.0f);   // Bottom right.
 
-	VertexData[0].TexCoord = D3DXVECTOR2(0.0f, 1.0f);
-	VertexData[1].TexCoord = D3DXVECTOR2(0.5f, 0.0f);
-	VertexData[2].TexCoord = D3DXVECTOR2(1.0f, 1.0f);
+	VertexData[0].TexCoord = XMFLOAT2(0.0f, 1.0f);
+	VertexData[1].TexCoord = XMFLOAT2(0.5f, 0.0f);
+	VertexData[2].TexCoord = XMFLOAT2(1.0f, 1.0f);
 
 	// Set up the description of the static vertex buffer.
 	D3D11_BUFFER_DESC VertexBufferDesc;

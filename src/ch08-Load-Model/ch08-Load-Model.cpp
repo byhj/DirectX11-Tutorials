@@ -65,26 +65,26 @@ private:
 
 	struct MatrixBuffer
 	{
-		XMMATRIX  model;
-		XMMATRIX  view;
-		XMMATRIX  proj;
+		XMFLOAT4X4  model;
+		XMFLOAT4X4  view;
+		XMFLOAT4X4  proj;
 
 	};
 	MatrixBuffer cbMatrix;
 
 	struct LightBuffer
 	{
-		D3DXVECTOR4 diffuseColor;
-		D3DXVECTOR3 lightDirection;
+		XMFLOAT4 diffuseColor;
+		XMFLOAT3 lightDirection;
 		float padding;
 	};
 	LightBuffer cbLight;
 
 	struct  Vertex
 	{
-		D3DXVECTOR3 Position;
-		D3DXVECTOR2 TexCoord;
-		D3DXVECTOR3 Normal;
+		XMFLOAT3 Position;
+		XMFLOAT2 TexCoord;
+		XMFLOAT3 Normal;
 	};
 
 	struct ModelVertex
@@ -150,13 +150,18 @@ void D3DInitApp::v_Render()
 	rot += .0001f;
 
 	//Update the mvp matrix
-	D3DXCOLOR bgColor( 0.0f, 0.0f, 0.0f, 1.0f );
+	float bgColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	XMVECTOR rotaxis = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 	         Model   = XMMatrixRotationAxis( rotaxis, rot); 
-     cbMatrix.model  = XMMatrixTranspose(Model);
-	 cbMatrix.view   = XMMatrixTranspose(View);
-	 cbMatrix.proj   = XMMatrixTranspose(Proj);
-	 TestShader.use(m_pD3D11DeviceContext);
+
+	XMMATRIX tempModel =  XMMatrixTranspose(Model);
+	XMMATRIX tempView  =  XMMatrixTranspose(View);
+	XMMATRIX tempProj  =  XMMatrixTranspose(Proj);
+	XMStoreFloat4x4(&cbMatrix.model, tempModel);
+	XMStoreFloat4x4(&cbMatrix.view,  tempView);
+	XMStoreFloat4x4(&cbMatrix.proj,  tempProj);
+
+	TestShader.use(m_pD3D11DeviceContext);
 
 	m_pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
 	m_pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
@@ -359,8 +364,8 @@ bool D3DInitApp::init_buffer()
 	// Get a pointer to the data in the constant buffer.
 	LightBuffer *dataPtr2 = (LightBuffer*)mappedResource.pData;
 
-	dataPtr2->diffuseColor = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f);
-	dataPtr2->lightDirection = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+	dataPtr2->diffuseColor   = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	dataPtr2->lightDirection = XMFLOAT3(0.0f, 0.0f, 1.0f);
 	dataPtr2->padding = 0.0f;
 
 	m_pD3D11DeviceContext->Unmap(m_pLightBuffer, 0);
@@ -521,12 +526,12 @@ bool D3DInitApp::load_obj(char *objFile)
 	// Important: Also convert to left hand coordinate system since Maya uses right hand coordinate system.
 	fin.get(ch);
 	Vertex vt;
-	D3DXVECTOR3 Pos;
-	D3DXVECTOR2 Tex;
-	D3DXVECTOR3 Normal;
-	std::vector<D3DXVECTOR3> vPos;
-	std::vector<D3DXVECTOR2> vTex;
-	std::vector<D3DXVECTOR3> vNormal;
+	XMFLOAT3 Pos;
+	XMFLOAT2 Tex;
+	XMFLOAT3 Normal;
+	std::vector<XMFLOAT3> vPos;
+	std::vector<XMFLOAT2> vTex;
+	std::vector<XMFLOAT3> vNormal;
 	std::vector<unsigned int> vPosIndex;
 	std::vector<unsigned int> vTexIndex;
 	std::vector<unsigned int> vNormalIndex;

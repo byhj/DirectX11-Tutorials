@@ -61,26 +61,26 @@ private:
 
 	struct MatrixBuffer
 	{
-		XMMATRIX  model;
-		XMMATRIX  view;
-		XMMATRIX  proj;
+		XMFLOAT4X4  model;
+		XMFLOAT4X4  view;
+		XMFLOAT4X4  proj;
 
 	};
 	MatrixBuffer cbMatrix;
 
 	struct LightBuffer
 	{
-		D3DXVECTOR4 diffuseColor;
-		D3DXVECTOR3 lightDirection;
+		XMFLOAT4 diffuseColor;
+		XMFLOAT3 lightDirection;
 		float padding;
 	};
 	LightBuffer cbLight;
 
 	struct  Vertex
 	{
-		D3DXVECTOR3 Position;
-		D3DXVECTOR2 TexCoord;
-		D3DXVECTOR3 Normal;
+		XMFLOAT3 Position;
+		XMFLOAT2 TexCoord;
+		XMFLOAT3 Normal;
 	};
 
 	ID3D11InputLayout       *m_pInputLayout;
@@ -136,12 +136,17 @@ void D3DInitApp::v_Render()
 	rot += .0001f;
 
 	//Update the mvp matrix
-	D3DXCOLOR bgColor( 0.0f, 0.0f, 0.0f, 1.0f );
+	float bgColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	XMVECTOR rotaxis = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 	         Model   = XMMatrixRotationAxis( rotaxis, rot); 
-    cbMatrix.model   = XMMatrixTranspose(Model);
-	cbMatrix.view    = XMMatrixTranspose(View);
-	cbMatrix.proj    = XMMatrixTranspose(Proj);
+
+	XMMATRIX tempModel =  XMMatrixTranspose(Model);
+	XMMATRIX tempView  =  XMMatrixTranspose(View);
+	XMMATRIX tempProj  =  XMMatrixTranspose(Proj);
+	XMStoreFloat4x4(&cbMatrix.model, tempModel);
+	XMStoreFloat4x4(&cbMatrix.view,  tempView);
+	XMStoreFloat4x4(&cbMatrix.proj,  tempProj);
+
 	m_pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
 	m_pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
 
@@ -227,17 +232,17 @@ bool D3DInitApp::init_buffer()
 	m_VertexCount = 3;
 	Vertex *VertexData = new Vertex[m_VertexCount];
 
-	VertexData[0].Position = D3DXVECTOR3(-1.0f, -1.0f, 0.0f);  // Bottom left.
-	VertexData[1].Position = D3DXVECTOR3(0.0f, 1.0f, 0.0f);    // Top middle.
-	VertexData[2].Position = D3DXVECTOR3(1.0f, -1.0f, 0.0f);   // Bottom right.
+	VertexData[0].Position = XMFLOAT3(-1.0f, -1.0f, 0.0f);  // Bottom left.
+	VertexData[1].Position = XMFLOAT3(0.0f, 1.0f, 0.0f);    // Top middle.
+	VertexData[2].Position = XMFLOAT3(1.0f, -1.0f, 0.0f);   // Bottom right.
 
-	VertexData[0].TexCoord = D3DXVECTOR2(0.0f, 1.0f);
-	VertexData[1].TexCoord = D3DXVECTOR2(0.5f, 0.0f);
-	VertexData[2].TexCoord = D3DXVECTOR2(1.0f, 1.0f);
+	VertexData[0].TexCoord = XMFLOAT2(0.0f, 1.0f);
+	VertexData[1].TexCoord = XMFLOAT2(0.5f, 0.0f);
+	VertexData[2].TexCoord = XMFLOAT2(1.0f, 1.0f);
 
-	VertexData[0].Normal = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
-	VertexData[1].Normal = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
-	VertexData[2].Normal = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+	VertexData[0].Normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
+	VertexData[1].Normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
+	VertexData[2].Normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
 
 	// Set up the description of the static vertex buffer.
 	D3D11_BUFFER_DESC VertexBufferDesc;
@@ -346,8 +351,8 @@ bool D3DInitApp::init_buffer()
 	// Get a pointer to the data in the constant buffer.
 	LightBuffer *dataPtr2 = (LightBuffer*)mappedResource.pData;
 
-	dataPtr2->diffuseColor = D3DXVECTOR4(0.0f, 0.0f, 1.0f, 1.0f);
-	dataPtr2->lightDirection = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+	dataPtr2->diffuseColor   = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
+	dataPtr2->lightDirection = XMFLOAT3(0.0f, 0.0f, 1.0f);
 	dataPtr2->padding = 0.0f;
 
 	m_pD3D11DeviceContext->Unmap(m_pLightBuffer, 0);

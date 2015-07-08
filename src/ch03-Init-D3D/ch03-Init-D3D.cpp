@@ -72,7 +72,7 @@ bool D3DInitApp::v_InitD3D()
 void D3DInitApp::v_Render()
 {
 	//Render 
-	D3DXCOLOR bgColor( 0.0f, 0.0f, 0.5f, 1.0f );
+	float bgColor[4] = {0.0f, 0.0f, 0.5f, 1.0f };
 
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, NULL);
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
