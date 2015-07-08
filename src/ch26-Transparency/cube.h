@@ -36,7 +36,7 @@ public:
 private:
 	struct TexTransBuffer
 	{
-         D3DXVECTOR4 texTrans;
+         XMFLOAT4 texTrans;
 	};
 
 	struct MatrixBuffer
@@ -50,19 +50,19 @@ private:
 
 	struct LightBuffer
 	{
-		D3DXVECTOR4 ambientColor;
-		D3DXVECTOR4 diffuseColor;
-		D3DXVECTOR3 lightDirection;
+		XMFLOAT4 ambientColor;
+		XMFLOAT4 diffuseColor;
+		XMFLOAT3 lightDirection;
 		float specularPower;
-		D3DXVECTOR4 specularColor;
+		XMFLOAT4 specularColor;
 	};
 	LightBuffer cbLight;
 
 	struct  Vertex
 	{
-		D3DXVECTOR3 Position;
-		D3DXVECTOR2 TexCoord;
-		D3DXVECTOR3 Normal;
+		XMFLOAT3 Position;
+		XMFLOAT2 TexCoord;
+		XMFLOAT3 Normal;
 	};
 
 	struct ModelVertex
@@ -106,7 +106,7 @@ void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMMATRIX &Mode
 	static float tx = 0.0f, ty = 0.0f;
 	tx += 0.001f;
 	ty -= 0.001f;
-	D3DXVECTOR4 texTrans = D3DXVECTOR4(tx, ty, 0.0f, 0.0f);
+	XMFLOAT4 texTrans = XMFLOAT4(tx, ty, 0.0f, 0.0f);
 	int bufferSlot = 1;
 	pD3D11DeviceContext->UpdateSubresource(m_CameraBuffer, 0, NULL, &texTrans, 0, 0);
 	pD3D11DeviceContext->PSSetConstantBuffers( bufferSlot, 1, &m_CameraBuffer);
@@ -205,11 +205,11 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	// Get a pointer to the data in the constant buffer.
 	LightBuffer *dataPtr2 = (LightBuffer*)mappedResource.pData;
 
-	dataPtr2->ambientColor   = D3DXVECTOR4(0.75f, 0.75f, 0.75f, 0.15f);
-	dataPtr2->diffuseColor   = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f);
-	dataPtr2->lightDirection = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+	dataPtr2->ambientColor   = XMFLOAT4(0.75f, 0.75f, 0.75f, 0.15f);
+	dataPtr2->diffuseColor   = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	dataPtr2->lightDirection = XMFLOAT3(0.0f, 0.0f, 1.0f);
 	dataPtr2->specularPower  = 32.0f;
-	dataPtr2->specularColor  = D3DXVECTOR4(0.0f, 0.0f, 1.0f, 1.0f);
+	dataPtr2->specularColor  = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
 
 	pD3D11DeviceContext->Unmap(m_pLightBuffer, 0);
 
@@ -361,12 +361,12 @@ bool Cube::load_obj(char *objFile)
 	// Important: Also convert to left hand coordinate system since Maya uses right hand coordinate system.
 	fin.get(ch);
 	Vertex vt;
-	D3DXVECTOR3 Pos;
-	D3DXVECTOR2 Tex;
-	D3DXVECTOR3 Normal;
-	std::vector<D3DXVECTOR3> vPos;
-	std::vector<D3DXVECTOR2> vTex;
-	std::vector<D3DXVECTOR3> vNormal;
+	XMFLOAT3 Pos;
+	XMFLOAT2 Tex;
+	XMFLOAT3 Normal;
+	std::vector<XMFLOAT3> vPos;
+	std::vector<XMFLOAT2> vTex;
+	std::vector<XMFLOAT3> vNormal;
 	std::vector<unsigned int> vPosIndex;
 	std::vector<unsigned int> vTexIndex;
 	std::vector<unsigned int> vNormalIndex;

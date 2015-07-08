@@ -35,7 +35,7 @@ private:
 
 	struct CameraBuffer
 	{
-		D3DXVECTOR3 camPos;
+		XMFLOAT3 camPos;
 		float padding;
 	};
 
@@ -50,21 +50,21 @@ private:
 
 	struct LightBuffer
 	{
-		D3DXVECTOR4 ambientColor;
-		D3DXVECTOR4 diffuseColor;
-		D3DXVECTOR3 lightDirection;
+		XMFLOAT4 ambientColor;
+		XMFLOAT4 diffuseColor;
+		XMFLOAT3 lightDirection;
 		float specularPower;
-		D3DXVECTOR4 specularColor;
+		XMFLOAT4 specularColor;
 	};
 	LightBuffer cbLight;
 
 	struct VertexType
 	{
-		D3DXVECTOR3 position;
-		D3DXVECTOR2 texture;
-		D3DXVECTOR3 normal;
-		D3DXVECTOR3 tangent;
-		D3DXVECTOR3 binormal;
+		XMFLOAT3 position;
+		XMFLOAT2 texture;
+		XMFLOAT3 normal;
+		XMFLOAT3 tangent;
+		XMFLOAT3 binormal;
 	};
 
 	struct ModelType
@@ -171,11 +171,11 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 
 	for (int i = 0; i != VertexCount; ++i)
 	{
-		VertexData[i].position = D3DXVECTOR3(pModelVertex[i].x, pModelVertex[i].y, pModelVertex[i].z);
-		VertexData[i].texture = D3DXVECTOR2(pModelVertex[i].tu, pModelVertex[i].tv);
-		VertexData[i].normal = D3DXVECTOR3(pModelVertex[i].nx, pModelVertex[i].ny, pModelVertex[i].nz);
-		VertexData[i].tangent = D3DXVECTOR3(pModelVertex[i].tx, pModelVertex[i].ty, pModelVertex[i].tz);
-		VertexData[i].binormal = D3DXVECTOR3(pModelVertex[i].bx, pModelVertex[i].by, pModelVertex[i].bz);
+		VertexData[i].position = XMFLOAT3(pModelVertex[i].x, pModelVertex[i].y, pModelVertex[i].z);
+		VertexData[i].texture = XMFLOAT2(pModelVertex[i].tu, pModelVertex[i].tv);
+		VertexData[i].normal = XMFLOAT3(pModelVertex[i].nx, pModelVertex[i].ny, pModelVertex[i].nz);
+		VertexData[i].tangent = XMFLOAT3(pModelVertex[i].tx, pModelVertex[i].ty, pModelVertex[i].tz);
+		VertexData[i].binormal = XMFLOAT3(pModelVertex[i].bx, pModelVertex[i].by, pModelVertex[i].bz);
 
  		IndexData[i] = i;
 	}
@@ -252,11 +252,11 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	// Get a pointer to the data in the constant buffer.
 	LightBuffer *dataPtr2 = (LightBuffer*)mappedResource.pData;
 
-	dataPtr2->ambientColor   = D3DXVECTOR4(0.35f, 0.35f, 0.35f, 0.15f);
-	dataPtr2->diffuseColor   = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f);
-	dataPtr2->lightDirection = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	dataPtr2->ambientColor   = XMFLOAT4(0.35f, 0.35f, 0.35f, 0.15f);
+	dataPtr2->diffuseColor   = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	dataPtr2->lightDirection = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	dataPtr2->specularPower  = 32.0f;
-	dataPtr2->specularColor  = D3DXVECTOR4(0.0f, 0.0f, 1.0f, 1.0f);
+	dataPtr2->specularColor  = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
 
 	pD3D11DeviceContext->Unmap(m_pLightBuffer, 0);
 
@@ -282,7 +282,7 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 
 	// Get a pointer to the data in the constant buffer.
 	CameraBuffer *dataPtr3 = (CameraBuffer*)mappedResource.pData;
-	dataPtr3->camPos = D3DXVECTOR3(0.0f, 0.0f, -3.0f);
+	dataPtr3->camPos = XMFLOAT3(0.0f, 0.0f, -3.0f);
 	dataPtr3->padding = 0.0f;
 	pD3D11DeviceContext->Unmap(m_CameraBuffer, 0);
 

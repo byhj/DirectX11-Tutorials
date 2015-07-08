@@ -16,7 +16,7 @@ void D3DFont::drawFps(ID3D11DeviceContext *pD3D11DeviceContext, UINT fps)
 		);
 }
 
-void D3DFont::drawText(ID3D11DeviceContext *pD3D11DeivceContext, WCHAR *text, 
+void D3DFont::drawText(ID3D11DeviceContext *pD3D11DeivceContext, const WCHAR *text, 
 					   float fontSize, float posX, float posY)
 {
 	m_pFontWrapper->DrawString(

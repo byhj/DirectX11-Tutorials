@@ -11,10 +11,10 @@
 #include <WindowsX.h>
 #include <windows.h>
 #include <d3dx11.h>
-#include <xnamath.h>
 #include <dxgi.h>
-#include <d3dcommon.h>
 #include <d3d11.h>
+#include <xnamath.h>
+#include <d3dcommon.h>
 #include <D3DX11async.h>
 
 #include <ctime>
@@ -49,6 +49,7 @@ public:
 	virtual void v_OnMouseUp(WPARAM btnState, int x, int y)  { }
 	virtual void v_OnMouseMove(WPARAM btnState, int x, int y){ }
 	virtual void v_OnMouseWheel(WPARAM btnState, int x, int y) { }
+
 protected:
 	int   m_ScreenWidth;
 	int   m_ScreenHeight;

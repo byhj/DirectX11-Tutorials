@@ -35,7 +35,7 @@ private:
 
 	struct CameraBuffer
 	{
-		D3DXVECTOR3 camPos;
+		XMFLOAT3 camPos;
 		float padding;
 	};
 
@@ -50,18 +50,18 @@ private:
 
 	struct LightBuffer
 	{
-		D3DXVECTOR4 ambientColor;
-		D3DXVECTOR4 diffuseColor;
-		D3DXVECTOR3 lightDirection;
+		XMFLOAT4 ambientColor;
+		XMFLOAT4 diffuseColor;
+		XMFLOAT3 lightDirection;
 		float specularPower;
-		D3DXVECTOR4 specularColor;
+		XMFLOAT4 specularColor;
 	};
 	LightBuffer cbLight;
 
 	struct Vertex
 	{
-		D3DXVECTOR3 Pos;
-		D3DXVECTOR4 Color;
+		XMFLOAT3 Pos;
+		XMFLOAT4 Color;
 	};
 	struct ModelVertex
 	{
@@ -126,13 +126,13 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	unsigned long * IndexData = new unsigned long[m_IndexCount];
 
 	// Load the vertex array with data.
-	VertexData[0].Pos = D3DXVECTOR3(-1.0f, -1.0f, 0.0f);  // Bottom left.
-	VertexData[1].Pos = D3DXVECTOR3(0.0f, 1.0f, 0.0f);  // Top middle.
-	VertexData[2].Pos = D3DXVECTOR3(1.0f, -1.0f, 0.0f);  // Bottom right.
+	VertexData[0].Pos = XMFLOAT3(-1.0f, -1.0f, 0.0f);  // Bottom left.
+	VertexData[1].Pos = XMFLOAT3(0.0f, 1.0f, 0.0f);  // Top middle.
+	VertexData[2].Pos = XMFLOAT3(1.0f, -1.0f, 0.0f);  // Bottom right.
 	
-	VertexData[0].Color = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
-	VertexData[1].Color = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
-	VertexData[2].Color = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
+	VertexData[0].Color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+	VertexData[1].Color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+	VertexData[2].Color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
 
 	// Load the index array with data.
 	IndexData[0] = 0;  // Bottom left.

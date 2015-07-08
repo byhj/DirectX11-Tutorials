@@ -42,9 +42,6 @@ public:
 		ReleaseCOM(m_pRasterState       )
 	}
 
-	ID3D11Device * GetDevice();
-	ID3D11DeviceContext *GetDeviceContext();
-
 private:
 	bool init_device();
 	void init_camera();
@@ -81,7 +78,7 @@ private:
 	D3DTimer timer;
 	D3DCamera camera;
 	int m_videoCardMemory;
-	WCHAR m_videoCardInfo[255];
+	std::wstring m_videoCardInfo;
 	float fps;
 };
 
@@ -256,7 +253,7 @@ bool D3DRenderSystem::init_device()
 	m_videoCardMemory = (int)(adapterDesc.DedicatedVideoMemory / 1024 / 1024);
 
 	// Convert the name of the video card to a character array and store it.
-	swprintf(m_videoCardInfo,L"Video Card  : %ls", adapterDesc.Description);
+	m_videoCardInfo = std::wstring(L"Video Card  :") +  adapterDesc.Description;
 	return true;
 }
 
@@ -309,7 +306,7 @@ void D3DRenderSystem::TurnZBufferOff()
 
 void  D3DRenderSystem::BeginScene()
 {
-	D3DXVECTOR4 bgColor = D3DXVECTOR4(0.2f, 0.3f, 0.4f, 1.0f);
+	float bgColor[4] = {0.2f,  0.3f,  0.4f, 1.0f};
 
 	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
@@ -353,9 +350,10 @@ void D3DRenderSystem::DrawFps()
 
 void D3DRenderSystem::DrawMessage()
 {
-	WCHAR WinInfo[255];
-	swprintf(WinInfo, L"Window Size: %d x %d", m_ScreenWidth, m_ScreenHeight);
+	std::wstring winInfo;
+	winInfo = L"Window Size: " + std::to_wstring(m_ScreenWidth) 
+		+ L" X " + std::to_wstring(m_ScreenHeight);
 	DrawFps();
-	font.drawText(m_pD3D11DeviceContext, WinInfo, 22.0f, 10.0f, 40.0f);
-	font.drawText(m_pD3D11DeviceContext, m_videoCardInfo, 22.0f, 10.0f, 70.0f);
+	font.drawText(m_pD3D11DeviceContext, winInfo.c_str(), 22.0f, 10.0f, 40.0f);
+	font.drawText(m_pD3D11DeviceContext, m_videoCardInfo.c_str(), 22.0f, 10.0f, 70.0f);
 }

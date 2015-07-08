@@ -18,7 +18,7 @@ public:
 		DebugHR(hr);
 		m_pFW1Factory->Release();
 	}
-	void drawText(ID3D11DeviceContext *pD3D11DeivceContext, WCHAR *text, 
+	void drawText(ID3D11DeviceContext *pD3D11DeivceContext, const WCHAR *text, 
 		          float fontSize, float posX, float posY);
 
 	void drawFps(ID3D11DeviceContext *pD3D11DeviceContext, UINT fps);

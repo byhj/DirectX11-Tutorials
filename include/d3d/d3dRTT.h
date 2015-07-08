@@ -45,8 +45,8 @@ private:
 
 	struct  Vertex
 	{
-		D3DXVECTOR3 Pos;
-		D3DXVECTOR2 Tex;
+		XMFLOAT3 Pos;
+		XMFLOAT2 Tex;
 	};
 
 	ID3D11RenderTargetView   *m_pRenderTargetView;

@@ -9,6 +9,7 @@
 #include "d3d/d3dTimer.h"
 
 #include "cube.h"
+#include <string>
 
 class D3DRenderSystem: public D3DApp
 {
@@ -76,10 +77,11 @@ private:
 	ID3D11RasterizerState    *m_pRasterState;
 
 	D3DFont font;
-	Cube cube;
 	D3DTimer timer;
+	Cube cube;
+
 	int m_videoCardMemory;
-	WCHAR m_videoCardInfo[255];
+	std::wstring m_videoCardInfo;
 	float fps;
 };
 
@@ -105,7 +107,6 @@ void D3DRenderSystem::v_Render()
 	rot +=  timer.GetDeltaTime();
 
 	Model = XMMatrixRotationY(rot);
-	//Model = XMMatrixRotationX(-60.0f);
 	cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
 
 	EndScene();
@@ -252,7 +253,8 @@ bool D3DRenderSystem::init_device()
 	m_videoCardMemory = (int)(adapterDesc.DedicatedVideoMemory / 1024 / 1024);
 
 	// Convert the name of the video card to a character array and store it.
-	swprintf(m_videoCardInfo,L"Video Card  : %ls", adapterDesc.Description);
+	m_videoCardInfo = std::wstring(L"Video Card  :") +  adapterDesc.Description;
+
 	return true;
 }
 
@@ -305,7 +307,7 @@ void D3DRenderSystem::TurnZBufferOff()
 
 void  D3DRenderSystem::BeginScene()
 {
-	D3DXVECTOR4 bgColor = D3DXVECTOR4(0.2f, 0.3f, 0.4f, 1.0f);
+	float bgColor[4] = {0.2f,  0.3f,  0.4f, 1.0f};
 
 	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
@@ -349,9 +351,10 @@ void D3DRenderSystem::DrawFps()
 
 void D3DRenderSystem::DrawMessage()
 {
-	WCHAR WinInfo[255];
-	swprintf(WinInfo, L"Window Size: %d x %d", m_ScreenWidth, m_ScreenHeight);
+	std::wstring winInfo;
+	winInfo = L"Window Size: " + std::to_wstring(m_ScreenWidth) 
+		    + L" X " + std::to_wstring(m_ScreenHeight);
 	DrawFps();
-	font.drawText(m_pD3D11DeviceContext, WinInfo, 22.0f, 10.0f, 40.0f);
-	font.drawText(m_pD3D11DeviceContext, m_videoCardInfo, 22.0f, 10.0f, 70.0f);
+	font.drawText(m_pD3D11DeviceContext, winInfo.c_str(), 22.0f, 10.0f, 40.0f);
+	font.drawText(m_pD3D11DeviceContext, m_videoCardInfo.c_str(), 22.0f, 10.0f, 70.0f);
 }

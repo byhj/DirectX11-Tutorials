@@ -100,7 +100,7 @@ private:
 	Cube cube;
 	D3DTimer timer;
 	int m_videoCardMemory;
-	WCHAR m_videoCardInfo[255];
+	std::wstring m_videoCardInfo;
 	float fps;
 
 	XMFLOAT4X4 m_World;
@@ -354,7 +354,7 @@ bool D3DRenderSystem::init_device()
 	m_videoCardMemory = (int)(adapterDesc.DedicatedVideoMemory / 1024 / 1024);
 
 	// Convert the name of the video card to a character array and store it.
-	swprintf(m_videoCardInfo,L"Video Card  : %ls", adapterDesc.Description);
+	m_videoCardInfo = std::wstring(L"Video Card  :") +  adapterDesc.Description;
 	return true;
 }
 
@@ -407,7 +407,7 @@ void D3DRenderSystem::TurnZBufferOff()
 
 void  D3DRenderSystem::BeginScene()
 {
-	D3DXVECTOR4 bgColor = D3DXVECTOR4(0.5f, 0.5f, 0.5, 1.0f);
+	XMFLOAT4 bgColor = XMFLOAT4(0.5f, 0.5f, 0.5, 1.0f);
 
 	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
 	m_pD3D11DeviceContext->OMSetBlendState(NULL, NULL, 0XFFFFFFFF);

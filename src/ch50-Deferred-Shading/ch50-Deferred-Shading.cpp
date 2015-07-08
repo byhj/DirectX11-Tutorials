@@ -94,7 +94,7 @@ private:
 	D3DRTT d3dRtt;
 	D3DTimer timer;
 	int m_videoCardMemory;
-	WCHAR m_videoCardInfo[255];
+	std::wstring m_videoCardInfo;
 	float fps;
 };
 
@@ -191,7 +191,7 @@ void D3DRenderSystem::v_Render()
 	Model = XMMatrixRotationY(rot);
 	View  = camera.GetViewMatrix();
 
-	D3DXVECTOR4 bgColor = D3DXVECTOR4(0.5f, 0.5f, 0.5f, 1.0f);
+	XMFLOAT4 bgColor = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 
 	//Render to texture
 	m_pD3D11DeviceContext->OMSetRenderTargets(2, &pRenderTextureSRVs[0], m_pDepthStencilView);
@@ -365,7 +365,7 @@ bool D3DRenderSystem::init_device()
 	m_videoCardMemory = (int)(adapterDesc.DedicatedVideoMemory / 1024 / 1024);
 
 	// Convert the name of the video card to a character array and store it.
-	swprintf(m_videoCardInfo,L"Video Card  : %ls", adapterDesc.Description);
+	m_videoCardInfo = std::wstring(L"Video Card  :") +  adapterDesc.Description;
 	return true;
 }
 
@@ -423,7 +423,7 @@ void D3DRenderSystem::TurnZBufferOff()
 
 void  D3DRenderSystem::BeginScene()
 {
-	D3DXVECTOR4 bgColor = D3DXVECTOR4(0.2f, 0.3f, 0.4f, 1.0f);
+	float bgColor[4] = {0.2f,  0.3f,  0.4f, 1.0f};
 
 	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
 	m_pD3D11DeviceContext->OMSetBlendState(NULL, NULL, 0XFFFFFFFF);

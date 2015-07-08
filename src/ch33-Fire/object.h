@@ -61,9 +61,9 @@ private:
 
 	struct Vertex
 	{
-		D3DXVECTOR3 Position;
-		D3DXVECTOR2 TexCoord;
-		D3DXVECTOR3 Normal;
+		XMFLOAT3 Position;
+		XMFLOAT2 TexCoord;
+		XMFLOAT3 Normal;
 	};
 	struct ModelVertex
 	{
@@ -148,9 +148,9 @@ bool Object::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11
 
 	for (int i = 0; i != m_VertexCount; ++i)
 	{
-		VertexData[i].Position = D3DXVECTOR3(m_pModelVertex[i].x,  m_pModelVertex[i].y,  m_pModelVertex[i].z);
-		VertexData[i].TexCoord = D3DXVECTOR2(m_pModelVertex[i].u,  m_pModelVertex[i].v);
-		VertexData[i].Normal   = D3DXVECTOR3(m_pModelVertex[i].nx, m_pModelVertex[i].ny, m_pModelVertex[i].nz);
+		VertexData[i].Position = XMFLOAT3(m_pModelVertex[i].x,  m_pModelVertex[i].y,  m_pModelVertex[i].z);
+		VertexData[i].TexCoord = XMFLOAT2(m_pModelVertex[i].u,  m_pModelVertex[i].v);
+		VertexData[i].Normal   = XMFLOAT3(m_pModelVertex[i].nx, m_pModelVertex[i].ny, m_pModelVertex[i].nz);
 		IndexData[i] = i;
 	}
 

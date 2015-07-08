@@ -30,39 +30,39 @@ public:
 		for(int i = 0; i < m_currentParticleCount; i++)
 		{
 			// Bottom left.
-			m_vertices[index].Position  = D3DXVECTOR3(m_particleList[i].positionX - m_particleSize, m_particleList[i].positionY - m_particleSize, m_particleList[i].positionZ);
-			m_vertices[index].TexCoord  = D3DXVECTOR2(0.0f, 1.0f);
-			m_vertices[index].Color     = D3DXVECTOR4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
+			m_vertices[index].Position  = XMFLOAT3(m_particleList[i].positionX - m_particleSize, m_particleList[i].positionY - m_particleSize, m_particleList[i].positionZ);
+			m_vertices[index].TexCoord  = XMFLOAT2(0.0f, 1.0f);
+			m_vertices[index].Color     = XMFLOAT4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
 			index++;
 
 			// Top left.
-			m_vertices[index].Position = D3DXVECTOR3(m_particleList[i].positionX - m_particleSize, m_particleList[i].positionY + m_particleSize, m_particleList[i].positionZ);
-			m_vertices[index].TexCoord = D3DXVECTOR2(0.0f, 0.0f);
-			m_vertices[index].Color    = D3DXVECTOR4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
+			m_vertices[index].Position = XMFLOAT3(m_particleList[i].positionX - m_particleSize, m_particleList[i].positionY + m_particleSize, m_particleList[i].positionZ);
+			m_vertices[index].TexCoord = XMFLOAT2(0.0f, 0.0f);
+			m_vertices[index].Color    = XMFLOAT4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
 			index++;
 
 			// Bottom right.
-			m_vertices[index].Position = D3DXVECTOR3(m_particleList[i].positionX + m_particleSize, m_particleList[i].positionY - m_particleSize, m_particleList[i].positionZ);
-			m_vertices[index].TexCoord = D3DXVECTOR2(1.0f, 1.0f);
-			m_vertices[index].Color    = D3DXVECTOR4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
+			m_vertices[index].Position = XMFLOAT3(m_particleList[i].positionX + m_particleSize, m_particleList[i].positionY - m_particleSize, m_particleList[i].positionZ);
+			m_vertices[index].TexCoord = XMFLOAT2(1.0f, 1.0f);
+			m_vertices[index].Color    = XMFLOAT4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
 			index++;
 
 			// Bottom right.
-			m_vertices[index].Position = D3DXVECTOR3(m_particleList[i].positionX + m_particleSize, m_particleList[i].positionY - m_particleSize, m_particleList[i].positionZ);
-			m_vertices[index].TexCoord = D3DXVECTOR2(1.0f, 1.0f);
-			m_vertices[index].Color    = D3DXVECTOR4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
+			m_vertices[index].Position = XMFLOAT3(m_particleList[i].positionX + m_particleSize, m_particleList[i].positionY - m_particleSize, m_particleList[i].positionZ);
+			m_vertices[index].TexCoord = XMFLOAT2(1.0f, 1.0f);
+			m_vertices[index].Color    = XMFLOAT4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
 			index++;
 
 			// Top left.
-			m_vertices[index].Position = D3DXVECTOR3(m_particleList[i].positionX - m_particleSize, m_particleList[i].positionY + m_particleSize, m_particleList[i].positionZ);
-			m_vertices[index].TexCoord = D3DXVECTOR2(0.0f, 0.0f);
-			m_vertices[index].Color    = D3DXVECTOR4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
+			m_vertices[index].Position = XMFLOAT3(m_particleList[i].positionX - m_particleSize, m_particleList[i].positionY + m_particleSize, m_particleList[i].positionZ);
+			m_vertices[index].TexCoord = XMFLOAT2(0.0f, 0.0f);
+			m_vertices[index].Color    = XMFLOAT4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
 			index++;
 
 			// Top right.
-			m_vertices[index].Position = D3DXVECTOR3(m_particleList[i].positionX + m_particleSize, m_particleList[i].positionY + m_particleSize, m_particleList[i].positionZ);
-			m_vertices[index].TexCoord = D3DXVECTOR2(1.0f, 0.0f);
-			m_vertices[index].Color    = D3DXVECTOR4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
+			m_vertices[index].Position = XMFLOAT3(m_particleList[i].positionX + m_particleSize, m_particleList[i].positionY + m_particleSize, m_particleList[i].positionZ);
+			m_vertices[index].TexCoord = XMFLOAT2(1.0f, 0.0f);
+			m_vertices[index].Color    = XMFLOAT4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
 			index++;
 		}
 
@@ -135,7 +135,7 @@ private:
 
 	struct CameraBuffer
 	{
-		D3DXVECTOR3 camPos;
+		XMFLOAT3 camPos;
 		float padding;
 	};
 
@@ -151,9 +151,9 @@ private:
 
 	struct  Vertex
 	{
-		D3DXVECTOR3 Position;
-		D3DXVECTOR2 TexCoord;
-		D3DXVECTOR4 Color;
+		XMFLOAT3 Position;
+		XMFLOAT2 TexCoord;
+		XMFLOAT4 Color;
 	};
 
 	struct ModelVertex

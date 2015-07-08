@@ -32,7 +32,27 @@ public:
 	}
 
 	bool v_InitD3D();
-	void v_Render();
+	void v_Render()
+	{
+		//Render scene 
+
+		float bgColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+		Model = XMMatrixIdentity();
+		MVP = (Model * View * Proj);
+		MVP = XMMatrixTranspose(MVP);	
+		XMStoreFloat4x4(&cbMatrix.MVP, MVP);
+
+		m_pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
+		m_pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
+		m_pD3D11DeviceContext->OMSetRenderTargets( 1, &m_pRenderTargetView, m_pDepthStencilView );
+		m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
+		m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+		TestShader.use(m_pD3D11DeviceContext);
+		m_pD3D11DeviceContext->DrawIndexed(3, 0, 0);
+
+		m_pSwapChain->Present(0, 0);
+	}
 
     void v_Shutdown()
 	{
@@ -82,6 +102,7 @@ private:
 	ID3D11Buffer            *m_pMVPBuffer;
 	ID3D11Buffer            *m_pVertexBuffer;
 	ID3D11Buffer            *m_pIndexBuffer;
+
 	int m_VertexCount;
 	int m_IndexCount;
 
@@ -107,28 +128,6 @@ bool D3DInitApp::v_InitD3D()
 	init_shader();
 
  	return true;
-}
-
-void D3DInitApp::v_Render()
-{
-	//Render scene 
-
-	float bgColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
-	Model = XMMatrixIdentity();
-	MVP = (Model * View * Proj);
-	MVP = XMMatrixTranspose(MVP);	
-	XMStoreFloat4x4(&cbMatrix.MVP, MVP);
-	
-	m_pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
-	m_pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
-	m_pD3D11DeviceContext->OMSetRenderTargets( 1, &m_pRenderTargetView, m_pDepthStencilView );
-	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
-	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
-	
-	TestShader.use(m_pD3D11DeviceContext);
-	m_pD3D11DeviceContext->DrawIndexed(3, 0, 0);
-
-	m_pSwapChain->Present(0, 0);
 }
 
 bool D3DInitApp::init_device()

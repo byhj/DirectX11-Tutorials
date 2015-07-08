@@ -36,7 +36,7 @@ public:
 private:
 	struct CameraBuffer
 	{
-		D3DXVECTOR3 camPos;
+		XMFLOAT3 camPos;
 		float padding;
 	};
 
@@ -51,19 +51,19 @@ private:
 
 	struct LightBuffer
 	{
-		D3DXVECTOR4 ambientColor;
-		D3DXVECTOR4 diffuseColor;
-		D3DXVECTOR3 lightDirection;
+		XMFLOAT4 ambientColor;
+		XMFLOAT4 diffuseColor;
+		XMFLOAT3 lightDirection;
 		float specularPower;
-		D3DXVECTOR4 specularColor;
+		XMFLOAT4 specularColor;
 	};
 	LightBuffer cbLight;
 
 	struct  Vertex
 	{
-		D3DXVECTOR3 Position;
-		D3DXVECTOR2 TexCoord;
-		D3DXVECTOR3 Normal;
+		XMFLOAT3 Position;
+		XMFLOAT2 TexCoord;
+		XMFLOAT3 Normal;
 	};
 
 	struct ModelVertex
@@ -199,11 +199,11 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	// Get a pointer to the data in the constant buffer.
 	LightBuffer *dataPtr2 = (LightBuffer*)mappedResource.pData;
 
-	dataPtr2->ambientColor   = D3DXVECTOR4(0.75f, 0.75f, 0.75f, 0.75f);
-	dataPtr2->diffuseColor   = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f);
-	dataPtr2->lightDirection = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+	dataPtr2->ambientColor   = XMFLOAT4(0.75f, 0.75f, 0.75f, 0.75f);
+	dataPtr2->diffuseColor   = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	dataPtr2->lightDirection = XMFLOAT3(0.0f, 0.0f, 1.0f);
 	dataPtr2->specularPower  = 32.0f;
-	dataPtr2->specularColor  = D3DXVECTOR4(0.0f, 0.0f, 1.0f, 1.0f);
+	dataPtr2->specularColor  = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
 
 	pD3D11DeviceContext->Unmap(m_pLightBuffer, 0);
 
@@ -229,7 +229,7 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 
 	// Get a pointer to the data in the constant buffer.
 	CameraBuffer *dataPtr3 = (CameraBuffer*)mappedResource.pData;
-	dataPtr3->camPos = D3DXVECTOR3(0.0f, 0.0f, -3.0f);
+	dataPtr3->camPos = XMFLOAT3(0.0f, 0.0f, -3.0f);
 	dataPtr3->padding = 0.0f;
 	pD3D11DeviceContext->Unmap(m_CameraBuffer, 0);
 
@@ -368,12 +368,12 @@ bool Cube::load_obj(char *objFile)
 	// Important: Also convert to left hand coordinate system since Maya uses right hand coordinate system.
 	fin.get(ch);
 	Vertex vt;
-	D3DXVECTOR3 Pos;
-	D3DXVECTOR2 Tex;
-	D3DXVECTOR3 Normal;
-	std::vector<D3DXVECTOR3> vPos;
-	std::vector<D3DXVECTOR2> vTex;
-	std::vector<D3DXVECTOR3> vNormal;
+	XMFLOAT3 Pos;
+	XMFLOAT2 Tex;
+	XMFLOAT3 Normal;
+	std::vector<XMFLOAT3> vPos;
+	std::vector<XMFLOAT2> vTex;
+	std::vector<XMFLOAT3> vNormal;
 	std::vector<unsigned int> vPosIndex;
 	std::vector<unsigned int> vTexIndex;
 	std::vector<unsigned int> vNormalIndex;

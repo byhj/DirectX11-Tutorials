@@ -20,7 +20,6 @@ public:
 		m_pRenderTargetView   = NULL;
 		m_pDepthStencilView   = NULL;
 		m_pDepthStencilBuffer = NULL;
-		m_pMVPBuffer          = NULL;
 		m_pRasterState        = NULL;
 	}
 
@@ -34,7 +33,6 @@ public:
 		ReleaseCOM(m_pRenderTargetView  )
 		ReleaseCOM(m_pDepthStencilView  )
 		ReleaseCOM(m_pDepthStencilBuffer)
-		ReleaseCOM(m_pMVPBuffer         )
 		ReleaseCOM(m_pRasterState       )
 	}
 
@@ -65,7 +63,6 @@ private:
 	ID3D11Texture2D          *m_pDepthStencilBuffer;
 	ID3D11DepthStencilState  *m_pDepthStencilState;
 	ID3D11DepthStencilState  *m_pDepthDisabledStencilState;
-	ID3D11Buffer             *m_pMVPBuffer;
 	ID3D11RasterizerState    *m_pRasterState;
 
 	Bitmap bitmap;
@@ -205,7 +202,7 @@ bool D3DRenderSystem::init_device()
 
 bool D3DRenderSystem::v_InitD3D()
 {
-		init_device();
+	init_device();
 
 	//Viewport Infomation
 	D3D11_VIEWPORT vp;
@@ -268,12 +265,9 @@ void D3DRenderSystem::TurnZBufferOff()
 
 void  D3DRenderSystem::BeginScene()
 {
-	D3DXVECTOR4 bgColor = D3DXVECTOR4(0.0f, 0.0f, 0.5f, 1.0f);
+	float bgColor[4] = {0.0f, 0.0f, 0.5f, 1.0f};
 
-	// Clear the back buffer.
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
-
-	// Clear the depth buffer.
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 	return;

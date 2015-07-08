@@ -5,7 +5,7 @@
 #endif 
 
 #include "d3d/d3dApp.h"
-#include <d3d/d3dShader.h>
+#include "d3d/d3dShader.h"
 
 class D3DInitApp: public D3DApp
 {
@@ -30,7 +30,27 @@ public:
 	}
 
 	bool v_InitD3D();
-	void v_Render();
+	void v_Render()
+	{
+		//Render scene 
+
+		float bgColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+		Model = XMMatrixIdentity();
+		MVP = (Model * View * Proj);
+		MVP = XMMatrixTranspose(MVP);	
+		XMStoreFloat4x4(&cbMatrix.MVP, MVP);
+
+		m_pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
+		m_pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
+		m_pD3D11DeviceContext->PSSetShaderResources( 0, 1, &m_pTexture );
+		m_pD3D11DeviceContext->PSSetSamplers( 0, 1, &m_pTexSamplerState );
+		m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
+		m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
+		TestShader.use(m_pD3D11DeviceContext);
+		m_pD3D11DeviceContext->DrawIndexed(3, 0, 0);
+
+		m_pSwapChain->Present(0, 0);
+	}
 
     void v_Shutdown()
 	{
@@ -110,28 +130,6 @@ bool D3DInitApp::v_InitD3D()
 	init_shader();
 
  	return true;
-}
-
-void D3DInitApp::v_Render()
-{
-	//Render scene 
-
-	float bgColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
-	Model = XMMatrixIdentity();
-	MVP = (Model * View * Proj);
-	MVP = XMMatrixTranspose(MVP);	
-	XMStoreFloat4x4(&cbMatrix.MVP, MVP);
-
-	m_pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
-	m_pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
-	m_pD3D11DeviceContext->PSSetShaderResources( 0, 1, &m_pTexture );
-	m_pD3D11DeviceContext->PSSetSamplers( 0, 1, &m_pTexSamplerState );
-	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
-	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
-	TestShader.use(m_pD3D11DeviceContext);
-	m_pD3D11DeviceContext->DrawIndexed(3, 0, 0);
-
-	m_pSwapChain->Present(0, 0);
 }
 
 bool D3DInitApp::init_device()

@@ -6,15 +6,32 @@ public:
 	D3DInitApp()
 	{
 		m_AppName = L"DirectX11: ch03-Init-D3D";
-		m_pSwapChain          = 0;
-		m_pD3D11Device        = 0;
-		m_pD3D11DeviceContext = 0;
-		m_pRenderTargetView   = 0;
+		m_pSwapChain          = nullptr;
+		m_pD3D11Device        = nullptr;
+		m_pD3D11DeviceContext = nullptr;
+		m_pRenderTargetView   = nullptr;
+	}
+
+	void v_Render()
+	{
+		//Render 
+		float bgColor[4] = {0.0f, 0.0f, 0.5f, 1.0f };
+
+		m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, NULL);
+		m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
+
+		m_pSwapChain->Present(0, 0);
+	}
+
+	void v_Shutdown()
+	{
+		ReleaseCOM( m_pSwapChain         );
+		ReleaseCOM( m_pD3D11Device       );
+		ReleaseCOM( m_pD3D11DeviceContext);
+		ReleaseCOM( m_pRenderTargetView  );
 	}
 
 	bool v_InitD3D();
-	void v_Render();
-
 private:
 
 	IDXGISwapChain          *m_pSwapChain;
@@ -29,7 +46,7 @@ bool D3DInitApp::v_InitD3D()
 {
 	HRESULT hr;
 
-	//Create buffer desc
+	////////////////////////Create buffer desc////////////////////////////
 	DXGI_MODE_DESC bufferDesc;
 	ZeroMemory(&bufferDesc, sizeof(DXGI_MODE_DESC));
 	bufferDesc.Width                   = m_ScreenWidth;
@@ -69,13 +86,3 @@ bool D3DInitApp::v_InitD3D()
 	return true;
 }
 
-void D3DInitApp::v_Render()
-{
-	//Render 
-	float bgColor[4] = {0.0f, 0.0f, 0.5f, 1.0f };
-
-	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, NULL);
-	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
-
-	m_pSwapChain->Present(0, 0);
-}

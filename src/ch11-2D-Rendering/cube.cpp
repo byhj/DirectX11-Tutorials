@@ -1,121 +1,38 @@
+#include "cube.h"
+#include <vector>
 
-#include "d3d/d3dApp.h"
-#include <d3d/d3dShader.h>
-
-class Cube
+void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext)
 {
-public:
-	Cube()
-	{
-		m_pInputLayout        = NULL;
-		m_pMVPBuffer          = NULL;
-		m_pLightBuffer        = NULL;
-		m_pVertexBuffer       = NULL;
-		m_pIndexBuffer        = NULL;
-		m_pTexture            = NULL;
-	}
+	//Render scene 
+	//Keep the cubes rotating
+	static float rot = 0.0f;
+	rot += .0001f;
 
-	void Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMMATRIX &Model,  
-		                             const XMMATRIX &View, const XMMATRIX &Proj);
+	//Update the mvp matrix
+	XMVECTOR rotaxis = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	Model   = XMMatrixRotationAxis( rotaxis, rot); 
+	XMMATRIX tempModel  = XMMatrixTranspose(Model);
+	XMMATRIX tempView   = XMMatrixTranspose(View);
+	XMMATRIX tempProj   = XMMatrixTranspose(Proj);
+	XMStoreFloat4x4(&cbMatrix.model, tempModel);
+	XMStoreFloat4x4(&cbMatrix.view, tempView);
+	XMStoreFloat4x4(&cbMatrix.proj, tempProj);
 
-	void shutdown()
-	{
-			ReleaseCOM(m_pRenderTargetView  )
-			ReleaseCOM(m_pMVPBuffer         )
-			ReleaseCOM(m_pLightBuffer       )
-			ReleaseCOM(m_pVertexBuffer      )
-			ReleaseCOM(m_pIndexBuffer       )
-	}
-
-	bool load_model(char *modelFile);
-	bool load_obj(char *objFile);
-	bool init_buffer (ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext);
-	bool init_shader (ID3D11Device *pD3D11Device, HWND hWnd);
-	void init_texture(ID3D11Device *pD3D11Device, LPCWSTR texFile);
-
-private:
-	struct CameraBuffer
-	{
-		XMFLOAT3 camPos;
-		float padding;
-	};
-
-	struct MatrixBuffer
-	{
-		XMMATRIX  model;
-		XMMATRIX  view;
-		XMMATRIX  proj;
-
-	};
-	MatrixBuffer cbMatrix;
-
-	struct LightBuffer
-	{
-		XMFLOAT4 ambientColor;
-		XMFLOAT4 diffuseColor;
-		XMFLOAT3 lightDirection;
-		float specularPower;
-		XMFLOAT4 specularColor;
-	};
-	LightBuffer cbLight;
-
-	struct  Vertex
-	{
-		XMFLOAT3 Position;
-		XMFLOAT2 TexCoord;
-		XMFLOAT3 Normal;
-	};
-
-	struct ModelVertex
-	{
-		float x, y , z;
-		float u, v;
-		float nx, ny, nz;
-	};
-	ModelVertex  *m_pModelVertex;
-
-	ID3D11RenderTargetView   *m_pRenderTargetView;
-	ID3D11Buffer             *m_pMVPBuffer;
-	ID3D11Buffer             *m_pLightBuffer;
-	ID3D11Buffer             *m_CameraBuffer;
-	ID3D11Buffer             *m_pVertexBuffer;
-	ID3D11Buffer             *m_pIndexBuffer;
-	ID3D11ShaderResourceView *m_pTexture;
-	ID3D11SamplerState       *m_pTexSamplerState;
-	ID3D11InputLayout        *m_pInputLayout;
-
-
-	int m_VertexCount;
-	int m_IndexCount;
-	std::vector<Vertex> VertexData;
-	std::vector<unsigned int> IndexData;
-
-	Shader CubeShader;
-};
-
-
-void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMMATRIX &Model,  
-				  const XMMATRIX &View, const XMMATRIX &Proj)
-{
-
-	cbMatrix.model  = XMMatrixTranspose(Model);
-	cbMatrix.view   = XMMatrixTranspose(View);
-	cbMatrix.proj   = XMMatrixTranspose(Proj);
+	TestShader.use(pD3D11DeviceContext);
 	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
 	pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
 
+	// Set vertex buffer stride and offset.=
 	unsigned int stride;
 	unsigned int offset;
 	stride = sizeof(Vertex); 
 	offset = 0;
-
 	pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
 	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 	pD3D11DeviceContext->PSSetShaderResources( 0, 1, &m_pTexture );
 	pD3D11DeviceContext->PSSetSamplers( 0, 1, &m_pTexSamplerState );
-
-	CubeShader.use(pD3D11DeviceContext);
 	pD3D11DeviceContext->DrawIndexed(m_IndexCount, 0, 0);
 
 }
@@ -199,7 +116,7 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	// Get a pointer to the data in the constant buffer.
 	LightBuffer *dataPtr2 = (LightBuffer*)mappedResource.pData;
 
-	dataPtr2->ambientColor   = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	dataPtr2->ambientColor   = XMFLOAT4(0.15f, 0.15f, 0.15f, 0.15f);
 	dataPtr2->diffuseColor   = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	dataPtr2->lightDirection = XMFLOAT3(0.0f, 0.0f, 1.0f);
 	dataPtr2->specularPower  = 32.0f;
@@ -239,10 +156,21 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	return true;
 }
 
+bool Cube::init_camera(float aspect)
+{
+	//MVP Matrix
+	camPos    = XMVectorSet( 0.0f, 0.0f, -3.0f, 0.0f );
+	camTarget = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
+	camUp     = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
+	View      = XMMatrixLookAtLH( camPos, camTarget, camUp );
+	Proj      = XMMatrixPerspectiveFovLH( 0.4f*3.14f, aspect, 1.0f, 1000.0f);
+	Model     = XMMatrixIdentity();
+
+	return true;
+}
 
 bool Cube::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 {
-	HRESULT result;
 
 	D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc[3];
 	pInputLayoutDesc[0].SemanticName         = "POSITION";
@@ -271,10 +199,10 @@ bool Cube::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 
 	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
 
-	CubeShader.init(pD3D11Device, hWnd);
-	CubeShader.attachVS(L"cube.vsh", pInputLayoutDesc, numElements);
-	CubeShader.attachPS(L"cube.psh");
-	CubeShader.end();
+	TestShader.init(pD3D11Device, hWnd);
+	TestShader.attachVS(L"triangle.vsh", pInputLayoutDesc, numElements);
+	TestShader.attachPS(L"triangle.psh");
+	TestShader.end();
 
 	return true;
 }
@@ -311,7 +239,7 @@ bool Cube::load_model(char *modelFile)
 {
 	std::ifstream fin;
 	char ch;
-	int i;
+
 	fin.open(modelFile);
 
 	if (fin.fail())

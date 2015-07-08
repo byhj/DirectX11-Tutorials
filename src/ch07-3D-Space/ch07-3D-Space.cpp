@@ -5,7 +5,7 @@
 #endif 
 
 #include "d3d/d3dApp.h"
-#include <d3d/d3dShader.h>
+#include "d3d/d3dShader.h"
 
 class D3DInitApp: public D3DApp
 {
@@ -31,7 +31,37 @@ public:
 	}
 
 	bool v_InitD3D();
-	void v_Render();
+	void v_Render()
+	{
+		//Render scene 
+		//Keep the cubes rotating
+		static float rot = 0.0f;
+		rot += .0001f;
+
+		//Update the mvp matrix
+		float bgColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+		XMVECTOR rotaxis = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+		Model   = XMMatrixRotationAxis( rotaxis, rot); 
+
+		XMMATRIX tempModel =  XMMatrixTranspose(Model);
+		XMMATRIX tempView  =  XMMatrixTranspose(View);
+		XMMATRIX tempProj  =  XMMatrixTranspose(Proj);
+		XMStoreFloat4x4(&cbMatrix.model, tempModel);
+		XMStoreFloat4x4(&cbMatrix.view,  tempView);
+		XMStoreFloat4x4(&cbMatrix.proj,  tempProj);
+
+		TestShader.use(m_pD3D11DeviceContext);
+		m_pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
+		m_pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
+
+		m_pD3D11DeviceContext->PSSetShaderResources( 0, 1, &m_pTexture );
+		m_pD3D11DeviceContext->PSSetSamplers( 0, 1, &m_pTexSamplerState );
+		m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
+		m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
+		m_pD3D11DeviceContext->DrawIndexed(m_IndexCount, 0, 0);
+
+		m_pSwapChain->Present(0, 0);
+	}
 
     void v_Shutdown()
 	{
@@ -133,38 +163,6 @@ bool D3DInitApp::v_InitD3D()
 	init_shader();
 
  	return true;
-}
-
-void D3DInitApp::v_Render()
-{
-	//Render scene 
-	//Keep the cubes rotating
-	static float rot = 0.0f;
-	rot += .0001f;
-
-	//Update the mvp matrix
-	float bgColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
-	XMVECTOR rotaxis = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	         Model   = XMMatrixRotationAxis( rotaxis, rot); 
-
-	XMMATRIX tempModel =  XMMatrixTranspose(Model);
-	XMMATRIX tempView  =  XMMatrixTranspose(View);
-	XMMATRIX tempProj  =  XMMatrixTranspose(Proj);
-	XMStoreFloat4x4(&cbMatrix.model, tempModel);
-	XMStoreFloat4x4(&cbMatrix.view,  tempView);
-	XMStoreFloat4x4(&cbMatrix.proj,  tempProj);
-
-	TestShader.use(m_pD3D11DeviceContext);
-	m_pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
-	m_pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
-
-	m_pD3D11DeviceContext->PSSetShaderResources( 0, 1, &m_pTexture );
-	m_pD3D11DeviceContext->PSSetSamplers( 0, 1, &m_pTexSamplerState );
-	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
-	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
-	m_pD3D11DeviceContext->DrawIndexed(m_IndexCount, 0, 0);
-
-	m_pSwapChain->Present(0, 0);
 }
 
 bool D3DInitApp::init_device()
@@ -375,7 +373,7 @@ bool D3DInitApp::init_camera()
 	m_pD3D11DeviceContext->RSSetViewports(1, &vp);
 
 	//MVP Matrix
-	camPos    = XMVectorSet( 0.0f, 0.0f, -3.0f, 0.0f );
+	camPos    = XMVectorSet( 0.0f, 0.0f, -5.0f, 0.0f );
 	camTarget = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
 	camUp     = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
 	View      = XMMatrixLookAtLH( camPos, camTarget, camUp );
