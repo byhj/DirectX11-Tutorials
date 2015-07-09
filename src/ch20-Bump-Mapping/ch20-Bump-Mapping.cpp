@@ -137,7 +137,7 @@ void D3DRenderSystem::v_OnMouseWheel(WPARAM btnState, int x, int y)
 {
 	static float zoom = 45.0f;
 	zoom += x * 0.01f;
-	Proj   = XMMatrixPerspectiveFovLH( D3DXToRadian(zoom), GetAspect(), 1.0f, 1000.0f);
+	Proj   = XMMatrixPerspectiveFovLH( XMConvertToRadians(zoom), GetAspect(), 1.0f, 1000.0f);
 }
 
 void D3DRenderSystem::v_OnMouseDown(WPARAM btnState, int x, int y)
@@ -374,7 +374,7 @@ void D3DRenderSystem::init_camera()
 	camTarget = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
 	camUp     = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
 	View      = XMMatrixLookAtLH( camPos, camTarget, camUp );
-	Proj      = XMMatrixPerspectiveFovLH( D3DXToRadian(45.0f), GetAspect(), 1.0f, 1000.0f);
+	Proj      = XMMatrixPerspectiveFovLH( XMConvertToRadians(45.0f), GetAspect(), 1.0f, 1000.0f);
 	Model     = XMMatrixIdentity();
 }
 
@@ -454,5 +454,5 @@ void D3DRenderSystem::DrawMessage()
 	swprintf(WinInfo, L"Window Size: %d x %d", m_ScreenWidth, m_ScreenHeight);
 	DrawFps();
 	font.drawText(m_pD3D11DeviceContext, WinInfo, 22.0f, 10.0f, 40.0f);
-	font.drawText(m_pD3D11DeviceContext, m_videoCardInfo, 22.0f, 10.0f, 70.0f);
+	font.drawText(m_pD3D11DeviceContext, m_videoCardInfo.c_str(), 22.0f, 10.0f, 70.0f);
 }

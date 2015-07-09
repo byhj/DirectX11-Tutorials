@@ -22,14 +22,14 @@ void D3DCamera::update()
 	XMStoreFloat3(&this->target, target);
 
 	m_View = XMMatrixLookAtLH(pos, target, up);
-	m_Proj  = XMMatrixPerspectiveFovLH( D3DXToRadian(45.0f), m_aspect, 1.0f, 1000.0f);
+	m_Proj  = XMMatrixPerspectiveFovLH( XMConvertToRadians(45.0f), m_aspect, 1.0f, 1000.0f);
 }
 
 void D3DCamera::OnMouseWheel(WPARAM btnState, int x, int y, float aspect)
 {
 	static float zoom = 45.0f;
 	zoom += x * 0.01f;
-	m_Proj  = XMMatrixPerspectiveFovLH( D3DXToRadian(45.0f), aspect, 1.0f, 1000.0f);
+	m_Proj  = XMMatrixPerspectiveFovLH( XMConvertToRadians(45.0f), aspect, 1.0f, 1000.0f);
 }
 
 void D3DCamera::OnMouseDown(WPARAM btnState, int x, int y, HWND hWnd)

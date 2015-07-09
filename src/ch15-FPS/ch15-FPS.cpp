@@ -9,18 +9,12 @@
 #include "d3d/d3dTimer.h"
 
 #include "cube.h"
-
-const float Pi = 3.1415926535f;
-
-static float Clamp(const float& x, const float& low, const float& high)
-{
-	return x < low ? low : (x > high ? high : x); 
-}
+#include <string>
 
 class D3DRenderSystem: public D3DApp
 {
 public:
-	D3DRenderSystem():m_Theta(1.5f * Pi), m_Phi(0.25f * Pi), m_Radius(3.0f) 
+	D3DRenderSystem()
 	{
 		m_AppName = L"DirectX11: ch12-Font";
 		m_pSwapChain          = NULL;
@@ -32,24 +26,10 @@ public:
 		m_pMVPBuffer          = NULL;
 		m_pRasterState        = NULL;
 		fps = 0.0f;
-		m_LastMousePos.x = 0;
-		m_LastMousePos.y = 0;
-
-		XMMATRIX I = XMMatrixIdentity();
-		XMStoreFloat4x4(&m_World, I);
-		XMStoreFloat4x4(&m_View, I);
-		XMStoreFloat4x4(&m_Proj, I);
 	}
 
 	bool v_InitD3D();
 	void v_Render();
-	void v_OnMouseDown(WPARAM btnState, int x, int y);
-	void v_OnMouseMove(WPARAM btnState, int x, int y);
-	void v_OnMouseUp(WPARAM btnState, int x, int y);
-	void v_OnMouseWheel(WPARAM btnState, int x, int y);
-
-	void update();
-
 	void v_Shutdown()
 	{		
 		ReleaseCOM(m_pSwapChain         )
@@ -97,101 +77,22 @@ private:
 	ID3D11RasterizerState    *m_pRasterState;
 
 	D3DFont font;
-	Cube cube;
 	D3DTimer timer;
+	Cube cube;
+
 	int m_videoCardMemory;
 	std::wstring m_videoCardInfo;
 	float fps;
-
-	XMFLOAT4X4 m_World;
-	XMFLOAT4X4 m_View;
-	XMFLOAT4X4 m_Proj;
-
-	float m_Theta;
-	float m_Phi;
-	float m_Radius;
-
-	POINT m_LastMousePos;
-
 };
 
 CALL_MAIN(D3DRenderSystem);
 
-void D3DRenderSystem::update()
-{
-	// Convert Spherical to Cartesian coordinates.
-	float x = m_Radius * sinf(m_Phi) * cosf(m_Theta);
-	float z = m_Radius * sinf(m_Phi) * sinf(m_Theta);
-	float y = m_Radius * cosf(m_Phi);
-
-	// Build the view matrix.
-	XMVECTOR pos    = XMVectorSet(x, y, z, 1.0f);
-	XMVECTOR target = XMVectorZero();
-	XMVECTOR up     = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-
-	XMMATRIX V = XMMatrixLookAtLH(pos, target, up);
-	XMStoreFloat4x4(&m_View, V);
-}
-
-void D3DRenderSystem::v_OnMouseWheel(WPARAM btnState, int x, int y)
-{
-	static float zoom = 45.0f;
-	zoom += x * 0.01f;
-	Proj   = XMMatrixPerspectiveFovLH( D3DXToRadian(zoom), GetAspect(), 1.0f, 1000.0f);
-}
-
-void D3DRenderSystem::v_OnMouseDown(WPARAM btnState, int x, int y)
-{
-	m_LastMousePos.x = x;
-	m_LastMousePos.y = y;
-
-	SetCapture( GetHwnd() );
-}
-
-void D3DRenderSystem::v_OnMouseUp(WPARAM btnState, int x, int y)
-{
-	ReleaseCapture();
-}
-
-void D3DRenderSystem::v_OnMouseMove(WPARAM btnState, int x, int y)
-{
-	if( (btnState & MK_LBUTTON) != 0 )
-	{
-		// Make each pixel correspond to a quarter of a degree.
-		float dx = XMConvertToRadians(0.25f*static_cast<float>(x - m_LastMousePos.x));
-		float dy = XMConvertToRadians(0.25f*static_cast<float>(y - m_LastMousePos.y));
-
-		// Update angles based on input to orbit camera around box.
-		m_Theta += dx;
-		m_Phi   += dy;
-
-		// Restrict the angle mPhi.
-		m_Phi = Clamp(m_Phi, 0.1f, Pi-0.1f);
-	}
-
-	else if( (btnState & MK_RBUTTON) != 0 )
-	{
-		// Make each pixel correspond to 0.005 unit in the scene.
-		float dx = 0.005f*static_cast<float>(x - m_LastMousePos.x);
-		float dy = 0.005f*static_cast<float>(y - m_LastMousePos.y);
-
-		// Update the camera radius based on input.
-		m_Radius += dx - dy;
-
-		// Restrict the radius.
-		m_Radius = Clamp(m_Radius, 3.0f, 15.0f);
-	}
-
-	m_LastMousePos.x = x;
-	m_LastMousePos.y = y;
-}
 
 bool D3DRenderSystem::v_InitD3D()
 {
 	init_device();
 	init_camera();
 	init_object();
-	//camera.InitDirectInput(GetHwnd(), GetAppInst());
 
 	return true;
 }
@@ -201,14 +102,13 @@ void D3DRenderSystem::v_Render()
 
 	BeginScene();
 
+	DrawMessage();
 	static float rot = 0.0f;
 	rot +=  timer.GetDeltaTime();
-	update();
-	View = XMLoadFloat4x4(&m_View);
-	//Model = XMMatrixRotationY(rot);
+
+	Model = XMMatrixRotationY(rot);
 	cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
 
-	DrawMessage();
 	EndScene();
 }
 
@@ -354,6 +254,7 @@ bool D3DRenderSystem::init_device()
 
 	// Convert the name of the video card to a character array and store it.
 	m_videoCardInfo = std::wstring(L"Video Card  :") +  adapterDesc.Description;
+
 	return true;
 }
 
@@ -373,7 +274,7 @@ void D3DRenderSystem::init_camera()
 	camTarget = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
 	camUp     = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
 	View      = XMMatrixLookAtLH( camPos, camTarget, camUp );
-	Proj      = XMMatrixPerspectiveFovLH( D3DXToRadian(45.0f), GetAspect(), 1.0f, 1000.0f);
+	Proj      = XMMatrixPerspectiveFovLH( 0.4f*3.14f, GetAspect(), 1.0f, 1000.0f);
 	Model     = XMMatrixIdentity();
 }
 
@@ -382,7 +283,8 @@ void D3DRenderSystem::init_object()
 
 	cube.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
 	cube.init_shader(m_pD3D11Device, GetHwnd());
-	cube.init_texture(m_pD3D11Device, L"../../media/textures/stone01.dds");
+	cube.init_texture(m_pD3D11Device, L"../../media/textures/seafloor.dds");
+
 	font.init(m_pD3D11Device);
 
 	timer.Reset();
@@ -408,7 +310,6 @@ void  D3DRenderSystem::BeginScene()
 	float bgColor[4] = {0.2f,  0.3f,  0.4f, 1.0f};
 
 	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
-	m_pD3D11DeviceContext->OMSetBlendState(NULL, NULL, 0XFFFFFFFF);
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
@@ -450,9 +351,10 @@ void D3DRenderSystem::DrawFps()
 
 void D3DRenderSystem::DrawMessage()
 {
-	WCHAR WinInfo[255];
-	swprintf(WinInfo, L"Window Size: %d x %d", m_ScreenWidth, m_ScreenHeight);
+	std::wstring winInfo;
+	winInfo = L"Window Size: " + std::to_wstring(m_ScreenWidth) 
+		+ L" X " + std::to_wstring(m_ScreenHeight);
 	DrawFps();
-	font.drawText(m_pD3D11DeviceContext, WinInfo, 22.0f, 10.0f, 40.0f);
-	font.drawText(m_pD3D11DeviceContext, m_videoCardInfo, 22.0f, 10.0f, 70.0f);
+	font.drawText(m_pD3D11DeviceContext, winInfo.c_str(), 22.0f, 10.0f, 40.0f);
+	font.drawText(m_pD3D11DeviceContext, m_videoCardInfo.c_str(), 22.0f, 10.0f, 70.0f);
 }

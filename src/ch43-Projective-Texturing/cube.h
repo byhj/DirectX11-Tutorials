@@ -103,7 +103,7 @@ void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMMATRIX &Mode
 	XMVECTOR target = XMVectorZero();
 	XMVECTOR up     = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 	cbMatrix.view2  = XMMatrixTranspose ( XMMatrixLookAtLH(pos, target, up) );
-	cbMatrix.proj2  = XMMatrixTranspose (XMMatrixPerspectiveFovLH(D3DXToRadian(45.0f), 1.0f, 1.0f, 1000.0f) );
+	cbMatrix.proj2  = XMMatrixTranspose (XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0f), 1.0f, 1.0f, 1000.0f) );
 
 	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
 	pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
