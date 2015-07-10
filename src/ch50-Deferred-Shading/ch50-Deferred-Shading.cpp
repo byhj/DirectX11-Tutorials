@@ -65,13 +65,6 @@ private:
 	void DrawFps();
 	void DrawMessage();
 
-	XMMATRIX Model;
-	XMMATRIX View;
-	XMMATRIX Proj;
-	XMVECTOR camPos;
-	XMVECTOR camTarget;
-	XMVECTOR camUp;
-
 	//D3D Device 
 	IDXGISwapChain           *m_pSwapChain;
 	ID3D11Device             *m_pD3D11Device;
@@ -96,6 +89,10 @@ private:
 	int m_videoCardMemory;
 	std::wstring m_videoCardInfo;
 	float fps;
+
+	XMFLOAT4X4 m_Model;
+	XMFLOAT4X4 m_View;
+	XMFLOAT4X4 m_Proj;
 };
 
 CALL_MAIN(D3DRenderSystem);
@@ -188,8 +185,8 @@ void D3DRenderSystem::v_Render()
 	static float rot = 0.0f;
 	rot +=  timer.GetDeltaTime();
 	UpdateScene();
-	Model = XMMatrixRotationY(rot);
-	View  = camera.GetViewMatrix();
+	XMMATRIX Model = XMMatrixRotationY(rot);
+	m_View  = camera.GetViewMatrix();
 
 	float bgColor[4] = {0.5f, 0.5f, 0.5f, 1.0f};
 
@@ -199,9 +196,7 @@ void D3DRenderSystem::v_Render()
 	m_pD3D11DeviceContext->ClearRenderTargetView(pRenderTextureSRVs[1], bgColor);
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 	
-	cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
-
-
+	cube.Render(m_pD3D11DeviceContext, m_Model, m_View, m_Proj);
 
 
 	BeginScene();
@@ -214,9 +209,10 @@ void D3DRenderSystem::v_Render()
 
 	// Create an orthographic projection matrix for 2D rendering. 
 	Model = XMMatrixIdentity();
-	XMMATRIX tProj = XMMatrixOrthographicLH(m_ScreenWidth, m_ScreenHeight, 1.0f, 1000.0f);
-
-	d3dRtt.Render(m_pD3D11DeviceContext, &pShaderResourceView[0], Model, View, tProj);
+	XMMATRIX orthProj = XMMatrixOrthographicLH(m_ScreenWidth, m_ScreenHeight, 1.0f, 1000.0f);
+	XMFLOAT4X4 orth;
+	XMStoreFloat4x4(&orth, orthProj);
+	d3dRtt.Render(m_pD3D11DeviceContext, &pShaderResourceView[0], m_Model, m_View, orth);
 	
 	TurnZBufferOn();
 
@@ -381,13 +377,15 @@ void D3DRenderSystem::init_camera()
 	m_pD3D11DeviceContext->RSSetViewports(1, &vp);
 
 	//MVP Matrix
-	camPos    = XMVectorSet( 0.0f, 0.0f, -5.0f, 0.0f );
-	camTarget = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
-	camUp     = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
-	View      = XMMatrixLookAtLH( camPos, camTarget, camUp );
-	Proj      = XMMatrixPerspectiveFovLH( XMConvertToRadians(45.0f), GetAspect(), 1.0f, 1000.0f);
-	Model     = XMMatrixIdentity();
+	XMVECTOR camPos    = XMVectorSet( 0.0f, 0.0f, -5.0f, 0.0f );
+	XMVECTOR camTarget = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
+	XMVECTOR camUp     = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
+	XMMATRIX View      = XMMatrixLookAtLH( camPos, camTarget, camUp );
+	XMMATRIX Proj      = XMMatrixPerspectiveFovLH( XMConvertToRadians(45.0f), GetAspect(), 1.0f, 1000.0f);
+	XMMATRIX Model     = XMMatrixIdentity();
+
 }
+
 
 void D3DRenderSystem::init_object()
 {

@@ -41,13 +41,13 @@ public:
 	void v_Shutdown()
 	{		
 		ReleaseCOM(m_pSwapChain         )
-		ReleaseCOM(m_pD3D11Device       )
-		ReleaseCOM(m_pD3D11DeviceContext)
-		ReleaseCOM(m_pRenderTargetView  )
-		ReleaseCOM(m_pDepthStencilView  )
-		ReleaseCOM(m_pDepthStencilBuffer)
-		ReleaseCOM(m_pMVPBuffer         )
-		ReleaseCOM(m_pRasterState       )
+			ReleaseCOM(m_pD3D11Device       )
+			ReleaseCOM(m_pD3D11DeviceContext)
+			ReleaseCOM(m_pRenderTargetView  )
+			ReleaseCOM(m_pDepthStencilView  )
+			ReleaseCOM(m_pDepthStencilBuffer)
+			ReleaseCOM(m_pMVPBuffer         )
+			ReleaseCOM(m_pRasterState       )
 	}
 
 	ID3D11Device * GetDevice();
@@ -65,12 +65,9 @@ private:
 	void DrawFps();
 	void DrawMessage();
 
-	XMMATRIX Model;
-	XMMATRIX View;
-	XMMATRIX Proj;
-	XMVECTOR camPos;
-	XMVECTOR camTarget;
-	XMVECTOR camUp;
+	XMFLOAT4X4 m_Model;
+	XMFLOAT4X4 m_View;
+	XMFLOAT4X4 m_Proj;
 
 	//D3D Device 
 	IDXGISwapChain           *m_pSwapChain;
@@ -129,7 +126,7 @@ bool D3DRenderSystem::v_InitD3D()
 	init_device();
 	init_camera();
 	init_object();
-	
+
 	D3D11_TEXTURE2D_DESC textureDesc;
 	HRESULT result;
 	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
@@ -186,16 +183,18 @@ void D3DRenderSystem::v_Render()
 	static float rot = 0.0f;
 	rot +=  timer.GetDeltaTime();
 	UpdateScene();
-	Model = XMMatrixRotationY(rot);
-	View  = camera.GetViewMatrix();
+
+	XMMATRIX Model = XMMatrixRotationY(rot);
+	XMStoreFloat4x4(&m_Model, XMMatrixTranspose(Model) );
+	m_View  = camera.GetViewMatrix();
 
 	float bgColor[4] = {0.2f,  0.3f,  0.4f, 1.0f};
 
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, &pRenderTargetView, m_pDepthStencilView);
 	m_pD3D11DeviceContext->ClearRenderTargetView(pRenderTargetView, bgColor);
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-	
-	cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
+
+	cube.Render(m_pD3D11DeviceContext, m_Model, m_View, m_Proj);
 
 	//Set normal render target view
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
@@ -209,7 +208,7 @@ void D3DRenderSystem::v_Render()
 	BeginScene();
 	if (fadeDone)
 	{
-	   cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
+		cube.Render(m_pD3D11DeviceContext, m_Model, m_View, m_Proj);
 	}
 	else 
 	{
@@ -217,9 +216,12 @@ void D3DRenderSystem::v_Render()
 
 		// Create an orthographic projection matrix for 2D rendering. 
 		Model =XMMatrixIdentity();
-		XMMATRIX TProj = XMMatrixOrthographicLH((float)m_ScreenWidth, (float)m_ScreenHeight, 0.1f, 1000.0f);
+		XMStoreFloat4x4(&m_Model, XMMatrixTranspose(Model) );
 
-		fade.Render(m_pD3D11DeviceContext, pShaderResourceView, Model, View, TProj, fadePercentage);
+		XMMATRIX orthProj = XMMatrixOrthographicLH((float)m_ScreenWidth, (float)m_ScreenHeight, 0.1f, 1000.0f);
+		XMFLOAT4X4 orth;
+		XMStoreFloat4x4(&orth, XMMatrixTranspose(orthProj) );
+		fade.Render(m_pD3D11DeviceContext, pShaderResourceView, m_Model, m_View, orth, fadePercentage);
 
 		TurnZBufferOn();
 
@@ -395,12 +397,16 @@ void D3DRenderSystem::init_camera()
 	m_pD3D11DeviceContext->RSSetViewports(1, &vp);
 
 	//MVP Matrix
-	camPos    = XMVectorSet( 0.0f, 0.0f, -5.0f, 0.0f );
-	camTarget = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
-	camUp     = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
-	View      = XMMatrixLookAtLH( camPos, camTarget, camUp );
-	Proj      = XMMatrixPerspectiveFovLH( XMConvertToRadians(45.0f), GetAspect(), 1.0f, 1000.0f);
-	Model     = XMMatrixIdentity();
+	XMVECTOR camPos    = XMVectorSet( 0.0f, 0.0f, -5.0f, 0.0f );
+	XMVECTOR camTarget = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
+	XMVECTOR camUp     = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
+	XMMATRIX View      = XMMatrixLookAtLH( camPos, camTarget, camUp );
+	XMMATRIX Proj      = XMMatrixPerspectiveFovLH( XMConvertToRadians(45.0f), GetAspect(), 1.0f, 1000.0f);
+	XMMATRIX Model     = XMMatrixIdentity();
+
+	XMStoreFloat4x4(&m_Model, XMMatrixTranspose(Model) );
+	XMStoreFloat4x4(&m_View,  XMMatrixTranspose(View) );
+	XMStoreFloat4x4(&m_Proj,  XMMatrixTranspose(Proj) );
 }
 
 void D3DRenderSystem::init_object()

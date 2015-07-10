@@ -16,11 +16,11 @@ public:
 	}
 
 	void Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &Model,  
-		                             const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj);
+		const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj);
 
 	void shutdown()
 	{
-			ReleaseCOM(m_pRenderTargetView  )
+		ReleaseCOM(m_pRenderTargetView  )
 			ReleaseCOM(m_pMVPBuffer         )
 			ReleaseCOM(m_pLightBuffer       )
 			ReleaseCOM(m_pVertexBuffer      )
@@ -41,11 +41,11 @@ private:
 
 	struct MatrixBuffer
 	{
-		XMMATRIX  model;
-		XMMATRIX  view;
-		XMMATRIX  proj;
-		XMMATRIX  view2;
-		XMMATRIX  proj2;
+		XMFLOAT4X4  model;
+		XMFLOAT4X4  view;
+		XMFLOAT4X4  proj;
+		XMFLOAT4X4  view2;
+		XMFLOAT4X4  proj2;
 	};
 	MatrixBuffer cbMatrix;
 
@@ -92,18 +92,20 @@ private:
 
 
 void Plane::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &Model,  
-				  const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj)
+				   const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj)
 {
 
 
-	cbMatrix.model  = XMMatrixTranspose(Model);
-	cbMatrix.view   = XMMatrixTranspose(View);
-	cbMatrix.proj   = XMMatrixTranspose(Proj);
+	cbMatrix.model  = Model;
+	cbMatrix.view   = View;
+	cbMatrix.proj   = Proj;
 	XMVECTOR pos    = XMVectorSet(2.0f, 5.0f, -8.0f, 1.0f);
 	XMVECTOR target = XMVectorZero();
 	XMVECTOR up     = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	cbMatrix.view2  = XMMatrixTranspose ( XMMatrixLookAtLH(pos, target, up) );
-	cbMatrix.proj2  = XMMatrixTranspose (XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0f), 1.0f, 1.0f, 1000.0f) );
+	XMMATRIX view2  =  XMMatrixTranspose ( XMMatrixLookAtLH(pos, target, up) );
+	XMMATRIX proj2  = XMMatrixTranspose (XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0f), 1.0f, 1.0f, 1000.0f) );
+	XMStoreFloat4x4(&cbMatrix.view2, view2); 
+	XMStoreFloat4x4(&cbMatrix.proj2, proj2);
 
 	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
 	pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
@@ -116,7 +118,7 @@ void Plane::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &M
 	pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
 	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    pD3D11DeviceContext->PSSetShaderResources(0, 2, m_pTextures);  
+	pD3D11DeviceContext->PSSetShaderResources(0, 2, m_pTextures);  
 	pD3D11DeviceContext->PSSetSamplers( 0, 1, &m_pTexSamplerState );
 
 	PlaneShader.use(pD3D11DeviceContext);
