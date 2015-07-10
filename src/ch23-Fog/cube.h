@@ -21,11 +21,11 @@ public:
 
 	void shutdown()
 	{
-			ReleaseCOM(m_pRenderTargetView  )
-			ReleaseCOM(m_pMVPBuffer         )
-			ReleaseCOM(m_pLightBuffer       )
-			ReleaseCOM(m_pVertexBuffer      )
-			ReleaseCOM(m_pIndexBuffer       )
+		ReleaseCOM(m_pRenderTargetView  )
+		ReleaseCOM(m_pMVPBuffer         )
+		ReleaseCOM(m_pLightBuffer       )
+		ReleaseCOM(m_pVertexBuffer      )
+		ReleaseCOM(m_pIndexBuffer       )
 	}
 
 	bool load_model(char *modelFile);
@@ -45,9 +45,9 @@ private:
 
 	struct MatrixBuffer
 	{
-		XMMATRIX  model;
-		XMMATRIX  view;
-		XMMATRIX  proj;
+		XMFLOAT4X4 model;
+		XMFLOAT4X4 view;
+		XMFLOAT4X4 proj;
 
 	};
 	MatrixBuffer cbMatrix;
@@ -101,9 +101,9 @@ void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &Mo
 				  const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj)
 {
 
-	cbMatrix.model  = XMMatrixTranspose(Model);
-	cbMatrix.view   = XMMatrixTranspose(View);
-	cbMatrix.proj   = XMMatrixTranspose(Proj);
+	cbMatrix.model  = Model;
+	cbMatrix.view   = View;
+	cbMatrix.proj   = Proj;
 	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
 	pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
 

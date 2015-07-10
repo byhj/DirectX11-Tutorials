@@ -191,7 +191,7 @@ void D3DRenderSystem::v_Render()
 	Model = XMMatrixRotationY(rot);
 	View  = camera.GetViewMatrix();
 
-	XMFLOAT4 bgColor = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+	float bgColor[4] = {0.5f, 0.5f, 0.5f, 1.0f};
 
 	//Render to texture
 	m_pD3D11DeviceContext->OMSetRenderTargets(2, &pRenderTextureSRVs[0], m_pDepthStencilView);

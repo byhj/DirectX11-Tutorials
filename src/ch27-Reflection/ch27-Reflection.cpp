@@ -37,12 +37,10 @@ public:
 		static float rot = 0.0f;
 		rot +=  timer.GetDeltaTime();
 		UpdateScene();
-		Model = XMMatrixIdentity();
-		View  = camera.GetViewMatrix();
 
+		m_View  = camera.GetViewMatrix();
 
-
-		XMFLOAT4 bgColor = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+		float bgColor[4] = {0.0f, 0.0f, 0.0f, 1.0f };
 		m_pD3D11DeviceContext->ClearRenderTargetView(pRenderTargetView, bgColor);
 		m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
@@ -53,17 +51,18 @@ public:
 		XMVECTOR target = XMVectorZero();
 		XMVECTOR up     = XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);
 		XMMATRIX reflectMat = XMMatrixLookAtLH(pos, target, up);
+        XMStoreFloat4x4(&m_Reflect, XMMatrixTranspose(reflectMat) );
 
 		m_pD3D11DeviceContext->OMSetRenderTargets(1, &pRenderTargetView, m_pDepthStencilView);
-		cube.Render(m_pD3D11DeviceContext, Model, reflectMat, Proj);
+		cube.Render(m_pD3D11DeviceContext, m_Model, m_Reflect, m_Proj);
 
 		BeginScene();
 
 		//Set normal render target view
 		m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
-		cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
+		cube.Render(m_pD3D11DeviceContext, m_Model, m_View, m_Proj);
 
-        reflect.Render(m_pD3D11DeviceContext, pShaderResourceView, Model, View, Proj, reflectMat);
+        reflect.Render(m_pD3D11DeviceContext, pShaderResourceView, m_Model, m_View, m_Proj, m_Reflect);
 
 		DrawMessage();
 		EndScene();
@@ -103,13 +102,11 @@ private:
 	void TurnZBufferOff();
 	void DrawFps();
 	void DrawMessage();
-
-	XMMATRIX Model;
-	XMMATRIX View;
-	XMMATRIX Proj;
-	XMVECTOR camPos;
-	XMVECTOR camTarget;
-	XMVECTOR camUp;
+	
+	XMFLOAT4X4 m_Model;
+	XMFLOAT4X4 m_View;
+	XMFLOAT4X4 m_Proj;
+	XMFLOAT4X4 m_Reflect;
 
 	//D3D Device 
 	IDXGISwapChain           *m_pSwapChain;
@@ -332,12 +329,17 @@ void D3DRenderSystem::init_camera()
 	m_pD3D11DeviceContext->RSSetViewports(1, &vp);
 
 	//MVP Matrix
-	camPos    = XMVectorSet( 0.0f, 0.0f, -5.0f, 0.0f );
-	camTarget = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
-	camUp     = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
-	View      = XMMatrixLookAtLH( camPos, camTarget, camUp );
-	Proj      = XMMatrixPerspectiveFovLH( XMConvertToRadians(45.0f), GetAspect(), 1.0f, 1000.0f);
-	Model     = XMMatrixIdentity();
+	XMVECTOR camPos    = XMVectorSet( 0.0f, 0.0f, -5.0f, 0.0f );
+	XMVECTOR camTarget = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
+	XMVECTOR camUp     = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
+	XMMATRIX View      = XMMatrixLookAtLH( camPos, camTarget, camUp );
+	XMMATRIX Proj      = XMMatrixPerspectiveFovLH( XMConvertToRadians(45.0f), GetAspect(), 1.0f, 1000.0f);
+	XMMATRIX Model     = XMMatrixIdentity();
+
+	XMStoreFloat4x4(&m_Model, XMMatrixTranspose(Model) );
+	XMStoreFloat4x4(&m_View,  XMMatrixTranspose(View) );
+	XMStoreFloat4x4(&m_Proj,  XMMatrixTranspose(Proj) );
+
 }
 
 void D3DRenderSystem::init_object()
@@ -409,7 +411,7 @@ void D3DRenderSystem::TurnZBufferOff()
 
 void  D3DRenderSystem::BeginScene()
 {
-	XMFLOAT4 bgColor = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	float bgColor[4] = {0.0f, 0.0f, 0.0f, 1.0f };
 
 	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
 	m_pD3D11DeviceContext->OMSetBlendState(NULL, NULL, 0XFFFFFFFF);

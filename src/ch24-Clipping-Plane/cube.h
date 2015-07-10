@@ -20,11 +20,11 @@ public:
 
 	void shutdown()
 	{
-			ReleaseCOM(m_pRenderTargetView  )
-			ReleaseCOM(m_pMVPBuffer         )
-			ReleaseCOM(m_pLightBuffer       )
-			ReleaseCOM(m_pVertexBuffer      )
-			ReleaseCOM(m_pIndexBuffer       )
+		ReleaseCOM(m_pRenderTargetView  )
+		ReleaseCOM(m_pMVPBuffer         )
+		ReleaseCOM(m_pLightBuffer       )
+		ReleaseCOM(m_pVertexBuffer      )
+		ReleaseCOM(m_pIndexBuffer       )
 	}
 
 	bool load_model(char *modelFile);
@@ -36,14 +36,14 @@ public:
 private:
 	struct ClipBuffer
 	{
-         XMVECTOR clipPlane;
+        XMFLOAT4 clipPlane;
 	};
 
 	struct MatrixBuffer
 	{
-		XMMATRIX  model;
-		XMMATRIX  view;
-		XMMATRIX  proj;
+		XMFLOAT4X4  model;
+		XMFLOAT4X4  view;
+		XMFLOAT4X4  proj;
 
 	};
 	MatrixBuffer cbMatrix;
@@ -97,9 +97,9 @@ void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &Mo
 				  const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj)
 {
 
-	cbMatrix.model  = XMMatrixTranspose(Model);
-	cbMatrix.view   = XMMatrixTranspose(View);
-	cbMatrix.proj   = XMMatrixTranspose(Proj);
+	cbMatrix.model  = Model;
+	cbMatrix.view   = View;
+	cbMatrix.proj   = Proj;
 	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
 	pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
 
@@ -229,7 +229,7 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	// Get a pointer to the data in the constant buffer.
 	ClipBuffer *dataPtr3 = (ClipBuffer*)mappedResource.pData;
 
-	dataPtr3->clipPlane = XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f);
+	dataPtr3->clipPlane = XMFLOAT4(.0f, -1.0f, 0.0f, 0.0f);
 
 	pD3D11DeviceContext->Unmap(m_CameraBuffer, 0);
 

@@ -20,7 +20,7 @@ static float Clamp(const float& x, const float& low, const float& high)
 class D3DRenderSystem: public D3DApp
 {
 public:
-	D3DRenderSystem():m_Theta(1.5f * Pi), m_Phi(0.25f * Pi), m_Radius(3.0f) 
+	D3DRenderSystem():m_Theta(1.5f * Pi), m_Phi(0.25f * Pi), m_Radius(5.0f) 
 	{
 		m_AppName = L"DirectX11: ch12-Font";
 		m_pSwapChain          = NULL;
@@ -36,7 +36,7 @@ public:
 		m_LastMousePos.y = 0;
 
 		XMMATRIX I = XMMatrixIdentity();
-		XMStoreFloat4x4(&m_World, I);
+		XMStoreFloat4x4(&m_Model, I);
 		XMStoreFloat4x4(&m_View, I);
 		XMStoreFloat4x4(&m_Proj, I);
 	}
@@ -77,12 +77,9 @@ private:
 	void DrawFps();
 	void DrawMessage();
 
-	XMMATRIX Model;
-	XMMATRIX View;
-	XMMATRIX Proj;
-	XMVECTOR camPos;
-	XMVECTOR camTarget;
-	XMVECTOR camUp;
+	XMFLOAT4X4 m_Model;
+	XMFLOAT4X4 m_View;
+	XMFLOAT4X4 m_Proj;
 
 	//D3D Device 
 	IDXGISwapChain           *m_pSwapChain;
@@ -102,10 +99,6 @@ private:
 	int m_videoCardMemory;
 	std::wstring m_videoCardInfo;
 	float fps;
-
-	XMFLOAT4X4 m_World;
-	XMFLOAT4X4 m_View;
-	XMFLOAT4X4 m_Proj;
 
 	float m_Theta;
 	float m_Phi;
@@ -130,14 +123,16 @@ void D3DRenderSystem::update()
 	XMVECTOR up     = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
 	XMMATRIX V = XMMatrixLookAtLH(pos, target, up);
-	XMStoreFloat4x4(&m_View, V);
+	XMStoreFloat4x4(&m_View,  XMMatrixTranspose(V) );
 }
 
 void D3DRenderSystem::v_OnMouseWheel(WPARAM btnState, int x, int y)
 {
 	static float zoom = 45.0f;
 	zoom += x * 0.01f;
-	Proj   = XMMatrixPerspectiveFovLH( XMConvertToRadians(zoom), GetAspect(), 1.0f, 1000.0f);
+	XMMATRIX Proj   = XMMatrixPerspectiveFovLH( XMConvertToRadians(zoom), GetAspect(), 1.0f, 1000.0f);
+
+	XMStoreFloat4x4(&m_Proj, XMMatrixTranspose(Proj) );
 }
 
 void D3DRenderSystem::v_OnMouseDown(WPARAM btnState, int x, int y)
@@ -191,7 +186,6 @@ bool D3DRenderSystem::v_InitD3D()
 	init_device();
 	init_camera();
 	init_object();
-	//camera.InitDirectInput(GetHwnd(), GetAppInst());
 
 	return true;
 }
@@ -201,13 +195,11 @@ void D3DRenderSystem::v_Render()
 
 	BeginScene();
 
-
 	static float rot = 0.0f;
 	rot +=  timer.GetDeltaTime();
 	update();
-	View = XMLoadFloat4x4(&m_View);
-	//Model = XMMatrixRotationY(rot);
-	cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
+
+	cube.Render(m_pD3D11DeviceContext, m_Model, m_View, m_Proj);
 
 	DrawMessage();
 	EndScene();
@@ -369,13 +361,9 @@ void D3DRenderSystem::init_camera()
 	vp.Height   = m_ScreenHeight;
 	m_pD3D11DeviceContext->RSSetViewports(1, &vp);
 
-	//MVP Matrix
-	camPos    = XMVectorSet( 0.0f, 0.0f, -3.0f, 0.0f );
-	camTarget = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
-	camUp     = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
-	View      = XMMatrixLookAtLH( camPos, camTarget, camUp );
-	Proj      = XMMatrixPerspectiveFovLH( XMConvertToRadians(45.0f), GetAspect(), 1.0f, 1000.0f);
-	Model     = XMMatrixIdentity();
+	XMMATRIX Proj   = XMMatrixPerspectiveFovLH( XMConvertToRadians(45.0), GetAspect(), 1.0f, 1000.0f);
+
+	XMStoreFloat4x4(&m_Proj, XMMatrixTranspose(Proj) );
 }
 
 void D3DRenderSystem::init_object()
@@ -384,7 +372,6 @@ void D3DRenderSystem::init_object()
 	cube.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
 	cube.init_shader(m_pD3D11Device, GetHwnd());
 	cube.init_texture(m_pD3D11Device, L"../../media/textures/stone01.dds");
-
 	font.init(m_pD3D11Device);
 
 	timer.Reset();
@@ -407,7 +394,7 @@ void D3DRenderSystem::TurnZBufferOff()
 
 void  D3DRenderSystem::BeginScene()
 {
-	XMFLOAT4 bgColor = XMFLOAT4(0.5f, 0.5f, 0.5, 1.0f);
+	float bgColor[4] = {0.5f, 0.5f, 0.5f, 1.0f};
 
 	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
 	m_pD3D11DeviceContext->OMSetBlendState(NULL, NULL, 0XFFFFFFFF);

@@ -438,7 +438,7 @@ void D3DRenderSystem::TurnZBufferOff()
 
 void  D3DRenderSystem::BeginScene()
 {
-	XMFLOAT4 bgColor = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	float bgColor[4] = {0.0f, 0.0f, 0.0f, 1.0f };
 
 	//m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
 	//m_pD3D11DeviceContext->OMSetBlendState(NULL, NULL, 0XFFFFFFFF);

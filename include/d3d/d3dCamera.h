@@ -20,38 +20,23 @@ public:
 		m_LastMousePos.x = 0;
 		m_LastMousePos.y = 0;
 		XMMATRIX I = XMMatrixIdentity();
-		m_World = I;
-		m_View  = I;
-		m_Proj  = I;
-		pickFlag = false;
-	}
-
-	void init(int sw, int sh, std::vector<XMFLOAT3> vPos, std::vector<unsigned long> vIndex, XMMATRIX pickModel)
-	{
-		ClientWidth = sw;
-		ClientHeight = sh;
-		m_aspect = float(sw) / sh;
-		vertPosArray = vPos;
-		indexPosArray = vIndex;
-		this->pickModel = pickModel;
+		XMStoreFloat4x4(&m_World,  I);
+		XMStoreFloat4x4(&m_View ,  I);
+		XMStoreFloat4x4(&m_Proj ,  I);
 	}
 
 	void update();
-	XMMATRIX GetViewMatrix() const 
+	XMFLOAT4X4 GetViewMatrix() const 
 	{
 		return m_View;
 	}
-    XMMATRIX GetProjMatrix() const
+    XMFLOAT4X4 GetProjMatrix() const
 	{
 		return m_Proj;
 	}
 	XMFLOAT3 GetPos()
 	{
 		return pos;
-	}
-	bool CheckPick()
-	{
-		return pickFlag;
 	}
 	void SetRadius(float r)
 	{
@@ -62,13 +47,6 @@ public:
 	void OnMouseUp(WPARAM btnState, int x, int y);
 	void OnMouseWheel(WPARAM btnState, int x, int y, float aspect);
 
-	bool PointInTriangle(XMVECTOR& triV1, XMVECTOR& triV2, XMVECTOR& triV3, XMVECTOR& point );
-
-	float pick(XMVECTOR pickRayInWorldSpacePos, XMVECTOR pickRayInWorldSpaceDir, 
-		std::vector<XMFLOAT3>& vertPosArray, std::vector<DWORD>& indexPosArray, 
-		XMMATRIX& worldSpace);
-	void pickRayVector(float mouseX, float mouseY, XMVECTOR& pickRayInWorldSpacePos, XMVECTOR& pickRayInWorldSpaceDir);
-
 private:
 
 	float m_Theta;
@@ -76,19 +54,12 @@ private:
 	float m_Radius;
 	POINT m_LastMousePos;
 
-	XMMATRIX m_World;
-	XMMATRIX m_View;
-	XMMATRIX m_Proj;
+	XMFLOAT4X4 m_World;
+	XMFLOAT4X4 m_View;
+	XMFLOAT4X4 m_Proj;
 	XMFLOAT3 pos;
 	XMFLOAT3 target;
 	float m_aspect;
-
-	std::vector<XMFLOAT3> vertPosArray;
-	std::vector<unsigned long> indexPosArray;
-	int ClientWidth; 
-	int ClientHeight;
-	XMMATRIX pickModel;
-	bool pickFlag;
 };
 
 

@@ -21,9 +21,9 @@ public:
 	void Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &Model,  
 		const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj)
 	{
-		cbMatrix.model  = XMMatrixTranspose(Model);
-		cbMatrix.view   = XMMatrixTranspose(View);
-		cbMatrix.proj   = XMMatrixTranspose(Proj);
+		cbMatrix.model  = Model;
+		cbMatrix.view   = View;
+		cbMatrix.proj   = Proj;
 
 		pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
 		pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
@@ -62,9 +62,9 @@ private:
 
 	struct MatrixBuffer
 	{
-		XMMATRIX  model;
-		XMMATRIX  view;
-		XMMATRIX  proj;
+		XMFLOAT4X4  model;
+		XMFLOAT4X4  view;
+		XMFLOAT4X4  proj;
 
 	};
 	MatrixBuffer cbMatrix;
