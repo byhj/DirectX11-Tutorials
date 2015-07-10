@@ -18,8 +18,8 @@ public:
 		m_pIndexBuffer        = NULL;
 	}
 
-	void Render(ID3D11DeviceContext *pD3D11DeviceContext,ID3D11ShaderResourceView *pReflectTexSRV, const XMMATRIX &Model,  
-		const XMMATRIX &View, const XMMATRIX &Proj, const XMMATRIX &reflect)
+	void Render(ID3D11DeviceContext *pD3D11DeviceContext,ID3D11ShaderResourceView *pReflectTexSRV, const XMFLOAT4X4 &Model,  
+		const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj, XMFLOAT4X4reflect)
 	{
 		cbMatrix.model  = XMMatrixTranspose(Model);
 		cbMatrix.view   = XMMatrixTranspose(View);

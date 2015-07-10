@@ -1,3 +1,8 @@
+#ifdef _WIN32
+#define _XM_NO_INTRINSICS_
+#endif 
+
+
 #include <D3DX11.h>
 #include <xnamath.h>
 

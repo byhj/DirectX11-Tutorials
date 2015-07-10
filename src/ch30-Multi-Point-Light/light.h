@@ -15,8 +15,8 @@ public:
 		m_pIndexBuffer        = NULL;
 	}
 
-	void Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMMATRIX &Model,  
-		                             const XMMATRIX &View, const XMMATRIX &Proj);
+	void Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &Model,  
+		                             const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj);
 
 	void shutdown()
 	{
@@ -90,8 +90,8 @@ private:
 };
 
 
-void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMMATRIX &Model,  
-				  const XMMATRIX &View, const XMMATRIX &Proj)
+void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &Model,  
+				  const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj)
 {
 
 	cbMatrix.model  = XMMatrixTranspose(Model);

@@ -16,7 +16,9 @@ void D3DCamera::update()
 	XMVECTOR pos    = XMVectorSet(x, y, z, 0.0f);
 	XMVECTOR target = XMVectorZero();
 	XMVECTOR up     = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	m_View = XMMatrixLookAtLH(pos, target, up);
+	XMMATRIX View = XMMatrixLookAtLH(pos, target, up);
+
+	XMStoreFloat4x4(&m_View, XMMatrixTranspose(View) );
 }
 
 

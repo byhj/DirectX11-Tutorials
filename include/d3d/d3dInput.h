@@ -1,6 +1,10 @@
 #ifndef D3DINPUT_H
 #define D3DINPUT_H
 
+#ifdef _WIN32
+#define _XM_NO_INTRINSICS_
+#endif 
+
 #include <d3d11.h>
 #include <D3DX11.h>
 #include <xnamath.h>
@@ -19,15 +23,15 @@ public:
 		m_LastMousePos.y = 0;
 
 		XMMATRIX I = XMMatrixIdentity();
-		m_World =  I;
-		m_View  =  I;
-		m_Proj  =  I;
+		XMStoreFloat4x4(&m_World , I);
+		XMStoreFloat4x4(&m_View  , I);
+		XMStoreFloat4x4(&m_Proj  , I);
 	}
 
 	void update();
 	void DirectInput(float dt);
 	bool InitDirectInput(HWND hWnd,  HINSTANCE hInstance);
-    XMMATRIX GetViewMatrix()
+    XMFLOAT4X4 GetViewMatrix()
 	{
 		return m_View;
 	}
@@ -36,9 +40,9 @@ public:
 
 private:
 
-	XMMATRIX m_World;
-	XMMATRIX m_View;
-	XMMATRIX m_Proj;
+	XMFLOAT4X4 m_World;
+	XMFLOAT4X4 m_View;
+	XMFLOAT4X4 m_Proj;
 
 	float m_Theta;
 	float m_Phi;

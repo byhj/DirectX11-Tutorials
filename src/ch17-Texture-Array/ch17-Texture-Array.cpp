@@ -36,7 +36,7 @@ public:
 		m_LastMousePos.y = 0;
 
 		XMMATRIX I = XMMatrixIdentity();
-		XMStoreFloat4x4(&m_World, I);
+		XMStoreFloat4x4(&m_Model, I);
 		XMStoreFloat4x4(&m_View, I);
 		XMStoreFloat4x4(&m_Proj, I);
 	}
@@ -53,13 +53,13 @@ public:
 	void v_Shutdown()
 	{		
 		ReleaseCOM(m_pSwapChain         )
-			ReleaseCOM(m_pD3D11Device       )
-			ReleaseCOM(m_pD3D11DeviceContext)
-			ReleaseCOM(m_pRenderTargetView  )
-			ReleaseCOM(m_pDepthStencilView  )
-			ReleaseCOM(m_pDepthStencilBuffer)
-			ReleaseCOM(m_pMVPBuffer         )
-			ReleaseCOM(m_pRasterState       )
+		ReleaseCOM(m_pD3D11Device       )
+		ReleaseCOM(m_pD3D11DeviceContext)
+		ReleaseCOM(m_pRenderTargetView  )
+		ReleaseCOM(m_pDepthStencilView  )
+		ReleaseCOM(m_pDepthStencilBuffer)
+		ReleaseCOM(m_pMVPBuffer         )
+		ReleaseCOM(m_pRasterState       )
 	}
 
 	ID3D11Device * GetDevice();
@@ -77,12 +77,9 @@ private:
 	void DrawFps();
 	void DrawMessage();
 
-	XMMATRIX Model;
-	XMMATRIX View;
-	XMMATRIX Proj;
-	XMVECTOR camPos;
-	XMVECTOR camTarget;
-	XMVECTOR camUp;
+	XMFLOAT4X4 m_Model;
+	XMFLOAT4X4 m_View;
+	XMFLOAT4X4 m_Proj;
 
 	//D3D Device 
 	IDXGISwapChain           *m_pSwapChain;
@@ -102,10 +99,6 @@ private:
 	int m_videoCardMemory;
 	std::wstring m_videoCardInfo;
 	float fps;
-
-	XMFLOAT4X4 m_World;
-	XMFLOAT4X4 m_View;
-	XMFLOAT4X4 m_Proj;
 
 	float m_Theta;
 	float m_Phi;
@@ -130,14 +123,16 @@ void D3DRenderSystem::update()
 	XMVECTOR up     = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
 	XMMATRIX V = XMMatrixLookAtLH(pos, target, up);
-	XMStoreFloat4x4(&m_View, V);
+	XMStoreFloat4x4(&m_View,  XMMatrixTranspose(V) );
 }
 
 void D3DRenderSystem::v_OnMouseWheel(WPARAM btnState, int x, int y)
 {
 	static float zoom = 45.0f;
 	zoom += x * 0.01f;
-	Proj   = XMMatrixPerspectiveFovLH( XMConvertToRadians(zoom), GetAspect(), 1.0f, 1000.0f);
+	XMMATRIX Proj   = XMMatrixPerspectiveFovLH( XMConvertToRadians(zoom), GetAspect(), 1.0f, 1000.0f);
+
+	XMStoreFloat4x4(&m_Proj, XMMatrixTranspose(Proj) );
 }
 
 void D3DRenderSystem::v_OnMouseDown(WPARAM btnState, int x, int y)
@@ -191,7 +186,6 @@ bool D3DRenderSystem::v_InitD3D()
 	init_device();
 	init_camera();
 	init_object();
-	//camera.InitDirectInput(GetHwnd(), GetAppInst());
 
 	return true;
 }
@@ -201,13 +195,11 @@ void D3DRenderSystem::v_Render()
 
 	BeginScene();
 
-
 	static float rot = 0.0f;
 	rot +=  timer.GetDeltaTime();
 	update();
-	View = XMLoadFloat4x4(&m_View);
-	//Model = XMMatrixRotationY(rot);
-	cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
+
+	cube.Render(m_pD3D11DeviceContext, m_Model, m_View, m_Proj);
 
 	DrawMessage();
 	EndScene();
@@ -369,13 +361,9 @@ void D3DRenderSystem::init_camera()
 	vp.Height   = m_ScreenHeight;
 	m_pD3D11DeviceContext->RSSetViewports(1, &vp);
 
-	//MVP Matrix
-	camPos    = XMVectorSet( 0.0f, 0.0f, -3.0f, 0.0f );
-	camTarget = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
-	camUp     = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
-	View      = XMMatrixLookAtLH( camPos, camTarget, camUp );
-	Proj      = XMMatrixPerspectiveFovLH( XMConvertToRadians(45.0f), GetAspect(), 1.0f, 1000.0f);
-	Model     = XMMatrixIdentity();
+	XMMATRIX Proj   = XMMatrixPerspectiveFovLH( XMConvertToRadians(45.0), GetAspect(), 1.0f, 1000.0f);
+
+	XMStoreFloat4x4(&m_Proj, XMMatrixTranspose(Proj) );
 }
 
 void D3DRenderSystem::init_object()

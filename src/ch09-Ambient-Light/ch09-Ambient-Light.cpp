@@ -5,7 +5,7 @@
 #endif 
 
 #include "d3d/d3dApp.h"
-#include <d3d/d3dShader.h>
+#include "d3d/d3dShader.h"
 
 class D3DInitApp: public D3DApp
 {
@@ -399,7 +399,7 @@ bool D3DInitApp::init_camera()
 	m_pD3D11DeviceContext->RSSetViewports(1, &vp);
 
 	//MVP Matrix
-	camPos    = XMVectorSet( 0.0f, 0.0f, -3.0f, 0.0f );
+	camPos    = XMVectorSet( 0.0f, 0.0f, -5.0f, 0.0f );
 	camTarget = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
 	camUp     = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
 	View      = XMMatrixLookAtLH( camPos, camTarget, camUp );

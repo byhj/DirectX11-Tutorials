@@ -7,9 +7,9 @@
 #include "d3d/d3dApp.h"
 #include "d3d/d3dFont.h"
 #include "d3d/d3dTimer.h"
+#include "d3d/d3dInput.h"
 
 #include "cube.h"
-#include <string>
 
 class D3DRenderSystem: public D3DApp
 {
@@ -42,9 +42,6 @@ public:
 			ReleaseCOM(m_pRasterState       )
 	}
 
-	ID3D11Device * GetDevice();
-	ID3D11DeviceContext *GetDeviceContext();
-
 private:
 	bool init_device();
 	void init_camera();
@@ -57,12 +54,10 @@ private:
 	void DrawFps();
 	void DrawMessage();
 
-	XMMATRIX Model;
-	XMMATRIX View;
-	XMMATRIX Proj;
-	XMVECTOR camPos;
-	XMVECTOR camTarget;
-	XMVECTOR camUp;
+	XMFLOAT4X4 m_Model;
+	XMFLOAT4X4 m_View;
+	XMFLOAT4X4 m_Proj;
+
 
 	//D3D Device 
 	IDXGISwapChain           *m_pSwapChain;
@@ -77,9 +72,9 @@ private:
 	ID3D11RasterizerState    *m_pRasterState;
 
 	D3DFont font;
-	D3DTimer timer;
 	Cube cube;
-
+	D3DTimer timer;
+	D3DCamera camera;
 	int m_videoCardMemory;
 	std::wstring m_videoCardInfo;
 	float fps;
@@ -93,6 +88,7 @@ bool D3DRenderSystem::v_InitD3D()
 	init_device();
 	init_camera();
 	init_object();
+	camera.InitDirectInput(GetHwnd(), GetAppInst());
 
 	return true;
 }
@@ -106,8 +102,12 @@ void D3DRenderSystem::v_Render()
 	static float rot = 0.0f;
 	rot +=  timer.GetDeltaTime();
 
-	Model = XMMatrixRotationY(rot);
-	cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
+	camera.DetectInput(GetHwnd(), timer.GetDeltaTime());
+	m_View = camera.GetViewMatrix();
+	XMMATRIX Model = XMMatrixRotationX(-60.0f);
+	XMStoreFloat4x4(&m_Model, XMMatrixTranspose(Model) );
+
+	cube.Render(m_pD3D11DeviceContext, m_Model, m_View, m_Proj);
 
 	EndScene();
 }
@@ -254,7 +254,6 @@ bool D3DRenderSystem::init_device()
 
 	// Convert the name of the video card to a character array and store it.
 	m_videoCardInfo = std::wstring(L"Video Card  :") +  adapterDesc.Description;
-
 	return true;
 }
 
@@ -270,12 +269,16 @@ void D3DRenderSystem::init_camera()
 	m_pD3D11DeviceContext->RSSetViewports(1, &vp);
 
 	//MVP Matrix
-	camPos    = XMVectorSet( 0.0f, 0.0f, -3.0f, 0.0f );
-	camTarget = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
-	camUp     = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
-	View      = XMMatrixLookAtLH( camPos, camTarget, camUp );
-	Proj      = XMMatrixPerspectiveFovLH( 0.4f*3.14f, GetAspect(), 1.0f, 1000.0f);
-	Model     = XMMatrixIdentity();
+	XMVECTOR camPos    = XMVectorSet( 0.0f, 0.0f, -3.0f, 0.0f );
+	XMVECTOR camTarget = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
+	XMVECTOR camUp     = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
+	XMMATRIX View      = XMMatrixLookAtLH( camPos, camTarget, camUp );
+	XMMATRIX Proj      = XMMatrixPerspectiveFovLH( 0.4f*3.14f, GetAspect(), 1.0f, 1000.0f);
+	XMMATRIX Model     = XMMatrixIdentity();
+
+	XMStoreFloat4x4(&m_Model, Model);
+	XMStoreFloat4x4(&m_View,  View);
+	XMStoreFloat4x4(&m_Proj,  XMMatrixTranspose(Proj) );
 }
 
 void D3DRenderSystem::init_object()

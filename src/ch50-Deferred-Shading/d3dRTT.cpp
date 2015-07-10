@@ -10,8 +10,8 @@ void D3DRTT::init_window(float posX, float posY, float width, float height, floa
 	m_aspect = aspect;
 }
 
-void D3DRTT::Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView **pTexture, const XMMATRIX &Model,  
-					const XMMATRIX &View, const XMMATRIX &Proj)
+void D3DRTT::Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView **pTexture, const XMFLOAT4X4 &Model,  
+					const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj)
 {
 
 	cbMatrix.model  = XMMatrixTranspose(Model);

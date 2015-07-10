@@ -14,7 +14,7 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="Framework">
-      <UniqueIdentifier>{502ea9df-db04-4e60-aac4-a324015254c9}</UniqueIdentifier>
+      <UniqueIdentifier>{03cf0dca-1693-4ce7-b55c-b3c10b3352eb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -47,13 +47,13 @@
     <ClInclude Include="..\..\include\d3d\d3dTimer.h">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\d3d\d3dFrustum.h">
-      <Filter>Framework</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ch18-Light-Map.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\include\d3d\d3dApp.cpp">
+      <Filter>Framework</Filter>
     </ClCompile>
     <ClCompile Include="..\..\include\d3d\d3dFont.cpp">
       <Filter>Framework</Filter>
@@ -65,12 +65,6 @@
       <Filter>Framework</Filter>
     </ClCompile>
     <ClCompile Include="..\..\include\d3d\d3dTimer.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\include\d3d\d3dFrustum.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\include\d3d\d3dApp.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
   </ItemGroup>

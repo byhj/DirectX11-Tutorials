@@ -44,6 +44,9 @@
     <ClInclude Include="..\..\include\d3d\d3dTimer.h">
       <Filter>Framework</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\d3d\d3dInput.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ch15-FPS.cpp">
@@ -59,6 +62,9 @@
       <Filter>Framework</Filter>
     </ClCompile>
     <ClCompile Include="..\..\include\d3d\d3dApp.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\include\d3d\d3dInput.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
   </ItemGroup>

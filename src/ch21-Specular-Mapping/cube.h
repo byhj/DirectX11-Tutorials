@@ -16,8 +16,8 @@ public:
 		m_pTextures[1]        = NULL;
 	}
 
-	void Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMMATRIX &Model,  
-		const XMMATRIX &View, const XMMATRIX &Proj, const XMVECTOR camPos);
+	void Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &Model,  
+		const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj, const XMVECTOR camPos);
 
 	void shutdown()
 	{
@@ -118,8 +118,8 @@ private:
 };
 
 
-void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMMATRIX &Model,  
-				  const XMMATRIX &View, const XMMATRIX &Proj, const XMVECTOR camPos)
+void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &Model,  
+				  const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj, const XMVECTOR camPos)
 {
     int bufferSlot = 0;
 	cbMatrix.model  = XMMatrixTranspose(Model);

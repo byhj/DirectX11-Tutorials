@@ -15,8 +15,8 @@ public:
 		m_pIndexBuffer        = NULL;
 	}
 
-	void Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView *pTexture,const XMMATRIX &Model,  
-		        const XMMATRIX &View, const XMMATRIX &Proj, float fadeAmount);
+	void Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView *pTexture,const XMFLOAT4X4 &Model,  
+		        const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj, float fadeAmount);
 
 	void shutdown()
 	{
@@ -81,8 +81,8 @@ void Fade::init_window(float posX, float posY, float width, float height)
 	m_height = height;
 }
 
-void Fade::Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView *pTexture, const XMMATRIX &Model,  
-				  const XMMATRIX &View, const XMMATRIX &Proj, float fadeAmount)
+void Fade::Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView *pTexture, const XMFLOAT4X4 &Model,  
+				  const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj, float fadeAmount)
 {
 
 	cbMatrix.model  = XMMatrixTranspose(Model);
