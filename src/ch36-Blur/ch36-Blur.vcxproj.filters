@@ -30,6 +30,18 @@
     <None Include="fade.psh">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="verticalblur.vsh">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="verticalblur.psh">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="horizontalblur.vsh">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="horizontalblur.psh">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fade.h">

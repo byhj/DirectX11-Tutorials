@@ -1,0 +1,38 @@
+
+struct VS_OUT
+{
+  float4 Pos :SV_POSITION;
+  float2 Tex :TEXCOORD0;
+  float4 RefractionPos: TEXCOORD1;
+};
+
+Texture2D colorTex       : register(t0);
+Texture2D normalTex      : register(t1);
+Texture2D refractionTex  : register(t2);
+
+SamplerState TexState    : register(s0);
+
+float4 PS(VS_OUT ps_in) : SV_TARGET
+{
+   float refractionScale = 0.01f;
+
+   //Convert the refraction tex from [-1, +1] to [0, 1]
+   float2 refractTexCoord;
+   refractTexCoord.x = ps_in.RefractionPos.x / ps_in.RefractionPos.w / 2.0f + 0.5f;
+   refractTexCoord.y = -ps_in.RefractionPos.y / ps_in.RefractionPos.w / 2.0f + 0.5f;
+
+   //Convert the normal from [0, 1] to [-1 +1]
+   float4 normalMap = normalTex.Sample(TexState, ps_in.Tex);
+   float3 normal = (normalMap.xyz * 2.0f) - 1.0f;
+   
+   
+   refractTexCoord += (normal.xy * refractionScale);
+   float4 refractColor = refractionTex.Sample(TexState, refractTexCoord);
+   float4 textureColor = colorTex.Sample(TexState, ps_in.Tex);
+
+   float4 pixelColor = lerp(refractColor, textureColor, 0.5f);
+
+   return float4(1.0f, 0.0f, 0.0f, 1.0f); //pixelColor;
+
+}
+

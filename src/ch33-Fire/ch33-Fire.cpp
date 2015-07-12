@@ -67,13 +67,6 @@ private:
 	void DrawFps();
 	void DrawMessage();
 
-	XMMATRIX Model;
-	XMMATRIX View;
-	XMMATRIX Proj;
-	XMVECTOR camPos;
-	XMVECTOR camTarget;
-	XMVECTOR camUp;
-
 	//D3D Device 
 	IDXGISwapChain           *m_pSwapChain;
 	ID3D11Device             *m_pD3D11Device;
@@ -93,9 +86,14 @@ private:
 	ID3D11BlendState         *m_pAlphaEnableState;
 	ID3D11BlendState         *m_pAlphaDisableState;
 	D3DFont font;
-	Object object;
 	D3DCamera camera;
 	D3DTimer timer;
+
+	XMFLOAT4X4 m_Model;
+	XMFLOAT4X4 m_View;
+	XMFLOAT4X4 m_Proj;
+
+	Object object;
 	int m_videoCardMemory;
 	std::wstring m_videoCardInfo;
 	float fps;
@@ -192,10 +190,10 @@ void D3DRenderSystem::v_Render()
 	static float rot = 0.0f;
 	rot +=  timer.GetDeltaTime();
 	UpdateScene();
-	Model = XMMatrixIdentity();
-	View  = camera.GetViewMatrix();
+
+	m_View = camera.GetViewMatrix();
 	m_pD3D11DeviceContext->RSSetState(m_pRasterState);
-	object.Render(m_pD3D11DeviceContext, Model, View, Proj);
+	object.Render(m_pD3D11DeviceContext, m_Model, m_View, m_Proj);
 
 	TurnOffAlphaBlending();
 
@@ -402,12 +400,15 @@ void D3DRenderSystem::init_camera()
 	m_pD3D11DeviceContext->RSSetViewports(1, &vp);
 
 	//MVP Matrix
-	camPos    = XMVectorSet( 0.0f, 0.0f, -5.0f, 0.0f );
-	camTarget = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
-	camUp     = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
-	View      = XMMatrixLookAtLH( camPos, camTarget, camUp );
-	Proj      = XMMatrixPerspectiveFovLH( XMConvertToRadians(45.0f), GetAspect(), 1.0f, 1000.0f);
-	Model     = XMMatrixIdentity();
+	XMVECTOR camPos    = XMVectorSet( 0.0f, 0.0f, -5.0f, 0.0f );
+	XMVECTOR camTarget = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
+	XMVECTOR camUp     = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
+	XMMATRIX View      = XMMatrixLookAtLH( camPos, camTarget, camUp );
+	XMMATRIX Proj      = XMMatrixPerspectiveFovLH( XMConvertToRadians(45.0f), GetAspect(), 1.0f, 1000.0f);
+	XMMATRIX Model     = XMMatrixIdentity();
+	XMStoreFloat4x4(&m_Model, XMMatrixTranspose(Model) );
+	XMStoreFloat4x4(&m_View, XMMatrixTranspose(View) );
+	XMStoreFloat4x4(&m_Proj, XMMatrixTranspose(Proj) );
 }
 
 void D3DRenderSystem::init_object()

@@ -14,36 +14,10 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="Framework">
-      <UniqueIdentifier>{7c502092-f6c7-416d-8a58-ff2bcf4632c3}</UniqueIdentifier>
+      <UniqueIdentifier>{14eeae78-cdf4-4173-a538-3f82d9b0afbb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="cube.psh">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="cube.vsh">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="reflect.psh">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="reflect.vsh">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="rtt.psh">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="rtt.vsh">
-      <Filter>Resource Files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="reflect.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="cube.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\d3d\d3dApp.h">
       <Filter>Framework</Filter>
     </ClInclude>
@@ -56,9 +30,6 @@
     <ClInclude Include="..\..\include\d3d\d3dFont.h">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\d3d\d3dFrustum.h">
-      <Filter>Framework</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\d3d\d3dRTT.h">
       <Filter>Framework</Filter>
     </ClInclude>
@@ -67,6 +38,12 @@
     </ClInclude>
     <ClInclude Include="..\..\include\d3d\d3dTimer.h">
       <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="cube.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="glass.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -82,9 +59,6 @@
     <ClCompile Include="..\..\include\d3d\d3dFont.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\include\d3d\d3dFrustum.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\include\d3d\d3dRTT.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
@@ -94,5 +68,25 @@
     <ClCompile Include="..\..\include\d3d\d3dTimer.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="glass.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cube.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cube.psh">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="cube.vsh">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="glass.vsh">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="glass.psh">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

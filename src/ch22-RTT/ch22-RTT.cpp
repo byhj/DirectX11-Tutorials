@@ -184,9 +184,8 @@ void D3DRenderSystem::v_Render()
 	rot +=  timer.GetDeltaTime();
 	UpdateScene();
 	XMMATRIX Model = XMMatrixRotationY(rot);
-	XMMATRIX View  = camera.GetViewMatrix();
 	XMStoreFloat4x4(&m_Model, XMMatrixTranspose(Model) );
-	XMStoreFloat4x4(&m_View, XMMatrixTranspose(View) );
+	m_View  = camera.GetViewMatrix();
 
 	float bgColor[4] = {0.5f, 0.5f, 0.5f, 1.0f};
 

@@ -1,129 +1,13 @@
-
-#include <d3d/d3dShader.h>
-
-class Cube
-{
-public:
-	Cube()
-	{
-		m_pInputLayout        = NULL;
-		m_pMVPBuffer          = NULL;
-		m_pLightBuffer        = NULL;
-		m_pVertexBuffer       = NULL;
-		m_pIndexBuffer        = NULL;
-		m_pTextures[0]        = NULL;
-		m_pTextures[1]        = NULL;
-	}
-
-	void Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &Model,  
-		                             const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj);
-
-	void shutdown()
-	{
-			ReleaseCOM(m_pRenderTargetView  )
-			ReleaseCOM(m_pMVPBuffer         )
-			ReleaseCOM(m_pLightBuffer       )
-			ReleaseCOM(m_pVertexBuffer      )
-			ReleaseCOM(m_pIndexBuffer       )
-	}
-
-	bool LoadModel(char *modelFile);
-	bool init_buffer (ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext);
-	bool init_shader (ID3D11Device *pD3D11Device, HWND hWnd);
-	void init_texture(ID3D11Device *pD3D11Device, LPCWSTR texFile, ID3D11ShaderResourceView *m_pTexture);
-private:
-
-	struct CameraBuffer
-	{
-		XMFLOAT3 camPos;
-		float padding;
-	};
-
-	struct MatrixBuffer
-	{
-		XMMATRIX  model;
-		XMMATRIX  view;
-		XMMATRIX  proj;
-
-	};
-	MatrixBuffer cbMatrix;
-
-	struct LightBuffer
-	{
-		XMFLOAT4 ambientColor;
-		XMFLOAT4 diffuseColor;
-		XMFLOAT3 lightDirection;
-		float specularPower;
-		XMFLOAT4 specularColor;
-	};
-	LightBuffer cbLight;
-
-	struct VertexType
-	{
-		XMFLOAT3 position;
-		XMFLOAT2 texture;
-		XMFLOAT3 normal;
-		XMFLOAT3 tangent;
-		XMFLOAT3 binormal;
-	};
-
-	struct ModelType
-	{
-		float x, y, z;
-		float tu, tv;
-		float nx, ny, nz;
-		float tx, ty, tz;
-		float bx, by, bz;
-	};
-
-	struct TempVertexType
-	{
-		float x, y, z;
-		float tu, tv;
-		float nx, ny, nz;
-	};
-
-	struct VectorType
-	{
-		float x, y, z;
-	};
-	struct ModelVertex
-	{
-		float x, y , z;
-		float u, v;
-		float nx, ny, nz;
-	};
-	ModelVertex  *m_pModelVertex;
-
-	ID3D11RenderTargetView   *m_pRenderTargetView;
-	ID3D11Buffer             *m_pMVPBuffer;
-	ID3D11Buffer             *m_pLightBuffer;
-	ID3D11Buffer             *m_CameraBuffer;
-	ID3D11Buffer             *m_pVertexBuffer;
-	ID3D11Buffer             *m_pIndexBuffer;
-	ID3D11ShaderResourceView *m_pTextures[2];
-	ID3D11SamplerState       *m_pTexSamplerState;
-	ID3D11InputLayout        *m_pInputLayout;
-
-	int m_VertexCount;
-	int m_IndexCount;
-	ModelType  *pModelVertex;
-	Shader CubeShader;
-
-	void CalculateModelVectors();
-	void CalculateTangentBinormal(TempVertexType, TempVertexType, TempVertexType, VectorType&, VectorType&);
-	void CalculateNormal(VectorType, VectorType, VectorType&);
-
-};
+#include "cube.h"
 
 
 void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &Model,  
 				  const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj)
 {
 
-	cbMatrix.model  = XMMatrixTranspose(Model);
-	cbMatrix.view   = XMMatrixTranspose(View);
-	cbMatrix.proj   = XMMatrixTranspose(Proj);
+	cbMatrix.model  = Model;
+	cbMatrix.view   = View;
+	cbMatrix.proj   = Proj;
 	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
 	pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
 
@@ -135,7 +19,7 @@ void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &Mo
 	pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
 	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    pD3D11DeviceContext->PSSetShaderResources(0, 2, m_pTextures);  
+	pD3D11DeviceContext->PSSetShaderResources(0, 2, m_pTextures);  
 	pD3D11DeviceContext->PSSetSamplers( 0, 1, &m_pTexSamplerState );
 
 	CubeShader.use(pD3D11DeviceContext);
@@ -177,7 +61,7 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 		VertexData[i].tangent = XMFLOAT3(pModelVertex[i].tx, pModelVertex[i].ty, pModelVertex[i].tz);
 		VertexData[i].binormal = XMFLOAT3(pModelVertex[i].bx, pModelVertex[i].by, pModelVertex[i].bz);
 
- 		IndexData[i] = i;
+		IndexData[i] = i;
 	}
 
 	// Set up the description of the static vertex buffer.
@@ -508,7 +392,7 @@ void Cube::CalculateModelVectors()
 	return;
 }
 void Cube::CalculateTangentBinormal(TempVertexType vertex1, TempVertexType vertex2, TempVertexType vertex3,
-										  VectorType& tangent, VectorType& binormal)
+									VectorType& tangent, VectorType& binormal)
 {
 	float vector1[3], vector2[3];
 	float tuVector[2], tvVector[2];

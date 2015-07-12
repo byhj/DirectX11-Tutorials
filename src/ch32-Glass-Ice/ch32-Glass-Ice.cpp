@@ -7,11 +7,10 @@
 #include "d3d/d3dApp.h"
 #include "d3d/d3dFont.h"
 #include "d3d/d3dTimer.h"
-#include "d3d/d3dRTT.h"
 #include "d3d/d3dCamera.h"
 
 #include "cube.h"
-#include "reflect.h"
+#include "glass.h"
 
 class D3DRenderSystem: public D3DApp
 {
@@ -31,44 +30,7 @@ public:
 	}
 
 	bool v_InitD3D();
-
-	void v_Render()
-	{
-		static float rot = 0.0f;
-		rot +=  timer.GetDeltaTime();
-		UpdateScene();
-		Model = XMMatrixIdentity();
-		View  = camera.GetViewMatrix();
-
-
-
-		float bgColor[4] = {0.0f, 0.0f, 0.0f, 1.0f };
-		m_pD3D11DeviceContext->ClearRenderTargetView(pRenderTargetView, bgColor);
-		m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-
-		//render to texture
-		XMFLOAT3 camPos = camera.GetPos();
-		camPos.y =  -camPos.y ;
-		XMVECTOR pos    = XMLoadFloat3(&camPos);
-		XMVECTOR target = XMVectorZero();
-		XMVECTOR up     = XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);
-		XMMATRIX reflectMat = XMMatrixLookAtLH(pos, target, up);
-
-		m_pD3D11DeviceContext->OMSetRenderTargets(1, &pRenderTargetView, m_pDepthStencilView);
-		cube.Render(m_pD3D11DeviceContext, Model, reflectMat, Proj);
-
-		BeginScene();
-
-		//Set normal render target view
-		m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
-		cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
-
-        reflect.Render(m_pD3D11DeviceContext, pShaderResourceView, Model, View, Proj, reflectMat);
-
-		DrawMessage();
-		EndScene();
-	}
-
+	void v_Render();
 	void v_OnMouseDown(WPARAM btnState, int x, int y);
 	void v_OnMouseMove(WPARAM btnState, int x, int y);
 	void v_OnMouseUp(WPARAM btnState, int x, int y);
@@ -95,7 +57,6 @@ private:
 	bool init_device();
 	void init_camera();
 	void init_object();
-	void init_rtt();
 
 	void BeginScene();
 	void EndScene();
@@ -103,13 +64,6 @@ private:
 	void TurnZBufferOff();
 	void DrawFps();
 	void DrawMessage();
-
-	XMMATRIX Model;
-	XMMATRIX View;
-	XMMATRIX Proj;
-	XMVECTOR camPos;
-	XMVECTOR camTarget;
-	XMVECTOR camUp;
 
 	//D3D Device 
 	IDXGISwapChain           *m_pSwapChain;
@@ -123,19 +77,24 @@ private:
 	ID3D11Buffer             *m_pMVPBuffer;
 	ID3D11RasterizerState    *m_pRasterState;
 
+	//Render to texture
 	ID3D11Texture2D          *pRenderTargetTexture;
 	ID3D11RenderTargetView   *pRenderTargetView;
 	ID3D11ShaderResourceView *pShaderResourceView;
 
+	XMFLOAT4X4 m_Model;
+	XMFLOAT4X4 m_View;
+	XMFLOAT4X4 m_Proj;
+
 	D3DFont font;
-	Cube cube;
-	Reflect reflect;
 	D3DCamera camera;
-	D3DRTT d3dRtt;
 	D3DTimer timer;
 	int m_videoCardMemory;
 	std::wstring m_videoCardInfo;
 	float fps;
+
+	Cube cube;
+	Glass glass;
 };
 
 CALL_MAIN(D3DRenderSystem);
@@ -144,7 +103,6 @@ void D3DRenderSystem::UpdateScene()
 {
 	camera.update();
 }
-
 void  D3DRenderSystem::v_OnMouseDown(WPARAM btnState, int x, int y)
 {
 	camera.OnMouseDown(btnState, x, y, GetHwnd());
@@ -169,11 +127,98 @@ bool D3DRenderSystem::v_InitD3D()
 	init_device();
 	init_camera();
 	init_object();
-	init_rtt();
+
+	D3D11_TEXTURE2D_DESC textureDesc;
+	HRESULT result;
+	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+
+	ZeroMemory(&textureDesc, sizeof(textureDesc));
+	textureDesc.Width = m_ScreenWidth;
+	textureDesc.Height = m_ScreenHeight;
+	textureDesc.MipLevels  = 1;
+	textureDesc.ArraySize = 1;
+	textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.Usage = D3D11_USAGE_DEFAULT;
+	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	textureDesc.CPUAccessFlags = 0;
+	textureDesc.MiscFlags = 0;
+
+	//Create the render target texture
+	result = m_pD3D11Device->CreateTexture2D(&textureDesc, NULL, &pRenderTargetTexture);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	//Setup the description of the render target view
+	renderTargetViewDesc.Format = textureDesc.Format;
+	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	renderTargetViewDesc.Texture2D.MipSlice = 0;
+
+	result = m_pD3D11Device->CreateRenderTargetView(pRenderTargetTexture, &renderTargetViewDesc, &pRenderTargetView);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	shaderResourceViewDesc.Format = textureDesc.Format;
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+	shaderResourceViewDesc.Texture2D.MipLevels = 1;
+	result = m_pD3D11Device->CreateShaderResourceView(pRenderTargetTexture, &shaderResourceViewDesc, &pShaderResourceView);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	//camera.InitDirectInput(GetHwnd(), GetAppInst());
 
 	return true;
 }
 
+
+void D3DRenderSystem::v_Render()
+{
+
+	static float rot = 0.0f;
+	rot +=  timer.GetDeltaTime();
+	UpdateScene();
+	XMMATRIX Model = XMMatrixRotationY(rot);
+	XMStoreFloat4x4(&m_Model, XMMatrixTranspose(Model) );
+	m_View  = camera.GetViewMatrix();
+
+	float bgColor[4] = {0.5f, 0.5f, 0.5f, 1.0f};
+
+	m_pD3D11DeviceContext->OMSetRenderTargets(1, &pRenderTargetView, m_pDepthStencilView);
+	m_pD3D11DeviceContext->ClearRenderTargetView(pRenderTargetView, bgColor);
+	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+	//cube.Render(m_pD3D11DeviceContext, m_Model, m_View, m_Proj);
+
+	//Set normal render target view
+	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
+
+	BeginScene();
+
+	//cube.Render(m_pD3D11DeviceContext,  m_Model, m_View, m_Proj);
+
+	TurnZBufferOff();
+
+	// Create an orthographic projection matrix for 2D rendering. 
+	Model = XMMatrixIdentity();
+	XMStoreFloat4x4(&m_Model, XMMatrixTranspose(Model) );
+	XMMATRIX orthProj = XMMatrixOrthographicLH(m_ScreenWidth, m_ScreenHeight, 1.0f, 1000.0f);
+	XMFLOAT4X4 orth;
+	XMStoreFloat4x4(&orth, XMMatrixTranspose(orthProj) );
+	glass.Render(m_pD3D11DeviceContext, pShaderResourceView, m_Model, m_View, orth);
+
+	TurnZBufferOn();
+
+	DrawMessage();
+	EndScene();
+}
 
 bool D3DRenderSystem::init_device()
 {
@@ -332,12 +377,14 @@ void D3DRenderSystem::init_camera()
 	m_pD3D11DeviceContext->RSSetViewports(1, &vp);
 
 	//MVP Matrix
-	camPos    = XMVectorSet( 0.0f, 0.0f, -5.0f, 0.0f );
-	camTarget = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
-	camUp     = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
-	View      = XMMatrixLookAtLH( camPos, camTarget, camUp );
-	Proj      = XMMatrixPerspectiveFovLH( XMConvertToRadians(45.0f), GetAspect(), 1.0f, 1000.0f);
-	Model     = XMMatrixIdentity();
+	XMVECTOR camPos    = XMVectorSet( 0.0f, 0.0f, -5.0f, 0.0f );
+	XMVECTOR camTarget = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
+	XMVECTOR camUp     = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
+	XMMATRIX View      = XMMatrixLookAtLH( camPos, camTarget, camUp );
+	XMMATRIX Proj      = XMMatrixPerspectiveFovLH( XMConvertToRadians(45.0f), GetAspect(), 1.0f, 1000.0f);
+
+	XMStoreFloat4x4(&m_View, XMMatrixTranspose(View) );
+	XMStoreFloat4x4(&m_Proj, XMMatrixTranspose(Proj) );
 }
 
 void D3DRenderSystem::init_object()
@@ -345,54 +392,18 @@ void D3DRenderSystem::init_object()
 
 	cube.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
 	cube.init_shader(m_pD3D11Device, GetHwnd());
-
 	font.init(m_pD3D11Device);
 
-	reflect.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-	reflect.init_shader(m_pD3D11Device, GetHwnd());
+	glass.init_window(-1.0f, 1.0f, 2.0f, 2.0f, GetAspect() );
+	glass.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
+	glass.init_shader(m_pD3D11Device, GetHwnd());
 
-	camera.SetRadius(10.0f);
+	camera.SetRadius(5.0f);
+
 	timer.Reset();
 }
 
 
-void D3DRenderSystem::init_rtt()
-{
-	D3D11_TEXTURE2D_DESC textureDesc;
-	HRESULT hr;
-	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
-	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
-
-	ZeroMemory(&textureDesc, sizeof(textureDesc));
-	textureDesc.Width            = m_ScreenWidth;
-	textureDesc.Height           = m_ScreenHeight;
-	textureDesc.MipLevels        = 1;
-	textureDesc.ArraySize        = 1;
-	textureDesc.Format           = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	textureDesc.SampleDesc.Count = 1;
-	textureDesc.Usage            = D3D11_USAGE_DEFAULT;
-	textureDesc.BindFlags        = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-	textureDesc.CPUAccessFlags   = 0;
-	textureDesc.MiscFlags        = 0;
-	//Create the render target texture
-	hr = m_pD3D11Device->CreateTexture2D(&textureDesc, NULL, &pRenderTargetTexture);
-	DebugHR(hr);
-
-	//Setup the description of the render target view
-	renderTargetViewDesc.Format             = textureDesc.Format;
-	renderTargetViewDesc.ViewDimension      = D3D11_RTV_DIMENSION_TEXTURE2D;
-	renderTargetViewDesc.Texture2D.MipSlice = 0;
-	hr = m_pD3D11Device->CreateRenderTargetView(pRenderTargetTexture, &renderTargetViewDesc, &pRenderTargetView);
-	DebugHR(hr);
-
-	shaderResourceViewDesc.Format                    = textureDesc.Format;
-	shaderResourceViewDesc.ViewDimension             = D3D11_SRV_DIMENSION_TEXTURE2D;
-	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
-	shaderResourceViewDesc.Texture2D.MipLevels       = 1;
-	hr = m_pD3D11Device->CreateShaderResourceView(pRenderTargetTexture, &shaderResourceViewDesc, &pShaderResourceView);
-	DebugHR(hr);
-
-}
 
 void D3DRenderSystem::TurnZBufferOn()
 {
@@ -409,7 +420,7 @@ void D3DRenderSystem::TurnZBufferOff()
 
 void  D3DRenderSystem::BeginScene()
 {
-	float bgColor[4] = {0.0f, 0.0f, 0.0f, 1.0f };
+	float bgColor[4] = {0.2f,  0.3f,  0.4f, 1.0f};
 
 	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
 	m_pD3D11DeviceContext->OMSetBlendState(NULL, NULL, 0XFFFFFFFF);

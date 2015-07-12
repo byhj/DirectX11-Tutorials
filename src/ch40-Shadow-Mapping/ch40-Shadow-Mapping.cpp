@@ -10,7 +10,7 @@
 #include "d3d/d3dRTT.h"
 #include "d3d/d3dCamera.h"
 
-#include "cube.h"
+#include "object.h"
 
 class D3DRenderSystem: public D3DApp
 {
@@ -65,13 +65,6 @@ private:
 	void DrawFps();
 	void DrawMessage();
 
-	XMMATRIX Model;
-	XMMATRIX View;
-	XMMATRIX Proj;
-	XMVECTOR camPos;
-	XMVECTOR camTarget;
-	XMVECTOR camUp;
-
 	//D3D Device 
 	IDXGISwapChain           *m_pSwapChain;
 	ID3D11Device             *m_pD3D11Device;
@@ -88,8 +81,15 @@ private:
 	ID3D11RenderTargetView   *pRenderTargetView;
 	ID3D11ShaderResourceView *pShaderResourceView;
 
+	 XMFLOAT4X4 m_Model;
+	 XMFLOAT4X4 m_View;
+	 XMFLOAT4X4 m_Proj;
+
 	D3DFont font;
-	Cube cube;
+	Object cube;
+	Object sphere;
+	Object plane;
+
 	D3DCamera camera;
 	D3DRTT d3dRtt;
 	D3DTimer timer;
@@ -186,8 +186,9 @@ void D3DRenderSystem::v_Render()
 	static float rot = 0.0f;
 	rot +=  timer.GetDeltaTime();
 	UpdateScene();
-	Model = XMMatrixRotationY(rot);
-	View  = camera.GetViewMatrix();
+	XMMATRIX Model = XMMatrixRotationY(rot);
+	XMStoreFloat4x4(&m_Model, XMMatrixTranspose(Model) );
+	m_View  = camera.GetViewMatrix();
 
 	float bgColor[4] = {0.5f, 0.5f, 0.5f, 1.0f};
 
@@ -195,22 +196,24 @@ void D3DRenderSystem::v_Render()
 	m_pD3D11DeviceContext->ClearRenderTargetView(pRenderTargetView, bgColor);
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 	
-	cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
+	cube.Render(m_pD3D11DeviceContext, m_Model, m_View, m_Proj);
 
 	//Set normal render target view
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
 
 	BeginScene();
 
-	cube.Render(m_pD3D11DeviceContext, Model, View, Proj);
+	cube.Render(m_pD3D11DeviceContext,  m_Model, m_View, m_Proj);
 
 	TurnZBufferOff();
 
 	// Create an orthographic projection matrix for 2D rendering. 
 	Model = XMMatrixIdentity();
-	XMMATRIX tProj = XMMatrixOrthographicLH(m_ScreenWidth, m_ScreenHeight, 1.0f, 1000.0f);
-
-	d3dRtt.Render(m_pD3D11DeviceContext, pShaderResourceView, Model, View, tProj);
+	XMStoreFloat4x4(&m_Model, XMMatrixTranspose(Model) );
+	XMMATRIX orthProj = XMMatrixOrthographicLH(m_ScreenWidth, m_ScreenHeight, 1.0f, 1000.0f);
+	XMFLOAT4X4 orth;
+	XMStoreFloat4x4(&orth, XMMatrixTranspose(orthProj) );
+	d3dRtt.Render(m_pD3D11DeviceContext, pShaderResourceView, m_Model, m_View, orth);
 	
 	TurnZBufferOn();
 
@@ -375,19 +378,30 @@ void D3DRenderSystem::init_camera()
 	m_pD3D11DeviceContext->RSSetViewports(1, &vp);
 
 	//MVP Matrix
-	camPos    = XMVectorSet( 0.0f, 0.0f, -5.0f, 0.0f );
-	camTarget = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
-	camUp     = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
-	View      = XMMatrixLookAtLH( camPos, camTarget, camUp );
-	Proj      = XMMatrixPerspectiveFovLH( XMConvertToRadians(45.0f), GetAspect(), 1.0f, 1000.0f);
-	Model     = XMMatrixIdentity();
+	XMVECTOR camPos    = XMVectorSet( 0.0f, 0.0f, -5.0f, 0.0f );
+	XMVECTOR camTarget = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
+	XMVECTOR camUp     = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
+	XMMATRIX View      = XMMatrixLookAtLH( camPos, camTarget, camUp );
+	XMMATRIX Proj      = XMMatrixPerspectiveFovLH( XMConvertToRadians(45.0f), GetAspect(), 1.0f, 1000.0f);
+
+	XMStoreFloat4x4(&m_View, XMMatrixTranspose(View) );
+	XMStoreFloat4x4(&m_Proj, XMMatrixTranspose(Proj) );
 }
 
 void D3DRenderSystem::init_object()
 {
-
+	cube.load_model("../../media/objects/cube.txt");
 	cube.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
 	cube.init_shader(m_pD3D11Device, GetHwnd());
+
+	sphere.load_model("../../media/objects/sphere.txt");
+	sphere.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
+	sphere.init_shader(m_pD3D11Device, GetHwnd());
+
+	plane.load_model("../../media/objects/plane01.txt");
+	plane.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
+	plane.init_shader(m_pD3D11Device, GetHwnd());
+
 	font.init(m_pD3D11Device);
 
 	d3dRtt.init_window(400.0f / m_ScreenWidth * 2.0f, 400.0f / m_ScreenHeight * 2.0f,
