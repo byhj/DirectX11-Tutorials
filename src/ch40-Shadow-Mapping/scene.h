@@ -1,13 +1,13 @@
-#ifndef OBJECT_H
-#define OBJECT_H
+#ifndef Depth_H
+#define Depth_H
 
 #include "d3d/d3dApp.h"
 #include "d3d/d3dShader.h"
 
-class Object
+class Depth
 {
 public:
-	Object()
+	Depth()
 	{
 		m_pInputLayout        = NULL;
 		m_pMVPBuffer          = NULL;
@@ -17,21 +17,20 @@ public:
 		m_pTexture            = NULL;
 	}
 
-	void Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView *pDepthTexSRV,
-		       const XMFLOAT4X4 &Model, const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj);
+	void Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &Model, const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj);
 
 	void shutdown()
 	{
-			ReleaseCOM(m_pRenderTargetView  )
-			ReleaseCOM(m_pMVPBuffer         )
-			ReleaseCOM(m_pLightBuffer       )
-			ReleaseCOM(m_pVertexBuffer      )
-			ReleaseCOM(m_pIndexBuffer       )
+		ReleaseCOM(m_pRenderTargetView  )
+		ReleaseCOM(m_pMVPBuffer         )
+		ReleaseCOM(m_pLightBuffer       )
+		ReleaseCOM(m_pVertexBuffer      )
+		ReleaseCOM(m_pIndexBuffer       )
 	}
 
 	bool load_model(char *modelFile);
-	bool load_obj(char *objFile);
-	bool init_buffer (ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext);
+	bool init_buffer (ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext, char *modelFile);
+	bool init_shader (ID3D11Device *pD3D11Device, HWND hWnd);
 	void init_texture(ID3D11Device *pD3D11Device, LPCWSTR texFile);
 
 private:
@@ -45,18 +44,10 @@ private:
 	};
 	MatrixBuffer cbMatrix;
 
-	struct LightBuffer
-	{
-		XMFLOAT4 ambientColor;
-		XMFLOAT4 diffuseColor;
-	};
-	LightBuffer cbLight;
 
 	struct  Vertex
 	{
 		XMFLOAT3 Position;
-		XMFLOAT2 TexCoord;
-		XMFLOAT3 Normal;
 	};
 
 	struct ModelVertex
@@ -84,7 +75,7 @@ private:
 	std::vector<Vertex> VertexData;
 	std::vector<unsigned int> IndexData;
 
-
+	Shader DepthShader;
 };
 
 #endif

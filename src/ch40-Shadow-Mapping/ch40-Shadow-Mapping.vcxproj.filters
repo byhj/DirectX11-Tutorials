@@ -35,9 +35,27 @@
     <ClCompile Include="object.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="shadowShader.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="depthShader.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="scene.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="object.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shadowShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="depthShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
