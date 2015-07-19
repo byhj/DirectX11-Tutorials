@@ -53,7 +53,7 @@
     <ClInclude Include="..\..\include\d3d\d3dTimer.h">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="d3dRTT.h">
+    <ClInclude Include="deferred.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -76,7 +76,10 @@
     <ClCompile Include="..\..\include\d3d\d3dTimer.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="d3dRTT.cpp">
+    <ClCompile Include="cube.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="deferred.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>

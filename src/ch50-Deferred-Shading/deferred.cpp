@@ -1,7 +1,7 @@
-#include "d3dRTT.h"
+#include "Deferred.h"
 
 
-void D3DRTT::init_window(float posX, float posY, float width, float height, float aspect)
+void Deferred::init_window(float posX, float posY, float width, float height, float aspect)
 {
 	m_posX  = posX;
 	m_posY  = posY;
@@ -10,13 +10,13 @@ void D3DRTT::init_window(float posX, float posY, float width, float height, floa
 	m_aspect = aspect;
 }
 
-void D3DRTT::Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView **pTexture, const XMFLOAT4X4 &Model,  
+void Deferred::Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView **pTexture, const XMFLOAT4X4 &Model,  
 					const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj)
 {
 
-	cbMatrix.model  = XMMatrixTranspose(Model);
-	cbMatrix.view   = XMMatrixTranspose(View);
-	cbMatrix.proj   = XMMatrixTranspose(Proj);
+	cbMatrix.model  = Model;
+	cbMatrix.view   = View;
+	cbMatrix.proj   = Proj;
 	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
 	pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
 
@@ -36,7 +36,7 @@ void D3DRTT::Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResour
 
 }
 
-bool D3DRTT::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext)
+bool Deferred::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext)
 {
 	HRESULT hr;
 
@@ -162,7 +162,7 @@ bool D3DRTT::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11
 }
 
 
-bool D3DRTT::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
+bool Deferred::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 {
 	HRESULT result;
 

@@ -6,10 +6,10 @@
 #include <d3d11.h>
 #include <xnamath.h>
 
-class D3DRTT
+class Deferred
 {
 public:
-	D3DRTT()
+	Deferred()
 	{
 		m_pInputLayout        = NULL;
 		m_pMVPBuffer          = NULL;
@@ -36,9 +36,9 @@ private:
 
 	struct MatrixBuffer
 	{
-		XMMATRIX  model;
-		XMMATRIX  view;
-		XMMATRIX  proj;
+		XMFLOAT4X4  model;
+		XMFLOAT4X4  view;
+		XMFLOAT4X4  proj;
 
 	};
 	MatrixBuffer cbMatrix;

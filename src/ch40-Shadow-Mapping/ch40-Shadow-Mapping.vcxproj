@@ -26,16 +26,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ch40-Shadow-Mapping.cpp" />
-    <ClCompile Include="depthShader.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="scene.cpp" />
-    <ClCompile Include="shadowShader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="depthShader.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="scene.h" />
-    <ClInclude Include="shadowShader.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{CF906315-D5AD-42A4-8ECC-3CE8B909357C}</ProjectGuid>

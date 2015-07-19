@@ -40,13 +40,13 @@ public:
 	void v_Shutdown()
 	{		
 		ReleaseCOM(m_pSwapChain         )
-			ReleaseCOM(m_pD3D11Device       )
-			ReleaseCOM(m_pD3D11DeviceContext)
-			ReleaseCOM(m_pRenderTargetView  )
-			ReleaseCOM(m_pDepthStencilView  )
-			ReleaseCOM(m_pDepthStencilBuffer)
-			ReleaseCOM(m_pMVPBuffer         )
-			ReleaseCOM(m_pRasterState       )
+		ReleaseCOM(m_pD3D11Device       )
+		ReleaseCOM(m_pD3D11DeviceContext)
+		ReleaseCOM(m_pRenderTargetView  )
+		ReleaseCOM(m_pDepthStencilView  )
+		ReleaseCOM(m_pDepthStencilBuffer)
+		ReleaseCOM(m_pMVPBuffer         )
+		ReleaseCOM(m_pRasterState       )
 	}
 
 	ID3D11Device * GetDevice();
