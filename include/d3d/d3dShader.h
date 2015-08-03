@@ -7,6 +7,10 @@
 #include <iostream>
 #include <string>
 
+namespace byhj
+{
+
+
 class Shader
 {
 public:
@@ -39,5 +43,7 @@ private:
 };
 
 
+
+}
 
 #endif

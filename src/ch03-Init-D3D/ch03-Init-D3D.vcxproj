@@ -79,9 +79,13 @@
   <ItemGroup>
     <ClCompile Include="..\..\include\d3d\d3dApp.cpp" />
     <ClCompile Include="ch03-Init-D3D.cpp" />
+    <ClCompile Include="RenderSystem.cpp" />
+    <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\d3d\d3dApp.h" />
+    <ClInclude Include="RenderSystem.h" />
+    <ClInclude Include="window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

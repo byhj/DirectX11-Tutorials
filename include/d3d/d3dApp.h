@@ -33,7 +33,7 @@ namespace byhj
 class D3DApp
 {
 public:
-	D3DApp() :m_AppName(L"Framework"), m_WndClassName(L"D3DWindow")
+	D3DApp() :m_AppName(L"DirectX11: "), m_WndClassName(L"D3DWindow")
 	{
 
 	}

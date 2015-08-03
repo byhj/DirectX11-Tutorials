@@ -1,5 +1,8 @@
 #include "d3dShader.h"
 
+namespace byhj
+{
+
 void Shader::init(ID3D11Device *pD3D11Device, HWND hWnd)
 {
 	this->pD3D11Device = pD3D11Device;
@@ -234,4 +237,8 @@ void Shader::end()
 {
 	pD3D11Device = 0;
 	hWnd = 0;
+}
+
+
+
 }
