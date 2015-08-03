@@ -1,11 +1,15 @@
 #include "d3dApp.h"
 
+namespace byhj
+{
+
+
 static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 static D3DApp *AppHandle = 0;
 
 int D3DApp::Run()
 {	
-	v_Init();
+	InitApp();
 
 	MSG msg;
 	ZeroMemory(&msg, sizeof(MSG));
@@ -29,15 +33,12 @@ int D3DApp::Run()
 	return (int)msg.wParam;
 }
 
-bool D3DApp::v_Init()
+void D3DApp::InitApp()
 {
-	if (!init_window())
-		return false;
+	init_window();
 
-	if (!v_InitD3D())
-		return false;
+	v_Init();
 
-	return true;
 }
 
 
@@ -101,10 +102,6 @@ bool D3DApp::init_window()
 	return true;
 }
 
-bool D3DApp::v_InitD3D()
-{
-	return true;
-}
 
 LRESULT CALLBACK D3DApp::MessageHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -161,3 +158,5 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 }
 
 
+
+}

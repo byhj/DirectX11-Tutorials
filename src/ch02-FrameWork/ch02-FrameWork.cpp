@@ -1,13 +1,10 @@
-#include "d3d/d3dApp.h"
+#include "RenderSystem.h"
+#include <memory>
 
-class FrameWorkApp: public D3DApp
-{
-public:
-	FrameWorkApp()
-	{
-		 m_AppName = L"DirectX11: ch02-FrameWork";
-	}
-	~FrameWorkApp(){}
-};
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline, int iCmdshow) 
+{                                                     
+	std::shared_ptr<byhj::RenderSystem> app = std::make_shared<byhj::RenderSystem>();
+	app->Run();       
 
-CALL_MAIN(FrameWorkApp);
+	return 0;                                           
+}

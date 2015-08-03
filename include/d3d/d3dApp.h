@@ -2,6 +2,7 @@
 #define D3DAPP_H
 
 #include <string>
+#define WIN32_LEAN_AND_MEAN
 
 #if defined(DEBUG) || defined(_DEBUG)
 #define _CRTDBG_MAP_ALLOC
@@ -26,23 +27,26 @@
 
 #include "d3dDebug.h"
 
+namespace byhj
+{
+
 class D3DApp
 {
 public:
-	D3DApp():m_AppName(L"Framework"), m_WndClassName(L"D3DWindow") 
+	D3DApp() :m_AppName(L"Framework"), m_WndClassName(L"D3DWindow")
 	{
 
 	}
 	virtual ~D3DApp() {}
 
+	void InitApp();
 	int Run();
 	LRESULT CALLBACK MessageHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-	virtual	bool v_InitD3D();
-	virtual bool v_Init();
-	virtual void v_Shutdown() {}
-	virtual void v_Render()   {}
-	virtual void v_Update()   {}
+	virtual	void v_Init()  = 0;
+	virtual void v_Shutdown() = 0;
+	virtual void v_Render()   = 0;
+	virtual void v_Update() {}
 
 	// Convenience overrides for handling mouse input.
 	virtual void v_OnMouseDown(WPARAM btnState, int x, int y){ }
@@ -74,15 +78,5 @@ private:
 	HWND      m_hWnd;
 };
 
-
-//D3DApp * D3DApp::app; 
-#define CALL_MAIN(a)                                    \
-	int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline, int iCmdshow) \
-{                                                       \
-	a *app = new a;                                     \
-	app->Run();                                         \
-	delete app;                                         \
-	return 0;                                           \
 }
-
 #endif
