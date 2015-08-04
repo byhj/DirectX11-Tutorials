@@ -18,17 +18,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="cube.psh">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="cube.vsh">
-      <Filter>Resource Files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="cube.h">
-      <Filter>Resource Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\d3d\d3dApp.h">
       <Filter>Framework</Filter>
     </ClInclude>
@@ -49,6 +38,12 @@
     </ClInclude>
     <ClInclude Include="..\..\include\d3d\d3dSound.h">
       <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cube.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -73,5 +68,19 @@
     <ClCompile Include="..\..\include\d3d\d3dApp.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="RenderSystem.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cube.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cube.vsh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="cube.psh">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

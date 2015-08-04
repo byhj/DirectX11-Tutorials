@@ -1,5 +1,7 @@
 #include "d3dSound.h"
 
+namespace byhj
+{
 
 D3DSound::D3DSound()
 	:pDirectSound(0),
@@ -322,4 +324,6 @@ bool D3DSound::PlayWaveFile()
 	}
 
 	return true;
+}
+
 }

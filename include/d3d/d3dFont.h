@@ -6,6 +6,9 @@
 
 #include "d3dDebug.h"
 
+namespace byhj
+{
+
 class D3DFont
 {
 public:
@@ -28,4 +31,5 @@ private:
 	IFW1FontWrapper *m_pFontWrapper;
 };
 
+}
 #endif

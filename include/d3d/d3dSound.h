@@ -10,6 +10,10 @@
 #include <dsound.h>
 #include <stdio.h>
 
+namespace byhj
+{
+
+
 class D3DSound
 {
 
@@ -53,5 +57,6 @@ private:
 	IDirectSoundBuffer8  *pSecondaryBuffer;
 };
 
+}
 
 #endif

@@ -4,50 +4,33 @@
 
 #include "d3d/d3dShader.h"
 #include "d3d/d3dDebug.h"
+#include "d3d/d3dUtility.h"
 
 #include <xnamath.h>
+
+namespace byhj
+{
+
 
 class Bitmap
 {
 public:
-	Bitmap()
-	{
-		m_pInputLayout        = NULL;
-		m_pVS                 = NULL;
-		m_pPS                 = NULL;
-		m_pRenderTargetView   = NULL;
-		m_pMVPBuffer          = NULL;
-		m_pVertexBuffer       = NULL;
-		m_pIndexBuffer        = NULL;
-		m_pTexture            = NULL;
-	}
+	Bitmap();
+	~Bitmap();
 
-	void Render(ID3D11DeviceContext *pD3D11DeviceContext);
+	void Init(ID3D11Device *pD3D11Device,  HWND hWnd);
+	void Render(ID3D11DeviceContext *pD3D11DeviceContext, const MatrixBuffer &matrix);
+	void Shutdown();
 
-	void Shutdown()
-	{
-		    ReleaseCOM(m_pInputLayout       )
-			ReleaseCOM(m_pVS                )
-			ReleaseCOM(m_pPS                )
-			ReleaseCOM(m_pMVPBuffer         )
-			ReleaseCOM(m_pRenderTargetView  )
-			ReleaseCOM(m_pVertexBuffer      )
-			ReleaseCOM(m_pIndexBuffer       )
-			ReleaseCOM(m_pTexture           )
-	}
 
 public:
 	bool init_window(int sw, int sh);
 	bool init_buffer (ID3D11Device *pD3D11Device, int posX, int posY);
 	bool init_shader (ID3D11Device *pD3D11Device, HWND hWnd);
-	void init_texture(ID3D11Device *pD3D11Device, LPCWSTR texFile);
+	void init_texture(ID3D11Device *pD3D11Device);
 
 private:
 
-	struct MatrixBuffer
-	{
-		XMFLOAT4X4  MVP;
-	};
 	MatrixBuffer cbMatrix;
 
 	struct Vertex
@@ -69,20 +52,13 @@ private:
 	int VertexCount;
 	int IndexCount;
 
-	Shader BitmapShader;
+	byhj::Shader BitmapShader;
 
 	int screenWidth, screenHeight;
 	int bitmapWidth, bitmapHeight;
 	int lastPosX, lastPosY;
 	float aspect;
-
-	XMMATRIX MVP;
-	XMMATRIX Model;
-	XMMATRIX View;
-	XMMATRIX Proj;
-
-	XMVECTOR camPos;
-	XMVECTOR camTarget;
-	XMVECTOR camUp;
 };
 
+
+}

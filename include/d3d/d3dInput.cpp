@@ -1,5 +1,9 @@
 #include "d3dInput.h"
 
+namespace byhj
+{
+
+
 float Clamp(const float& x, const float& low, const float& high)
 {
 	return x < low ? low : (x > high ? high : x); 
@@ -103,4 +107,7 @@ void D3DCamera::DetectInput(HWND hWnd, double time)
 	update();
 
 	return;
+}
+
+
 }

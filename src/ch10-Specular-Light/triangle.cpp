@@ -148,7 +148,7 @@ void Triangle::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D
 
 	dataPtr2->ambientColor   = XMFLOAT4(0.15f, 0.15f, 0.15f, 0.15f);
 	dataPtr2->diffuseColor   = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	dataPtr2->lightDirection = XMFLOAT3(0.0f, 0.0f, 1.0f);
+	dataPtr2->lightDirection = XMFLOAT3(.0f, 3.0f, -2.0f);
 	dataPtr2->specularPower  = 32.0f;
 	dataPtr2->specularColor  = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
 
@@ -176,7 +176,7 @@ void Triangle::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D
 
 	// Get a pointer to the data in the constant buffer.
 	CameraBuffer *dataPtr3 = (CameraBuffer*)mappedResource.pData;
-	dataPtr3->camPos = XMFLOAT3(0.0f, 0.0f, -3.0f);
+	dataPtr3->camPos = XMFLOAT3(0.0f, 2.0f, -3.0f);
 	dataPtr3->padding = 0.0f;
 	pD3D11DeviceContext->Unmap(m_CameraBuffer, 0);
 

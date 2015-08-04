@@ -3,6 +3,10 @@
 
 #include <windows.h>
 
+namespace byhj
+{
+
+
 class D3DTimer
 {
 public:
@@ -31,5 +35,6 @@ private:
 };
 
 
+}
 
 #endif

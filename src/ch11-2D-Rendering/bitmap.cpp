@@ -1,12 +1,42 @@
 #include "bitmap.h"
 
-void Bitmap::Render(ID3D11DeviceContext *pD3D11DeviceContext)
+namespace byhj
 {
 
-	Model = XMMatrixIdentity();
-	MVP = (Model * View * Proj);
-	MVP = XMMatrixTranspose(MVP);	
-	XMStoreFloat4x4(&cbMatrix.MVP, MVP);
+Bitmap::Bitmap()
+{
+	m_pInputLayout        = NULL;
+	m_pVS                 = NULL;
+	m_pPS                 = NULL;
+	m_pRenderTargetView   = NULL;
+	m_pMVPBuffer          = NULL;
+	m_pVertexBuffer       = NULL;
+	m_pIndexBuffer        = NULL;
+	m_pTexture            = NULL;
+}
+
+Bitmap::~Bitmap()
+{
+
+}
+
+void Bitmap::Init(ID3D11Device *pD3D11Device, HWND hWnd)
+{
+	init_window(100, 100);
+	init_buffer(pD3D11Device, 256, 256);
+	init_shader(pD3D11Device, hWnd);
+	init_texture(pD3D11Device);
+}
+
+
+
+void Bitmap::Render(ID3D11DeviceContext *pD3D11DeviceContext, const MatrixBuffer &matrix)
+{
+
+	cbMatrix.model = matrix.model;
+	cbMatrix.view  = matrix.view;
+	cbMatrix.proj  = matrix.proj;
+
 	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
 	pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
 
@@ -25,6 +55,19 @@ void Bitmap::Render(ID3D11DeviceContext *pD3D11DeviceContext)
 	pD3D11DeviceContext->PSSetSamplers( 0, 1, &m_pTexSamplerState );
 	pD3D11DeviceContext->DrawIndexed(IndexCount, 0, 0);
 
+}
+
+
+void Bitmap::Shutdown()
+{
+	ReleaseCOM(m_pInputLayout)
+		ReleaseCOM(m_pVS)
+		ReleaseCOM(m_pPS)
+		ReleaseCOM(m_pMVPBuffer)
+		ReleaseCOM(m_pRenderTargetView)
+		ReleaseCOM(m_pVertexBuffer)
+		ReleaseCOM(m_pIndexBuffer)
+		ReleaseCOM(m_pTexture)
 }
 
 bool Bitmap::init_window(int sw, int sh)
@@ -101,6 +144,7 @@ bool Bitmap::init_buffer(ID3D11Device *pD3D11Device, int posX, int posY)
 	// Give the subresource structure a pointer to the vertex data.
 	D3D11_SUBRESOURCE_DATA VBO;
 	VBO.pSysMem          = VertexData;
+
 	VBO.SysMemPitch      = 0;
 	VBO.SysMemSlicePitch = 0;
 
@@ -147,14 +191,6 @@ bool Bitmap::init_buffer(ID3D11Device *pD3D11Device, int posX, int posY)
 
 	////////////////////////////////Const Buffer//////////////////////////////////////
 
-	//MVP Matrix
-	camPos    = XMVectorSet( 0.0f, 0.0f, -3.0f, 0.0f );
-	camTarget = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
-	camUp     = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
-	View      = XMMatrixLookAtLH( camPos, camTarget, camUp );
-	Proj      = XMMatrixOrthographicLH( (float)screenWidth, (float)screenHeight, 0.1f, 1000.0f);
-
-
 	D3D11_BUFFER_DESC mvpDesc;	
 	ZeroMemory(&mvpDesc, sizeof(D3D11_BUFFER_DESC));
 	mvpDesc.Usage          = D3D11_USAGE_DEFAULT;
@@ -198,10 +234,11 @@ bool Bitmap::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 	return true;
 }
 
-void Bitmap::init_texture(ID3D11Device *pD3D11Device, LPCWSTR texFile)
+void Bitmap::init_texture(ID3D11Device *pD3D11Device)
 {
+
 	HRESULT hr;
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, texFile, NULL,NULL, &m_pTexture, NULL);
+	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/stone02.dds", NULL, NULL, &m_pTexture, NULL);
 	DebugHR(hr);
 
 	// Create a texture sampler state description.
@@ -223,5 +260,7 @@ void Bitmap::init_texture(ID3D11Device *pD3D11Device, LPCWSTR texFile)
 	// Create the texture sampler state.
 	hr = pD3D11Device->CreateSamplerState(&samplerDesc, &m_pTexSamplerState);
 	DebugHR(hr);
+
+}
 
 }
