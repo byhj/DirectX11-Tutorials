@@ -26,11 +26,15 @@
     <ClCompile Include="..\..\include\d3d\d3dApp.cpp" />
     <ClCompile Include="..\..\include\d3d\d3dShader.cpp" />
     <ClCompile Include="ch08-Load-Model.cpp" />
+    <ClCompile Include="RenderSystem.cpp" />
+    <ClCompile Include="triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\d3d\d3dApp.h" />
     <ClInclude Include="..\..\include\d3d\d3dDebug.h" />
     <ClInclude Include="..\..\include\d3d\d3dShader.h" />
+    <ClInclude Include="RenderSystem.h" />
+    <ClInclude Include="triangle.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D768E193-5F12-47D4-A44F-F37E80EBFF6C}</ProjectGuid>
