@@ -1,6 +1,7 @@
 #ifndef D3DUTILITY_H
 #define D3DUTILITY_H
 
+#include <windows.h>
 #include <xnamath.h>
 
 namespace byhj

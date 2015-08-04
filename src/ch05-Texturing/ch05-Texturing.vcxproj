@@ -25,12 +25,18 @@
   <ItemGroup>
     <ClCompile Include="..\..\include\d3d\d3dApp.cpp" />
     <ClCompile Include="..\..\include\d3d\d3dShader.cpp" />
+    <ClCompile Include="..\..\include\d3d\d3dUtility.cpp" />
     <ClCompile Include="ch05-Texturing.cpp" />
+    <ClCompile Include="RenderSystem.cpp" />
+    <ClCompile Include="triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\d3d\d3dApp.h" />
     <ClInclude Include="..\..\include\d3d\d3dDebug.h" />
     <ClInclude Include="..\..\include\d3d\d3dShader.h" />
+    <ClInclude Include="..\..\include\d3d\d3dUtility.h" />
+    <ClInclude Include="RenderSystem.h" />
+    <ClInclude Include="triangle.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1C58C243-29DE-4FDD-ABA7-D9288AB669BF}</ProjectGuid>
