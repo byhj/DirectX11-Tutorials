@@ -1,5 +1,10 @@
 #include "d3dCamera.h"
 
+
+namespace byhj
+{
+
+
 float Clamp(const float& x, const float& low, const float& high)
 {
 	return x < low ? low : (x > high ? high : x); 
@@ -83,3 +88,4 @@ void D3DCamera::OnMouseMove(WPARAM btnState, int x, int y)
 }
 
 
+}

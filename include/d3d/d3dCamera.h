@@ -10,6 +10,9 @@
 #include <D3DX10math.h>
 #include <vector>
 
+namespace byhj
+{
+
 const float Pi = 3.1415926535f;
 
 class D3DCamera
@@ -63,5 +66,6 @@ private:
 };
 
 
+}
 
 #endif

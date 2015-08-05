@@ -1,5 +1,8 @@
 #include "d3dRTT.h"
 
+namespace byhj
+{
+
 
 void D3DRTT::init_window(float posX, float posY, float width, float height, float aspect)
 {
@@ -191,4 +194,7 @@ bool D3DRTT::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 	D3DRTTShader.end();
 
 	return true;
+}
+
+
 }

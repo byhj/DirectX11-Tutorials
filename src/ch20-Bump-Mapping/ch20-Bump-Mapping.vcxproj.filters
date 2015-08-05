@@ -47,9 +47,6 @@
     <ClInclude Include="RenderSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="e.h">
-      <Filter>Resource Files</Filter>
-    </ClInclude>
     <ClInclude Include="cube.h">
       <Filter>Header Files</Filter>
     </ClInclude>
