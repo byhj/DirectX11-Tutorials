@@ -29,6 +29,8 @@
     <ClCompile Include="..\..\include\d3d\d3dShader.cpp" />
     <ClCompile Include="..\..\include\d3d\d3dTimer.cpp" />
     <ClCompile Include="ch24-Clipping-Plane.cpp" />
+    <ClCompile Include="cube.cpp" />
+    <ClCompile Include="RenderSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\d3d\d3dApp.h" />
@@ -38,6 +40,7 @@
     <ClInclude Include="..\..\include\d3d\d3dShader.h" />
     <ClInclude Include="..\..\include\d3d\d3dTimer.h" />
     <ClInclude Include="cube.h" />
+    <ClInclude Include="RenderSystem.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{EFF4376E-C998-402A-B9CA-6934E46CA6B6}</ProjectGuid>

@@ -1,5 +1,5 @@
-#ifndef Cube_H
-#define Cube_H
+#ifndef Plane_H
+#define Plane_H
 
 #include <windows.h>
 #include <xnamath.h>
@@ -7,17 +7,17 @@
 
 #include "d3d/d3dShader.h"
 #include "d3d/d3dUtility.h"
-
+#include "d3d/d3dLight.h"
 
 namespace byhj
 {
 
 
-class Cube
+class Plane
 {
 public:
-	Cube();
-	~Cube();
+	Plane();
+	~Plane();
 
 	void Init(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext, HWND hWnd);
 	void Render(ID3D11DeviceContext *pD3D11DeviceContext, const MatrixBuffer &matrix);
@@ -51,7 +51,8 @@ private:
 		XMFLOAT2 TexCoord;
 		XMFLOAT3 Normal;
 	};
-   
+
+	std::vector<D3DPointLight> pointLights;
 	MatrixBuffer cbMatrix;
 	ID3D11InputLayout        *m_pInputLayout      = nullptr;
 	ID3D11VertexShader       *m_pVS               = nullptr;
@@ -62,7 +63,7 @@ private:
 	ID3D11Buffer             *m_pLightBuffer      = nullptr;
 	ID3D11ShaderResourceView *m_pTexture          = nullptr;
 	ID3D11SamplerState       *m_pTexSamplerState  = nullptr;
-	byhj::Shader CubeShader;
+	byhj::Shader PlaneShader;
 
 	std::vector<Vertex> m_VertexData;
 	std::vector<DWORD> m_IndexData;

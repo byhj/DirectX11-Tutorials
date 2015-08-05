@@ -9,11 +9,6 @@ cbuffer LightBuffer	 : register(b0)
 
 };
 
- cbuffer TexTransBuffer	  : register(b1)
-{
-    float4 texTrans;
-};
-
 struct VS_OUTPUT 
 {
     float4 Pos : SV_POSITION;
@@ -38,6 +33,6 @@ float4 PS(VS_OUTPUT ps_in) : SV_TARGET
    
   float4 texColor = tex.Sample(texSample, ps_in.Tex);
   float4 pixelColor = result * texColor;
-  pixelColor.a = 0.75f;
+  pixelColor.a = 0.25f;
   return pixelColor;
 }

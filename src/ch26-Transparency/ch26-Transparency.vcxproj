@@ -26,6 +26,7 @@
     <ClInclude Include="..\..\include\d3d\d3dShader.h" />
     <ClInclude Include="..\..\include\d3d\d3dTimer.h" />
     <ClInclude Include="cube.h" />
+    <ClInclude Include="RenderSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cube.psh" />
@@ -38,6 +39,8 @@
     <ClCompile Include="..\..\include\d3d\d3dShader.cpp" />
     <ClCompile Include="..\..\include\d3d\d3dTimer.cpp" />
     <ClCompile Include="ch26-Transparency.cpp" />
+    <ClCompile Include="cube.cpp" />
+    <ClCompile Include="RenderSystem.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{79F02CC9-6802-458A-AF7E-48683A846AC0}</ProjectGuid>

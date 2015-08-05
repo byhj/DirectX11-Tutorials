@@ -6,11 +6,6 @@ cbuffer MatrixObject : register(b0)
 	float4x4 proj;
 };
 
-cbuffer CameraBuffer  : register(b1)
-{
-  float3 camPos;
-  float  padding;
-}
 
 struct VS_IN
 {

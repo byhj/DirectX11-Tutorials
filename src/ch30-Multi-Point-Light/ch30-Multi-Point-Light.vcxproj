@@ -19,8 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <None Include="light.psh" />
-    <None Include="light.vsh" />
+    <None Include="plane.psh" />
+    <None Include="plane.vsh" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\include\d3d\d3dApp.cpp" />
@@ -29,6 +29,8 @@
     <ClCompile Include="..\..\include\d3d\d3dShader.cpp" />
     <ClCompile Include="..\..\include\d3d\d3dTimer.cpp" />
     <ClCompile Include="ch30-Multi-Point-Light.cpp" />
+    <ClCompile Include="plane.cpp" />
+    <ClCompile Include="RenderSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\d3d\d3dApp.h" />
@@ -37,7 +39,9 @@
     <ClInclude Include="..\..\include\d3d\d3dFont.h" />
     <ClInclude Include="..\..\include\d3d\d3dShader.h" />
     <ClInclude Include="..\..\include\d3d\d3dTimer.h" />
-    <ClInclude Include="light.h" />
+    <ClInclude Include="plane.h" />
+    <ClInclude Include="ee.h" />
+    <ClInclude Include="RenderSystem.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{75747FCE-0B50-4A8B-BCC0-FDFC8F93B14C}</ProjectGuid>
