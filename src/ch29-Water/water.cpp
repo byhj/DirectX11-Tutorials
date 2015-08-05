@@ -1,130 +1,15 @@
+#include "water.h"
 
-#ifdef _WIN32
-#define _XM_NO_INTRINSICS_
-#endif 
-
-#include "d3d/d3dApp.h"
-#include <d3d/d3dShader.h>
-
-class Reflect
+namespace byhj
 {
-public:
-	Reflect()
-	{
-		m_pInputLayout        = NULL;
-		m_pMVPBuffer          = NULL;
-		m_pLightBuffer        = NULL;
-		m_pVertexBuffer       = NULL;
-		m_pIndexBuffer        = NULL;
-	}
-
-	void Render(ID3D11DeviceContext *pD3D11DeviceContext,ID3D11ShaderResourceView *pReflectTexSRV, const XMFLOAT4X4 &Model,  
-		const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj, XMFLOAT4X4 reflect)
-	{
-		cbMatrix.model   = Model;
-		cbMatrix.view    = View;
-		cbMatrix.proj    = Proj;
-		cbMatrix.reflect = reflect;
-
-		pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
-		pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
-
-		unsigned int stride;
-		unsigned int offset;
-		stride = sizeof(Vertex); 
-		offset = 0;
-
-		pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
-		pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-		pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pTexture);  
-		pD3D11DeviceContext->PSSetShaderResources(1, 1, &pReflectTexSRV);  
-		pD3D11DeviceContext->PSSetSamplers( 0, 1, &m_pTexSamplerState );
-
-		ReflectShader.use(pD3D11DeviceContext);
-		pD3D11DeviceContext->DrawIndexed(m_IndexCount, 0, 0);
-	}
-
-	void shutdown()
-	{
-		ReleaseCOM(m_pRenderTargetView  )
-		ReleaseCOM(m_pMVPBuffer         )
-		ReleaseCOM(m_pLightBuffer       )
-		ReleaseCOM(m_pVertexBuffer      )
-		ReleaseCOM(m_pIndexBuffer       )
-	}
-
-	bool LoadModel(char *modelFile);
-	bool init_buffer (ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext);
-	bool init_shader (ID3D11Device *pD3D11Device, HWND hWnd);
-	void init_texture(ID3D11Device *pD3D11Device, LPCWSTR texFile, ID3D11ShaderResourceView *m_pTexture);
-
-private:
-
-	struct CameraBuffer
-	{
-		XMFLOAT3 camPos;
-		float padding;
-	};
-
-	struct MatrixBuffer
-	{
-		XMFLOAT4X4  model;
-		XMFLOAT4X4  view;
-		XMFLOAT4X4  proj;
-		XMFLOAT4X4  reflect;
-
-	};
-	MatrixBuffer cbMatrix;
-
-	struct LightBuffer
-	{
-		XMFLOAT4 ambientColor;
-		XMFLOAT4 diffuseColor;
-		XMFLOAT3 lightDirection;
-		float specularPower;
-		XMFLOAT4 specularColor;
-	};
-	LightBuffer cbLight;
 
 
-	struct ModelVertex
-	{
-		float x, y, z;
-		float tu, tv;
-		float nx, ny, nz;
-	};
-	ModelVertex  *pModelVertex;
-
-	struct Vertex
-	{
-		XMFLOAT3 Pos;
-		XMFLOAT2 Tex;
-		XMFLOAT3 Normal;
-	};
-
-	ID3D11RenderTargetView   *m_pRenderTargetView;
-	ID3D11Buffer             *m_pMVPBuffer;
-	ID3D11Buffer             *m_pLightBuffer;
-	ID3D11Buffer             *m_CameraBuffer;
-	ID3D11Buffer             *m_pVertexBuffer;
-	ID3D11Buffer             *m_pIndexBuffer;
-	ID3D11ShaderResourceView *m_pTexture;
-	ID3D11SamplerState       *m_pTexSamplerState;
-	ID3D11InputLayout        *m_pInputLayout;
-
-	int m_VertexCount;
-	int m_IndexCount;
-	Shader ReflectShader;
-};
-
-
-bool Reflect::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext)
+bool Water::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext)
 {
 	HRESULT hr;
 
 	///////////////////////////Index Buffer ////////////////////////////////
-	LoadModel("../../media/objects/floor.txt");
+	LoadModel("../../media/objects/water.txt");
 
 	Vertex*VertexData;
 	unsigned long *IndexData;
@@ -153,7 +38,7 @@ bool Reflect::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D1
 	// Set up the description of the static vertex buffer.
 	D3D11_BUFFER_DESC VertexBufferDesc;
 	VertexBufferDesc.Usage               = D3D11_USAGE_DEFAULT;
-	VertexBufferDesc.ByteWidth           = sizeof(Vertex) * m_VertexCount;
+	VertexBufferDesc.ByteWidth           = sizeof(Vertex)* m_VertexCount;
 	VertexBufferDesc.BindFlags           = D3D11_BIND_VERTEX_BUFFER;
 	VertexBufferDesc.CPUAccessFlags      = 0;
 	VertexBufferDesc.MiscFlags           = 0;
@@ -174,7 +59,7 @@ bool Reflect::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D1
 	// Set up the description of the static index buffer.
 	D3D11_BUFFER_DESC IndexBufferDesc;
 	IndexBufferDesc.Usage               = D3D11_USAGE_DEFAULT;
-	IndexBufferDesc.ByteWidth           = sizeof(unsigned long) * m_IndexCount;
+	IndexBufferDesc.ByteWidth           = sizeof(unsigned long)* m_IndexCount;
 	IndexBufferDesc.BindFlags           = D3D11_BIND_INDEX_BUFFER;
 	IndexBufferDesc.CPUAccessFlags      = 0;
 	IndexBufferDesc.MiscFlags           = 0;
@@ -192,7 +77,7 @@ bool Reflect::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D1
 
 	////////////////////////////////MVP Buffer//////////////////////////////////////
 
-	D3D11_BUFFER_DESC mvpBufferDesc;	
+	D3D11_BUFFER_DESC mvpBufferDesc;
 	ZeroMemory(&mvpBufferDesc, sizeof(D3D11_BUFFER_DESC));
 	mvpBufferDesc.Usage          = D3D11_USAGE_DEFAULT;
 	mvpBufferDesc.ByteWidth      = sizeof(MatrixBuffer);
@@ -203,7 +88,7 @@ bool Reflect::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D1
 	DebugHR(hr);
 
 	///////////////////////////////////////Light buffer////////////////////////////////////////
-	D3D11_BUFFER_DESC lightBufferDesc;	
+	D3D11_BUFFER_DESC lightBufferDesc;
 	ZeroMemory(&lightBufferDesc, sizeof(D3D11_BUFFER_DESC));
 	lightBufferDesc.Usage          = D3D11_USAGE_DYNAMIC;
 	lightBufferDesc.ByteWidth      = sizeof(LightBuffer);
@@ -234,31 +119,6 @@ bool Reflect::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D1
 	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, &m_pLightBuffer);
 
 
-	D3D11_BUFFER_DESC cameraBufferDesc;
-	cameraBufferDesc.Usage               = D3D11_USAGE_DYNAMIC;
-	cameraBufferDesc.ByteWidth           = sizeof(CameraBuffer);
-	cameraBufferDesc.BindFlags           = D3D11_BIND_CONSTANT_BUFFER;
-	cameraBufferDesc.CPUAccessFlags      = D3D11_CPU_ACCESS_WRITE;
-	cameraBufferDesc.MiscFlags           = 0;
-	cameraBufferDesc.StructureByteStride = 0;
-
-	// Create the camera constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-	hr = pD3D11Device->CreateBuffer(&cameraBufferDesc, NULL, &m_CameraBuffer);
-	DebugHR(hr);
-
-	// Lock the camera constant buffer so it can be written to.
-	hr = pD3D11DeviceContext->Map(m_CameraBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	DebugHR(hr);
-
-	// Get a pointer to the data in the constant buffer.
-	CameraBuffer *dataPtr3 = (CameraBuffer*)mappedResource.pData;
-	dataPtr3->camPos = XMFLOAT3(0.0f, 0.0f, -3.0f);
-	dataPtr3->padding = 0.0f;
-	pD3D11DeviceContext->Unmap(m_CameraBuffer, 0);
-
-	int bufferSlot = 1;
-	pD3D11DeviceContext->VSSetConstantBuffers( bufferSlot, 1, &m_CameraBuffer);
-
 	// Create a texture sampler state description.
 	D3D11_SAMPLER_DESC samplerDesc;
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -279,7 +139,7 @@ bool Reflect::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D1
 	hr = pD3D11Device->CreateSamplerState(&samplerDesc, &m_pTexSamplerState);
 	DebugHR(hr);
 
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/blue01.dds", NULL,NULL, &m_pTexture, NULL);
+	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/water01.dds", NULL, NULL, &m_pTexture, NULL);
 	DebugHR(hr);
 
 
@@ -287,7 +147,7 @@ bool Reflect::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D1
 }
 
 
-bool Reflect::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
+bool Water::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 {
 	HRESULT result;
 
@@ -319,15 +179,15 @@ bool Reflect::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 
 	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
 
-	ReflectShader.init(pD3D11Device, hWnd);
-	ReflectShader.attachVS(L"Reflect.vsh", pInputLayoutDesc, numElements);
-	ReflectShader.attachPS(L"Reflect.psh");
-	ReflectShader.end();
+	WaterShader.init(pD3D11Device, hWnd);
+	WaterShader.attachVS(L"Water.vsh", pInputLayoutDesc, numElements);
+	WaterShader.attachPS(L"Water.psh");
+	WaterShader.end();
 
 	return true;
 }
 
-bool Reflect::LoadModel(char *modelFile)
+bool Water::LoadModel(char *modelFile)
 {
 	std::ifstream fin;
 	char ch;
@@ -340,7 +200,7 @@ bool Reflect::LoadModel(char *modelFile)
 	}
 	// Read up to the value of vertex count.
 	fin.get(ch);
-	while(ch != ':')
+	while (ch != ':')
 	{
 		fin.get(ch);
 	}
@@ -364,8 +224,8 @@ bool Reflect::LoadModel(char *modelFile)
 
 	for (int i = 0; i != m_VertexCount; ++i)
 	{
-		fin >> pModelVertex[i].x  >> pModelVertex[i].y >> pModelVertex[i].z;
-		fin >> pModelVertex[i].tu  >> pModelVertex[i].tv;
+		fin >> pModelVertex[i].x >> pModelVertex[i].y >> pModelVertex[i].z;
+		fin >> pModelVertex[i].tu >> pModelVertex[i].tv;
 		fin >> pModelVertex[i].nx >> pModelVertex[i].ny >> pModelVertex[i].nz;
 	}
 	fin.close();
@@ -373,3 +233,6 @@ bool Reflect::LoadModel(char *modelFile)
 	return true;
 
 }
+
+}
+

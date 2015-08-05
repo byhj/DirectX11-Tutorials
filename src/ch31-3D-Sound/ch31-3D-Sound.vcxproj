@@ -29,6 +29,8 @@
     <ClCompile Include="..\..\include\d3d\d3dShader.cpp" />
     <ClCompile Include="..\..\include\d3d\d3dTimer.cpp" />
     <ClCompile Include="ch31-3D-Sound.cpp" />
+    <ClCompile Include="cube.cpp" />
+    <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="SoundClass.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -39,6 +41,7 @@
     <ClInclude Include="..\..\include\d3d\d3dShader.h" />
     <ClInclude Include="..\..\include\d3d\d3dTimer.h" />
     <ClInclude Include="cube.h" />
+    <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="SoundClass.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

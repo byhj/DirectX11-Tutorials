@@ -1,6 +1,3 @@
-#ifndef WALL_H
-#define WALL_H
-
 #include "d3d/d3dApp.h"
 #include <d3d/d3dShader.h>
 
@@ -8,37 +5,23 @@ namespace byhj
 {
 
 
-class Wall
+class Plane
 {
 public:
-	Wall()
-	{
-		m_pInputLayout        = NULL;
-		m_pMVPBuffer          = NULL;
-		m_pLightBuffer        = NULL;
-		m_pVertexBuffer       = NULL;
-		m_pIndexBuffer        = NULL;
-		m_pTexture            = NULL;
-	}
+	Plane();
+	~Plane();
 
-	void Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &Model,  
-		const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj);
+	void Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView *pPlaneTexSRV, const XMFLOAT4X4 &Model,
+		const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj, XMFLOAT4X4 Plane);
+	void Shutdown();
 
-	void shutdown()
-	{
-		ReleaseCOM(m_pRenderTargetView  )
-			ReleaseCOM(m_pMVPBuffer         )
-			ReleaseCOM(m_pLightBuffer       )
-			ReleaseCOM(m_pVertexBuffer      )
-			ReleaseCOM(m_pIndexBuffer       )
-	}
-
-	bool load_model(char *modelFile);
+	bool LoadModel(char *modelFile);
 	bool init_buffer (ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext);
 	bool init_shader (ID3D11Device *pD3D11Device, HWND hWnd);
-	void init_texture(ID3D11Device *pD3D11Device, LPCWSTR texFile);
+	void init_texture(ID3D11Device *pD3D11Device, LPCWSTR texFile, ID3D11ShaderResourceView *m_pTexture);
 
 private:
+
 	struct CameraBuffer
 	{
 		XMFLOAT3 camPos;
@@ -50,6 +33,7 @@ private:
 		XMFLOAT4X4  model;
 		XMFLOAT4X4  view;
 		XMFLOAT4X4  proj;
+		XMFLOAT4X4  Plane;
 
 	};
 	MatrixBuffer cbMatrix;
@@ -64,20 +48,21 @@ private:
 	};
 	LightBuffer cbLight;
 
-	struct  Vertex
-	{
-		XMFLOAT3 Position;
-		XMFLOAT2 TexCoord;
-		XMFLOAT3 Normal;
-	};
 
 	struct ModelVertex
 	{
-		float x, y , z;
-		float u, v;
+		float x, y, z;
+		float tu, tv;
 		float nx, ny, nz;
 	};
-	ModelVertex  *m_pModelVertex;
+	ModelVertex  *pModelVertex;
+
+	struct Vertex
+	{
+		XMFLOAT3 Pos;
+		XMFLOAT2 Tex;
+		XMFLOAT3 Normal;
+	};
 
 	ID3D11RenderTargetView   *m_pRenderTargetView;
 	ID3D11Buffer             *m_pMVPBuffer;
@@ -89,15 +74,10 @@ private:
 	ID3D11SamplerState       *m_pTexSamplerState;
 	ID3D11InputLayout        *m_pInputLayout;
 
-
 	int m_VertexCount;
 	int m_IndexCount;
-
-	Shader WallShader;
+	Shader PlaneShader;
 };
 
 
-
 }
-
-#endif
