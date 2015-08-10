@@ -1,8 +1,13 @@
+#ifndef CUBE_H
+#define CUBE_H
 
 #include "d3d/d3dShader.h"
 #include "d3d/d3dDebug.h"
 #include <vector>
 #include <xnamath.h>
+
+namespace byhj
+{
 
 class Cube
 {
@@ -103,6 +108,10 @@ private:
 	std::vector<unsigned long> IndexData;
 	std::vector<XMFLOAT3> PosData;
 
-	Shader CubeShader;
+	byhj::Shader CubeShader;
 };
 
+
+}
+
+#endif

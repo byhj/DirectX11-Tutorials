@@ -23,6 +23,7 @@ public:
 private:
 	void init_device();
 	void init_camera();
+	void init_object();
 	void BeginScene();
 	void EndScene();
 

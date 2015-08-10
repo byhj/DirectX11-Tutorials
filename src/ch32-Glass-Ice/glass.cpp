@@ -1,5 +1,7 @@
 #include "glass.h"
 
+namespace byhj
+{
 
 void Glass::init_window(float posX, float posY, float width, float height, float aspect)
 {
@@ -198,4 +200,7 @@ bool Glass::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 	GlassShader.end();
 
 	return true;
+}
+
+
 }

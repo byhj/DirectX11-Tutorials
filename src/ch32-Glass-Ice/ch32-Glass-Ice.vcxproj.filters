@@ -45,6 +45,9 @@
     <ClInclude Include="glass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RenderSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ch32-Glass-Ice.cpp">
@@ -72,6 +75,9 @@
       <Filter>Header Files</Filter>
     </ClCompile>
     <ClCompile Include="cube.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystem.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>

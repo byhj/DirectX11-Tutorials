@@ -1,4 +1,5 @@
 #include "RenderSystem.h"
+#include "d3d/d3dDebug.h"
 
 namespace byhj
 {

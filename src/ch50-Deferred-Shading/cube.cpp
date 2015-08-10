@@ -1,5 +1,7 @@
 #include "cube.h"
 
+namespace byhj
+{
 
 void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &Model,  
 				  const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj)
@@ -330,4 +332,6 @@ bool Cube::load_obj(char *objFile)
 	m_IndexCount = IndexData.size();
 
 	return true;
+}
+
 }

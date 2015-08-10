@@ -50,7 +50,6 @@ void Bitmap::Render(ID3D11DeviceContext *pD3D11DeviceContext, const MatrixBuffer
 
 	BitmapShader.use(pD3D11DeviceContext);
 
-
 	pD3D11DeviceContext->PSSetShaderResources( 0, 1, &m_pTexture );
 	pD3D11DeviceContext->PSSetSamplers( 0, 1, &m_pTexSamplerState );
 	pD3D11DeviceContext->DrawIndexed(IndexCount, 0, 0);
@@ -61,13 +60,13 @@ void Bitmap::Render(ID3D11DeviceContext *pD3D11DeviceContext, const MatrixBuffer
 void Bitmap::Shutdown()
 {
 	ReleaseCOM(m_pInputLayout)
-		ReleaseCOM(m_pVS)
-		ReleaseCOM(m_pPS)
-		ReleaseCOM(m_pMVPBuffer)
-		ReleaseCOM(m_pRenderTargetView)
-		ReleaseCOM(m_pVertexBuffer)
-		ReleaseCOM(m_pIndexBuffer)
-		ReleaseCOM(m_pTexture)
+	ReleaseCOM(m_pVS)
+	ReleaseCOM(m_pPS)
+	ReleaseCOM(m_pMVPBuffer)
+	ReleaseCOM(m_pRenderTargetView)
+	ReleaseCOM(m_pVertexBuffer)
+	ReleaseCOM(m_pIndexBuffer)
+	ReleaseCOM(m_pTexture)
 }
 
 bool Bitmap::init_window(int sw, int sh)

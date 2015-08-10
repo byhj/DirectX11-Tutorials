@@ -28,6 +28,7 @@
     <ClInclude Include="..\..\include\d3d\d3dTimer.h" />
     <ClInclude Include="cube.h" />
     <ClInclude Include="glass.h" />
+    <ClInclude Include="RenderSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\include\d3d\d3dApp.cpp" />
@@ -39,6 +40,7 @@
     <ClCompile Include="ch32-Glass-Ice.cpp" />
     <ClCompile Include="cube.cpp" />
     <ClCompile Include="glass.cpp" />
+    <ClCompile Include="RenderSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cube.psh" />

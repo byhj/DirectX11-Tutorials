@@ -31,6 +31,9 @@
     <ClCompile Include="..\..\include\d3d\d3dShader.cpp" />
     <ClCompile Include="..\..\include\d3d\d3dTimer.cpp" />
     <ClCompile Include="ch28-Screen-Fades.cpp" />
+    <ClCompile Include="cube.cpp" />
+    <ClCompile Include="fade.cpp" />
+    <ClCompile Include="RenderSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\d3d\d3dApp.h" />
@@ -41,6 +44,7 @@
     <ClInclude Include="..\..\include\d3d\d3dTimer.h" />
     <ClInclude Include="cube.h" />
     <ClInclude Include="fade.h" />
+    <ClInclude Include="RenderSystem.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{CA42D8ED-3645-4F40-803D-4E4BEEBE4239}</ProjectGuid>

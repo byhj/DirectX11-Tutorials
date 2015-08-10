@@ -21,8 +21,8 @@
   <ItemGroup>
     <None Include="cube.psh" />
     <None Include="cube.vsh" />
-    <None Include="reflect.psh" />
-    <None Include="reflect.vsh" />
+    <None Include="plane.psh" />
+    <None Include="plane.vsh" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\include\d3d\d3dApp.cpp" />
@@ -32,6 +32,9 @@
     <ClCompile Include="..\..\include\d3d\d3dShader.cpp" />
     <ClCompile Include="..\..\include\d3d\d3dTimer.cpp" />
     <ClCompile Include="ch27-Reflection.cpp" />
+    <ClCompile Include="cube.cpp" />
+    <ClCompile Include="plane.cpp" />
+    <ClCompile Include="RenderSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\d3d\d3dApp.h" />
@@ -41,8 +44,10 @@
     <ClInclude Include="..\..\include\d3d\d3dRTT.h" />
     <ClInclude Include="..\..\include\d3d\d3dShader.h" />
     <ClInclude Include="..\..\include\d3d\d3dTimer.h" />
+    <ClInclude Include="2.h" />
     <ClInclude Include="cube.h" />
-    <ClInclude Include="reflect.h" />
+    <ClInclude Include="plane.h" />
+    <ClInclude Include="RenderSystem.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{710A140E-91CF-434C-BC59-A9FEC89C411A}</ProjectGuid>

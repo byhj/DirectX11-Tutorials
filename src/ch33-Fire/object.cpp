@@ -1,5 +1,8 @@
 #include "object.h"
 
+namespace byhj
+{
+
 
 void Object::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &Model,  
 					const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj)
@@ -283,5 +286,8 @@ bool Object::LoadModel(char *modelFile)
 	fin.close();
 
 	return true;
+
+}
+
 
 }

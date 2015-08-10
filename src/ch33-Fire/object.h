@@ -5,6 +5,10 @@
 #include "d3d/d3dShader.h"
 #include "d3d/d3dLight.h"
 
+namespace byhj
+{
+
+
 class Object
 {
 public:
@@ -93,4 +97,5 @@ private:
 	std::vector<D3DPointLight> pointLights;
 };
 
+}
 #endif

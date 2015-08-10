@@ -4,6 +4,9 @@
 #include "d3d/d3dApp.h"
 #include "d3d/d3dShader.h"
 
+namespace byhj
+{
+
 class Depth
 {
 public:
@@ -78,4 +81,5 @@ private:
 	Shader DepthShader;
 };
 
+}
 #endif

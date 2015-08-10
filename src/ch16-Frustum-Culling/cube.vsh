@@ -37,11 +37,11 @@ VS_OUT VS(VS_IN vs_in)
    vs_out.Pos = mul(vs_out.Pos, proj);
 
    vs_out.Tex = vs_in.Tex;
-   vs_out.Normal = mul(vs_in.Normal, (float3x3)model );
+   vs_out.Normal = mul(vs_in.Normal, (float3x3)(model * view));
    vs_out.Normal = normalize(vs_out.Normal);
 
    //Calc the view direction
-   float4 worldPos = mul(vs_in.Pos, model);
+   float4 worldPos = mul(vs_in.Pos, view);
    vs_out.ViewDir  = camPos.xyz - worldPos.xyz;
    vs_out.ViewDir  = normalize(vs_out.ViewDir);
     

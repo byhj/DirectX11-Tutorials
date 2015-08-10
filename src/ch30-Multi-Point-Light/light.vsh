@@ -17,8 +17,6 @@ struct VS_IN
 	 float4 Pos       :POSITION;
 	 float2 Tex       :TEXCOORD0;
 	 float3 Normal    :NORMAL;
-	 float3 tangent   :TANGENT;
-	 float3 binormal  :BINORMAL;
 };
 
 struct VS_OUT
@@ -26,8 +24,7 @@ struct VS_OUT
     float4 Pos : SV_POSITION;
     float2 Tex : TEXCOORD0;
 	float3 Normal: NORMAL;
-	float3 tangent   :TANGENT;
-	float3 binormal  :BINORMAL;
+	float4 WorldPos: TEXCOORD1;
 };
 
 VS_OUT VS(VS_IN vs_in)
@@ -40,16 +37,11 @@ VS_OUT VS(VS_IN vs_in)
    vs_out.Pos = mul(vs_out.Pos, view);
    vs_out.Pos = mul(vs_out.Pos, proj);
 
+   vs_out.WorldPos = mul(vs_in.Pos, model);
+
    vs_out.Tex = vs_in.Tex;
    vs_out.Normal = mul(vs_in.Normal, (float3x3)model);
    vs_out.Normal = normalize(vs_out.Normal);
-
-   	vs_out.tangent = mul(vs_in.tangent, (float3x3)model);
-    vs_out.tangent = normalize(vs_out.tangent);
-
-	vs_out.binormal = mul(vs_in.binormal, (float3x3)model);
-    vs_out.binormal = normalize(vs_out.binormal);
-
-    
+   
    return vs_out;
 }

@@ -1,127 +1,40 @@
+#include "square.h"
 
-#include "d3d/d3dApp.h"
-#include <d3d/d3dShader.h>
-#include "d3d/d3dLight.h"
-
-class Cube
-{
-public:
-	Cube()
-	{
-		m_pInputLayout        = NULL;
-		m_pMVPBuffer          = NULL;
-		m_pLightBuffer        = NULL;
-		m_pVertexBuffer       = NULL;
-		m_pIndexBuffer        = NULL;
-	}
-
-	void Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &Model,  
-		                             const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj);
-
-	void shutdown()
-	{
-			ReleaseCOM(m_pRenderTargetView  )
-			ReleaseCOM(m_pMVPBuffer         )
-			ReleaseCOM(m_pLightBuffer       )
-			ReleaseCOM(m_pVertexBuffer      )
-			ReleaseCOM(m_pIndexBuffer       )
-	}
-
-	bool LoadModel(char *modelFile);
-	bool init_buffer (ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext);
-	bool init_shader (ID3D11Device *pD3D11Device, HWND hWnd);
-	void init_texture(ID3D11Device *pD3D11Device, LPCWSTR texFile, ID3D11ShaderResourceView *m_pTexture);
-private:
-
-	struct CameraBuffer
-	{
-		XMFLOAT3 camPos;
-		float padding;
-	};
-
-	struct MatrixBuffer
-	{
-		XMFLOAT4X4 model;
-		XMFLOAT4X4 view;
-		XMFLOAT4X4 proj;
-
-	};
-	MatrixBuffer cbMatrix;
-
-	struct LightBuffer
-	{
-		XMFLOAT4 ambientColor;
-		XMFLOAT4 diffuseColor;
-		XMFLOAT3 lightDirection;
-		float specularPower;
-		XMFLOAT4 specularColor;
-	};
-	LightBuffer cbLight;
-
-	struct Vertex
-	{
-		XMFLOAT3 Position;
-		XMFLOAT2 TexCoord;
-		XMFLOAT3 Normal;
-	};
-	struct ModelVertex
-	{
-		float x, y , z;
-		float u, v;
-		float nx, ny, nz;
-	};
-	ModelVertex  *m_pModelVertex;
-
-	ID3D11RenderTargetView   *m_pRenderTargetView;
-	ID3D11Buffer             *m_pMVPBuffer;
-	ID3D11Buffer             *m_pLightBuffer;
-	ID3D11Buffer             *m_CameraBuffer;
-	ID3D11Buffer             *m_pVertexBuffer;
-	ID3D11Buffer             *m_pIndexBuffer;
-	ID3D11ShaderResourceView *m_pTexture;
-	ID3D11SamplerState       *m_pTexSamplerState;
-	ID3D11InputLayout        *m_pInputLayout;
-
-	int m_VertexCount;
-	int m_IndexCount;
-
-	Shader CubeShader;
-	std::vector<D3DPointLight> pointLights;
-};
-
-
-void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &Model,  
-				  const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj)
+namespace byhj
 {
 
-	cbMatrix.model  = Model;
-	cbMatrix.view   = View;
-	cbMatrix.proj   = Proj;
-	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
-	pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
+void Square::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &Model,
+	const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj)
+{
+
+	cbMatrix.model = Model;
+	cbMatrix.view = View;
+	cbMatrix.proj = Proj;
+	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0);
+	pD3D11DeviceContext->VSSetConstantBuffers(0, 1, &m_pMVPBuffer);
 
 	unsigned int stride;
 	unsigned int offset;
-	stride = sizeof(Vertex); 
+	stride = sizeof(Vertex);
 	offset = 0;
 
 	pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
 	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pTexture);  
-	pD3D11DeviceContext->PSSetSamplers( 0, 1, &m_pTexSamplerState );
+	pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pTexture);
+	pD3D11DeviceContext->PSSetSamplers(0, 1, &m_pTexSamplerState);
 
-	CubeShader.use(pD3D11DeviceContext);
+	SquareShader.use(pD3D11DeviceContext);
 	pD3D11DeviceContext->DrawIndexed(m_IndexCount, 0, 0);
 
 }
 
-bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext)
+bool Square::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext)
 {
 	HRESULT hr;
 
 	///////////////////////////Index Buffer ////////////////////////////////
-	LoadModel("../../media/objects/floor.txt");
+	LoadModel("../../media/objects/square.txt");
 
 
 	Vertex *VertexData = new Vertex[m_VertexCount];
@@ -129,25 +42,25 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 
 	for (int i = 0; i != m_VertexCount; ++i)
 	{
-		VertexData[i].Position = XMFLOAT3(m_pModelVertex[i].x,  m_pModelVertex[i].y,  m_pModelVertex[i].z);
-		VertexData[i].TexCoord = XMFLOAT2(m_pModelVertex[i].u,  m_pModelVertex[i].v);
-		VertexData[i].Normal   = XMFLOAT3(m_pModelVertex[i].nx, m_pModelVertex[i].ny, m_pModelVertex[i].nz);
+		VertexData[i].Position = XMFLOAT3(m_pModelVertex[i].x, m_pModelVertex[i].y, m_pModelVertex[i].z);
+		VertexData[i].TexCoord = XMFLOAT2(m_pModelVertex[i].u, m_pModelVertex[i].v);
+		VertexData[i].Normal = XMFLOAT3(m_pModelVertex[i].nx, m_pModelVertex[i].ny, m_pModelVertex[i].nz);
 		IndexData[i] = i;
 	}
 
 	// Set up the description of the static vertex buffer.
 	D3D11_BUFFER_DESC VertexBufferDesc;
-	VertexBufferDesc.Usage               = D3D11_USAGE_DEFAULT;
-	VertexBufferDesc.ByteWidth           = sizeof(Vertex) * m_VertexCount;
-	VertexBufferDesc.BindFlags           = D3D11_BIND_VERTEX_BUFFER;
-	VertexBufferDesc.CPUAccessFlags      = 0;
-	VertexBufferDesc.MiscFlags           = 0;
+	VertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	VertexBufferDesc.ByteWidth = sizeof(Vertex)* m_VertexCount;
+	VertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	VertexBufferDesc.CPUAccessFlags = 0;
+	VertexBufferDesc.MiscFlags = 0;
 	VertexBufferDesc.StructureByteStride = 0;
 
 	// Give the subresource structure a pointer to the vertex data.
 	D3D11_SUBRESOURCE_DATA VBO;
-	VBO.pSysMem          = VertexData;
-	VBO.SysMemPitch      = 0;
+	VBO.pSysMem = VertexData;
+	VBO.SysMemPitch = 0;
 	VBO.SysMemSlicePitch = 0;
 
 	// Now create the vertex buffer.
@@ -158,17 +71,17 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 
 	// Set up the description of the static index buffer.
 	D3D11_BUFFER_DESC IndexBufferDesc;
-	IndexBufferDesc.Usage               = D3D11_USAGE_DEFAULT;
-	IndexBufferDesc.ByteWidth           = sizeof(unsigned long) * m_IndexCount;
-	IndexBufferDesc.BindFlags           = D3D11_BIND_INDEX_BUFFER;
-	IndexBufferDesc.CPUAccessFlags      = 0;
-	IndexBufferDesc.MiscFlags           = 0;
+	IndexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	IndexBufferDesc.ByteWidth = sizeof(unsigned long)* m_IndexCount;
+	IndexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	IndexBufferDesc.CPUAccessFlags = 0;
+	IndexBufferDesc.MiscFlags = 0;
 	IndexBufferDesc.StructureByteStride = 0;
 
 	// Give the subresource structure a pointer to the index data.
 	D3D11_SUBRESOURCE_DATA IBO;
-	IBO.pSysMem          = IndexData;
-	IBO.SysMemPitch      = 0;
+	IBO.pSysMem = IndexData;
+	IBO.SysMemPitch = 0;
 	IBO.SysMemSlicePitch = 0;
 
 	hr = pD3D11Device->CreateBuffer(&IndexBufferDesc, &IBO, &m_pIndexBuffer);
@@ -177,13 +90,13 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 
 	////////////////////////////////MVP Buffer//////////////////////////////////////
 
-	D3D11_BUFFER_DESC mvpBufferDesc;	
+	D3D11_BUFFER_DESC mvpBufferDesc;
 	ZeroMemory(&mvpBufferDesc, sizeof(D3D11_BUFFER_DESC));
-	mvpBufferDesc.Usage          = D3D11_USAGE_DEFAULT;
-	mvpBufferDesc.ByteWidth      = sizeof(MatrixBuffer);
-	mvpBufferDesc.BindFlags      = D3D11_BIND_CONSTANT_BUFFER;
+	mvpBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	mvpBufferDesc.ByteWidth = sizeof(MatrixBuffer);
+	mvpBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	mvpBufferDesc.CPUAccessFlags = 0;
-	mvpBufferDesc.MiscFlags      = 0;
+	mvpBufferDesc.MiscFlags = 0;
 	hr = pD3D11Device->CreateBuffer(&mvpBufferDesc, NULL, &m_pMVPBuffer);
 	DebugHR(hr);
 
@@ -193,41 +106,41 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	XMFLOAT4 pos;
 
 	color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-	pos   = XMFLOAT4(-3.0f, 1.0f, 3.0f, 1.0f);
+	pos = XMFLOAT4(-3.0f, 1.0f, 3.0f, 1.0f);
 	pLight.SetLightColor(color);
 	pLight.SetLightPos(pos);
 	pointLights.push_back(pLight);
 
 	color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
-	pos   = XMFLOAT4(3.0f, 1.0f, 3.0f, 1.0f);
+	pos = XMFLOAT4(3.0f, 1.0f, 3.0f, 1.0f);
 	pLight.SetLightColor(color);
 	pLight.SetLightPos(pos);
 	pointLights.push_back(pLight);
 
 	color = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
-	pos   = XMFLOAT4(-3.0f, 1.0f, -3.0f, 1.0f);
+	pos = XMFLOAT4(-3.0f, 1.0f, -3.0f, 1.0f);
 	pLight.SetLightColor(color);
 	pLight.SetLightPos(pos);
 	pointLights.push_back(pLight);
 
 	color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	pos   = XMFLOAT4(3.0f, 1.0f, -3.0f, 1.0f);
+	pos = XMFLOAT4(3.0f, 1.0f, -3.0f, 1.0f);
 	pLight.SetLightColor(color);
 	pLight.SetLightPos(pos);
 	pointLights.push_back(pLight);
 
-	D3D11_BUFFER_DESC lightBufferDesc;	
+	D3D11_BUFFER_DESC lightBufferDesc;
 	ZeroMemory(&lightBufferDesc, sizeof(D3D11_BUFFER_DESC));
-	lightBufferDesc.Usage          = D3D11_USAGE_DEFAULT;
-	lightBufferDesc.ByteWidth      = sizeof(D3DPointLight) * pointLights.size();
-	lightBufferDesc.BindFlags      = D3D11_BIND_CONSTANT_BUFFER;
+	lightBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	lightBufferDesc.ByteWidth = sizeof(D3DPointLight)* pointLights.size();
+	lightBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	lightBufferDesc.CPUAccessFlags = 0;
-	lightBufferDesc.MiscFlags      = 0;
+	lightBufferDesc.MiscFlags = 0;
 
 	// Give the subresource structure a pointer to the index data.
 	D3D11_SUBRESOURCE_DATA lightSub;
-	lightSub.pSysMem          = &pointLights[0];
-	lightSub.SysMemPitch      = 0;
+	lightSub.pSysMem = &pointLights[0];
+	lightSub.SysMemPitch = 0;
 	lightSub.SysMemSlicePitch = 0;
 	hr = pD3D11Device->CreateBuffer(&lightBufferDesc, &lightSub, &m_pLightBuffer);
 	DebugHR(hr);
@@ -236,11 +149,11 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 
 
 	D3D11_BUFFER_DESC cameraBufferDesc;
-	cameraBufferDesc.Usage               = D3D11_USAGE_DYNAMIC;
-	cameraBufferDesc.ByteWidth           = sizeof(CameraBuffer);
-	cameraBufferDesc.BindFlags           = D3D11_BIND_CONSTANT_BUFFER;
-	cameraBufferDesc.CPUAccessFlags      = D3D11_CPU_ACCESS_WRITE;
-	cameraBufferDesc.MiscFlags           = 0;
+	cameraBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cameraBufferDesc.ByteWidth = sizeof(CameraBuffer);
+	cameraBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cameraBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cameraBufferDesc.MiscFlags = 0;
 	cameraBufferDesc.StructureByteStride = 0;
 
 	// Create the camera constant buffer pointer so we can access the vertex shader constant buffer from within this class.
@@ -259,7 +172,7 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	pD3D11DeviceContext->Unmap(m_CameraBuffer, 0);
 
 	int bufferSlot = 1;
-	pD3D11DeviceContext->VSSetConstantBuffers( bufferSlot, 1, &m_CameraBuffer);
+	pD3D11DeviceContext->VSSetConstantBuffers(bufferSlot, 1, &m_CameraBuffer);
 
 	// Create a texture sampler state description.
 	D3D11_SAMPLER_DESC samplerDesc;
@@ -281,14 +194,14 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	hr = pD3D11Device->CreateSamplerState(&samplerDesc, &m_pTexSamplerState);
 	DebugHR(hr);
 
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/grid01.dds", NULL,NULL, &m_pTexture, NULL);
+	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/seafloor.dds", NULL, NULL, &m_pTexture, NULL);
 	DebugHR(hr);
 
 	return true;
 }
 
 
-bool Cube::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
+bool Square::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 {
 	HRESULT result;
 
@@ -319,15 +232,15 @@ bool Cube::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 
 	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
 
-	CubeShader.init(pD3D11Device, hWnd);
-	CubeShader.attachVS(L"light.vsh", pInputLayoutDesc, numElements);
-	CubeShader.attachPS(L"light.psh");
-	CubeShader.end();
+	SquareShader.init(pD3D11Device, hWnd);
+	SquareShader.attachVS(L"light.vsh", pInputLayoutDesc, numElements);
+	SquareShader.attachPS(L"light.psh");
+	SquareShader.end();
 
 	return true;
 }
 
-bool Cube::LoadModel(char *modelFile)
+bool Square::LoadModel(char *modelFile)
 {
 	std::ifstream fin;
 	char ch;
@@ -340,7 +253,7 @@ bool Cube::LoadModel(char *modelFile)
 	}
 	// Read up to the value of vertex count.
 	fin.get(ch);
-	while(ch != ':')
+	while (ch != ':')
 	{
 		fin.get(ch);
 	}
@@ -349,7 +262,7 @@ bool Cube::LoadModel(char *modelFile)
 	fin >> m_VertexCount;
 	m_IndexCount = m_VertexCount;
 
-	m_pModelVertex  = new ModelVertex[m_VertexCount];
+	m_pModelVertex = new ModelVertex[m_VertexCount];
 	if (!m_pModelVertex)
 	{
 		return false;
@@ -364,12 +277,14 @@ bool Cube::LoadModel(char *modelFile)
 
 	for (int i = 0; i != m_VertexCount; ++i)
 	{
-		fin >> m_pModelVertex[i].x  >> m_pModelVertex[i].y >> m_pModelVertex[i].z;
-		fin >> m_pModelVertex[i].u  >> m_pModelVertex[i].v;
+		fin >> m_pModelVertex[i].x >> m_pModelVertex[i].y >> m_pModelVertex[i].z;
+		fin >> m_pModelVertex[i].u >> m_pModelVertex[i].v;
 		fin >> m_pModelVertex[i].nx >> m_pModelVertex[i].ny >> m_pModelVertex[i].nz;
 	}
 	fin.close();
 
 	return true;
+
+}
 
 }

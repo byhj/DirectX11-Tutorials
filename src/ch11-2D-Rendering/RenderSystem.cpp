@@ -17,9 +17,7 @@ void RenderSystem::v_Init()
 {
 	init_device();
 	init_camera();
-	m_Cube.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd() );
-
-	m_Bitmap.Init(m_pD3D11Device, GetHwnd() );
+	init_object();
 }
 
 void RenderSystem::v_Render()
@@ -31,10 +29,13 @@ void RenderSystem::v_Render()
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
 
 	m_Cube.Render(m_pD3D11DeviceContext, m_Matrix);
+	////////////////////////////////////////////////////////////////////
+
+	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthDisabledStencilState, 1);
+
+	m_Bitmap.Render(m_pD3D11DeviceContext, m_Matrix);
 
 	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
-	m_Bitmap.Render(m_pD3D11DeviceContext, m_Matrix);
-	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthDisabledStencilState, 1);
 
 	EndScene();
 }
@@ -223,5 +224,12 @@ void RenderSystem::init_camera()
 	XMStoreFloat4x4(&m_Matrix.proj,  XMMatrixTranspose(Proj) );
 
 }
+
+void RenderSystem::init_object()
+{
+	m_Cube.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd());
+	m_Bitmap.Init(m_pD3D11Device, GetHwnd()  );
+}
+
 
 }
