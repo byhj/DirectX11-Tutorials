@@ -69,4 +69,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="particle.psh">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="particle.vsh">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>

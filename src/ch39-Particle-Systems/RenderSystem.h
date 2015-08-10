@@ -59,6 +59,7 @@ private:
 	ID3D11DepthStencilState  *m_pDepthStencilState;
 	ID3D11DepthStencilState  *m_pDepthDisabledStencilState;
 	ID3D11RasterizerState   *m_pRasterState        = nullptr;
+	ID3D11BlendState         *m_pBlendEnable;
 
 	MatrixBuffer m_Matrix;
 };

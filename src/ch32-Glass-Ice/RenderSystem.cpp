@@ -47,6 +47,7 @@ void RenderSystem::v_Render()
 	XMMATRIX orthProj = XMMatrixOrthographicLH(m_ScreenWidth, m_ScreenHeight, 1.0f, 1000.0f);
 	XMFLOAT4X4 orth;
 	XMStoreFloat4x4(&orth, XMMatrixTranspose(orthProj));
+
 	glass.Render(m_pD3D11DeviceContext, m_pRttShaderResourceView, m_Matrix.model, m_Matrix.view, orth);
 
 	TurnZBufferOn();

@@ -35,7 +35,7 @@ struct VS_IN
 struct VS_OUT
 {
     float4 Pos  : SV_POSITION;
-	float2 Tex  : TEXCOORD;
+	float2 Tex  : TEXCOORD0;
    	float2 Tex1 : TEXCOORD1;
 	float2 Tex2 : TEXCOORD2;
 	float2 Tex3 : TEXCOORD3;
@@ -48,8 +48,8 @@ VS_OUT VS(VS_IN vs_in)
    VS_OUT vs_out;
    vs_out.Pos.w = 1.0f;
    vs_out.Pos = mul(vs_in.Pos,  cbMatrix.model);
-   vs_out.Pos = mul(vs_out.Pos, cbMatrix.view);
-   vs_out.Pos = mul(vs_out.Pos, cbMatrix.proj);
+ //  vs_out.Pos = mul(vs_out.Pos, cbMatrix.view);
+ //  vs_out.Pos = mul(vs_out.Pos, cbMatrix.proj);
 
 
 	// Compute texture coordinates for first noise texture using the first scale and upward scrolling speed values.

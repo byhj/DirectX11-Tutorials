@@ -164,8 +164,23 @@ void RenderSystem::init_device()
 	depthStencilViewDesc.ViewDimension      = D3D11_DSV_DIMENSION_TEXTURE2D;
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
 
+	/////////////////////////////////////////////////////////////////////////////
 	hr = m_pD3D11Device->CreateDepthStencilView(m_pDepthStencilBuffer, &depthStencilViewDesc, &m_pDepthStencilView);
 	DebugHR(hr);
+
+	D3D11_BLEND_DESC blendStateDesc;
+	ZeroMemory(&blendStateDesc, sizeof(D3D11_BLEND_DESC));
+	blendStateDesc.RenderTarget[0].BlendEnable = TRUE;
+	blendStateDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+	blendStateDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+	blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendStateDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendStateDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendStateDesc.RenderTarget[0].RenderTargetWriteMask = 0x0f;
+	hr = m_pD3D11Device->CreateBlendState(&blendStateDesc, &m_pBlendEnable);
+	DebugHR(hr);
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 	// Setup the raster description which will determine how and what polygons will be drawn.
@@ -208,8 +223,11 @@ void RenderSystem::BeginScene()
 {
 	//Render 
 	float bgColor[4] ={ 0.0f, 0.0f, 0.0f, 1.0f };
-
 	m_pD3D11DeviceContext->RSSetState(m_pRasterState);
+
+	float blendFactor[4]={ 0.0f, 0.0f, 0.0f, 0.0f};
+	m_pD3D11DeviceContext->OMSetBlendState(m_pBlendEnable, blendFactor, 0xffffffff);
+
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
 	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
@@ -251,7 +269,7 @@ void RenderSystem::init_object()
 
 	m_Timer.Reset();
 	m_Font.init(m_pD3D11Device);
-	m_Camera.SetRadius(10.0f);
+	m_Camera.SetRadius(3.0f);
 
 	m_Particle.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
 	m_Particle.init_shader(m_pD3D11Device, GetHwnd());

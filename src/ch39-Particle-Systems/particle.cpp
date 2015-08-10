@@ -2,6 +2,86 @@
 
 namespace byhj
 {
+void Particle::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &Model,
+		              const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj)
+	{
+
+		int index, i;
+		HRESULT result;
+		D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+		// Now build the vertex array from the particle list array.  Each particle is a quad made out of two triangles.
+		index = 0;
+
+		for (int i = 0; i < m_currentParticleCount; i++)
+		{
+			// Bottom left.
+			m_vertices[index].Position  = XMFLOAT3(m_particleList[i].positionX - m_particleSize, m_particleList[i].positionY - m_particleSize, m_particleList[i].positionZ);
+			m_vertices[index].TexCoord  = XMFLOAT2(0.0f, 1.0f);
+			m_vertices[index].Color     = XMFLOAT4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
+			index++;
+
+			// Top left.
+			m_vertices[index].Position = XMFLOAT3(m_particleList[i].positionX - m_particleSize, m_particleList[i].positionY + m_particleSize, m_particleList[i].positionZ);
+			m_vertices[index].TexCoord = XMFLOAT2(0.0f, 0.0f);
+			m_vertices[index].Color    = XMFLOAT4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
+			index++;
+
+			// Bottom right.
+			m_vertices[index].Position = XMFLOAT3(m_particleList[i].positionX + m_particleSize, m_particleList[i].positionY - m_particleSize, m_particleList[i].positionZ);
+			m_vertices[index].TexCoord = XMFLOAT2(1.0f, 1.0f);
+			m_vertices[index].Color    = XMFLOAT4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
+			index++;
+
+			// Bottom right.
+			m_vertices[index].Position = XMFLOAT3(m_particleList[i].positionX + m_particleSize, m_particleList[i].positionY - m_particleSize, m_particleList[i].positionZ);
+			m_vertices[index].TexCoord = XMFLOAT2(1.0f, 1.0f);
+			m_vertices[index].Color    = XMFLOAT4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
+			index++;
+
+			// Top left.
+			m_vertices[index].Position = XMFLOAT3(m_particleList[i].positionX - m_particleSize, m_particleList[i].positionY + m_particleSize, m_particleList[i].positionZ);
+			m_vertices[index].TexCoord = XMFLOAT2(0.0f, 0.0f);
+			m_vertices[index].Color    = XMFLOAT4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
+			index++;
+
+			// Top right.
+			m_vertices[index].Position = XMFLOAT3(m_particleList[i].positionX + m_particleSize, m_particleList[i].positionY + m_particleSize, m_particleList[i].positionZ);
+			m_vertices[index].TexCoord = XMFLOAT2(1.0f, 0.0f);
+			m_vertices[index].Color    = XMFLOAT4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
+			index++;
+		}
+
+		// Lock the vertex buffer.
+		result = pD3D11DeviceContext->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+		Vertex *vertexPtr = (Vertex*)mappedResource.pData;
+		memcpy(vertexPtr, m_vertices, m_VertexCount);
+
+		pD3D11DeviceContext->Unmap(m_pVertexBuffer, 0);
+
+		////////////////////////////////////////////////////////////////////////////////
+		cbMatrix.model = Model;
+		cbMatrix.view = View;
+		cbMatrix.proj = Proj;
+		pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0);
+		pD3D11DeviceContext->VSSetConstantBuffers(0, 1, &m_pMVPBuffer);
+
+		unsigned int stride;
+		unsigned int offset;
+		stride = sizeof(Vertex);
+		offset = 0;
+		// Set the vertex buffer to active in the input assembler so it can be rendered.
+		pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
+		pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+		pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pTexture);
+		pD3D11DeviceContext->PSSetSamplers(0, 1, &m_pTexSamplerState);
+
+		ParticleShader.use(pD3D11DeviceContext);
+		pD3D11DeviceContext->DrawIndexedInstanced(m_IndexCount, 4, 0, 0, 0);
+
+	}
 
 bool Particle::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext)
 {
@@ -138,7 +218,7 @@ bool Particle::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 
 	pInputLayoutDesc[2].SemanticName         = "TEXCOORD";
 	pInputLayoutDesc[2].SemanticIndex        = 1;
-	pInputLayoutDesc[2].Format               = DXGI_FORMAT_R32G32_FLOAT;
+	pInputLayoutDesc[2].Format               = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	pInputLayoutDesc[2].InputSlot            = 0;
 	pInputLayoutDesc[2].AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
 	pInputLayoutDesc[2].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
@@ -194,6 +274,35 @@ void Particle::Frame(float frameTime)
 
 }
 
+void Particle::KillParticles()
+{
+	int i, j;
+
+
+	// Kill all the particles that have gone below a certain height range.
+	for (i=0; i < m_maxParticles; i++)
+	{
+		if ((m_particleList[i].active == true) && (m_particleList[i].positionY < -3.0f))
+		{
+			m_particleList[i].active = false;
+			m_currentParticleCount--;
+
+			// Now shift all the live particles back up the array to erase the destroyed particle and keep the array sorted correctly.
+			for (j=i; j < m_maxParticles - 1; j++)
+			{
+				m_particleList[j].positionX = m_particleList[j + 1].positionX;
+				m_particleList[j].positionY = m_particleList[j + 1].positionY;
+				m_particleList[j].positionZ = m_particleList[j + 1].positionZ;
+				m_particleList[j].red       = m_particleList[j + 1].red;
+				m_particleList[j].green     = m_particleList[j + 1].green;
+				m_particleList[j].blue      = m_particleList[j + 1].blue;
+				m_particleList[j].velocity  = m_particleList[j + 1].velocity;
+				m_particleList[j].active    = m_particleList[j + 1].active;
+			}
+		}
+	}
+
+}
 void Particle::EmitParticles(float frameTime)
 {
 	bool emitParticle, found;
@@ -208,12 +317,13 @@ void Particle::EmitParticles(float frameTime)
 	emitParticle = false;
 
 	// Check if it is time to emit a new particle or not.
-	if(m_accumulatedTime > (1000.0f / m_particlesPerSecond))
+	if(m_accumulatedTime  > (1.0f / m_particlesPerSecond))
 	{
 		m_accumulatedTime = 0.0f;
 		emitParticle = true;
 	}
-	std::cout << m_accumulatedTime << std::endl;
+
+	//std::cout << m_accumulatedTime << std::endl;
 	// If there are particles to emit then emit one per frame.
 	if((emitParticle == true) && (m_currentParticleCount < (m_maxParticles - 1)))
 	{
@@ -286,35 +396,7 @@ void Particle::UpdateParticles(float frameTime)
 	return;
 }
 
-void Particle::KillParticles()
-{
-	int i, j;
 
-
-	// Kill all the particles that have gone below a certain height range.
-	for(i=0; i<m_maxParticles; i++)
-	{
-		if((m_particleList[i].active == true) && (m_particleList[i].positionY < -3.0f))
-		{
-			m_particleList[i].active = false;
-			m_currentParticleCount--;
-
-			// Now shift all the live particles back up the array to erase the destroyed particle and keep the array sorted correctly.
-			for(j=i; j<m_maxParticles-1; j++)
-			{
-				m_particleList[j].positionX = m_particleList[j+1].positionX;
-				m_particleList[j].positionY = m_particleList[j+1].positionY;
-				m_particleList[j].positionZ = m_particleList[j+1].positionZ;
-				m_particleList[j].red       = m_particleList[j+1].red;
-				m_particleList[j].green     = m_particleList[j+1].green;
-				m_particleList[j].blue      = m_particleList[j+1].blue;
-				m_particleList[j].velocity  = m_particleList[j+1].velocity;
-				m_particleList[j].active    = m_particleList[j+1].active;
-			}
-		}
-	}
-
-}
 
 
 }

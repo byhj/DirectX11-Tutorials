@@ -28,7 +28,7 @@ VS_OUT VS(VS_IN vs_in)
    vs_in.Pos.w = 1.0f;
    vs_out.Pos = mul(vs_in.Pos, model);
    vs_out.Pos = mul(vs_out.Pos, view);
-   vs_out.Pos = mul(vs_out.Pos, proj);
+  vs_out.Pos = mul(vs_out.Pos, proj);
 
    vs_out.Tex   = vs_in.Tex;
    vs_out.Color = vs_in.Color;
