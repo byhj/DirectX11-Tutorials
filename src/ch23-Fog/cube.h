@@ -39,10 +39,12 @@ private:
 	};
 	LightBuffer cbLight;
 
-	struct CameraBuffer
+	struct FogBuffer
 	{
-		XMFLOAT3 camPos;
-		float padding;
+		float fogStart;
+		float fogEnd;
+		float padding1;
+		float padding2;
 	};
 
 	struct  Vertex

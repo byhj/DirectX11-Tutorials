@@ -19,7 +19,7 @@ void RenderSystem::v_Init()
 	init_camera();
 
 	m_Timer.Reset();
-	m_Camera.SetRadius(20.0f);
+	m_Camera.SetRadius(10.0f);
 	m_Cube.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd() );
 	m_Font.init(m_pD3D11Device);
 }
@@ -42,12 +42,12 @@ void RenderSystem::v_Render()
 		XMMATRIX View = XMLoadFloat4x4(&m_Matrix.view);
 	
 		XMFLOAT4X4 pp;
-		XMStoreFloat4x4(&pp, Proj);
+		XMStoreFloat4x4(&pp, XMMatrixTranspose(Proj) );
 		D3DXMATRIX pr = D3DXMATRIX(pp._11, pp._12, pp._13, pp._14,
 			pp._21, pp._22, pp._23, pp._24,
 			pp._31, pp._32, pp._33, pp._34,
 			pp._41, pp._42, pp._43, pp._44);
-		XMStoreFloat4x4(&pp, View);
+		XMStoreFloat4x4(&pp, XMMatrixTranspose(View) );
 		D3DXMATRIX vi = D3DXMATRIX(pp._11, pp._12, pp._13, pp._14,
 			pp._21, pp._22, pp._23, pp._24,
 			pp._31, pp._32, pp._33, pp._34,
@@ -214,7 +214,7 @@ void RenderSystem::init_camera()
 	m_pD3D11DeviceContext->RSSetViewports(1, &vp);
 
 	//MVP Matrix
-	XMVECTOR camPos    = XMVectorSet(0.0f, 0.0f, -20.0f, 0.0f);
+	XMVECTOR camPos    = XMVectorSet(0.0f, 0.0f, -100.0f, 0.0f);
 	XMVECTOR camTarget = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	XMVECTOR camUp     = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 	XMMATRIX View      = XMMatrixLookAtLH(camPos, camTarget, camUp);

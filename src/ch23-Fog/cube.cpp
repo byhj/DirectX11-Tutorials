@@ -160,7 +160,7 @@ void Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 
 	D3D11_BUFFER_DESC cameraBufferDesc;
 	cameraBufferDesc.Usage               = D3D11_USAGE_DYNAMIC;
-	cameraBufferDesc.ByteWidth           = sizeof(CameraBuffer);
+	cameraBufferDesc.ByteWidth           = sizeof(FogBuffer);
 	cameraBufferDesc.BindFlags           = D3D11_BIND_CONSTANT_BUFFER;
 	cameraBufferDesc.CPUAccessFlags      = D3D11_CPU_ACCESS_WRITE;
 	cameraBufferDesc.MiscFlags           = 0;
@@ -175,14 +175,15 @@ void Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	DebugHR(hr);
 
 	// Get a pointer to the data in the constant buffer.
-	CameraBuffer *dataPtr3 = (CameraBuffer*)mappedResource.pData;
-	dataPtr3->camPos = XMFLOAT3(0.0f, 2.0f, -3.0f);
-	dataPtr3->padding = 0.0f;
+	FogBuffer *dataPtr3 = (FogBuffer*)mappedResource.pData;
+	dataPtr3->fogStart =  -10.0f;
+	dataPtr3->fogEnd   =   10.0f;
+	dataPtr3->padding1 =  0.0f;
+	dataPtr3->padding2 =  0.0f;
 	pD3D11DeviceContext->Unmap(m_CameraBuffer, 0);
 
 	int bufferSlot = 1;
 	pD3D11DeviceContext->VSSetConstantBuffers(bufferSlot, 1, &m_CameraBuffer);
-
 
 }
 

@@ -31,6 +31,8 @@ VS_OUT VS(VS_IN vs_in)
 {	
  
    VS_OUT vs_out;
+   vs_in.Pos.w = 1.0f;
+
   // Make the position with mvp matrix
    vs_out.Pos = mul(vs_in.Pos, model);
    vs_out.Pos = mul(vs_out.Pos, view);
@@ -43,6 +45,7 @@ VS_OUT VS(VS_IN vs_in)
    // Calculate linear fog.   
    float4 cameraPosition = mul(vs_in.Pos, model);
           cameraPosition = mul(cameraPosition, view);
+
    vs_out.fogFactor = saturate((fogEnd - cameraPosition.z) / (fogEnd - fogStart));
  
    return vs_out;
