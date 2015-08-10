@@ -1,45 +1,51 @@
-#include "Deferred.h"
+#include "fade.h"
 
 namespace byhj
 {
 
 
-void Deferred::init_window(float posX, float posY, float width, float height, float aspect)
+void Fade::init_window(float posX, float posY, float width, float height)
 {
-	m_posX  = posX;
-	m_posY  = posY;
-	m_width = width; 
+	m_posX = posX;
+	m_posY = posY;
+	m_width = width;
 	m_height = height;
-	m_aspect = aspect;
 }
 
-void Deferred::Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView **pTexture, const XMFLOAT4X4 &Model,  
-					const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj)
+void Fade::Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView *pTexture, const XMFLOAT4X4 &Model,
+	const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj, float fadeAmount)
 {
 
-	cbMatrix.model  = Model;
-	cbMatrix.view   = View;
-	cbMatrix.proj   = Proj;
-	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
-	pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
+	cbMatrix.model = Model;
+	cbMatrix.view = View;
+	cbMatrix.proj = Proj;
+	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0);
+	pD3D11DeviceContext->VSSetConstantBuffers(0, 1, &m_pMVPBuffer);
+
+	cbFade.fadeAmount = fadeAmount;
+	cbFade.padding[0] = 0.0f;
+	cbFade.padding[1] = 0.0f;
+	cbFade.padding[2] = 0.0f;
+	pD3D11DeviceContext->UpdateSubresource(m_pFadeBuffer, 0, NULL, &cbFade, 0, 0);
+	pD3D11DeviceContext->PSSetConstantBuffers(0, 1, &m_pFadeBuffer);
 
 	unsigned int stride;
 	unsigned int offset;
-	stride = sizeof(Vertex); 
+	stride = sizeof(Vertex);
 	offset = 0;
 
 	pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
 	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	pD3D11DeviceContext->PSSetShaderResources(0, 2, &pTexture[0]);  
-	pD3D11DeviceContext->PSSetSamplers( 0, 1, &m_pTexSamplerState );
+	pD3D11DeviceContext->PSSetShaderResources(0, 1, &pTexture);
+	pD3D11DeviceContext->PSSetSamplers(0, 1, &m_pTexSamplerState);
 
-	D3DRTTShader.use(pD3D11DeviceContext);
+	FadeShader.use(pD3D11DeviceContext);
 	pD3D11DeviceContext->DrawIndexed(m_IndexCount, 0, 0);
 
 }
 
-bool Deferred::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext)
+bool Fade::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext)
 {
 	HRESULT hr;
 
@@ -60,7 +66,7 @@ bool Deferred::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D
 		return false;
 	}
 
-	memset(VertexData, 0, sizeof(Vertex) * m_VertexCount);
+	memset(VertexData, 0, sizeof(Vertex)* m_VertexCount);
 
 	for (int i = 0; i != m_IndexCount; ++i)
 	{
@@ -71,38 +77,37 @@ bool Deferred::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D
 	VertexData[0].Pos = XMFLOAT3(m_posX, m_posY, 0.0f);  // Top left.
 	VertexData[0].Tex = XMFLOAT2(0.0f, 0.0f);
 
-	VertexData[1].Pos = XMFLOAT3(m_posX + m_width, m_posY, 0.0f);  
+	VertexData[1].Pos = XMFLOAT3(m_posX + m_width, m_posY, 0.0f);
 	VertexData[1].Tex = XMFLOAT2(1.0f, 0.0f);
 
 	VertexData[2].Pos = XMFLOAT3(m_posX + m_width, m_posY - m_height, 0.0f);   //Bottom right
 	VertexData[2].Tex = XMFLOAT2(1.0f, 1.0f);
 
 	// Second triangle.
-	VertexData[3].Pos = XMFLOAT3(m_posX + m_width, m_posY - m_height, 0.0f);   
+	VertexData[3].Pos = XMFLOAT3(m_posX + m_width, m_posY - m_height, 0.0f);
 	VertexData[3].Tex = XMFLOAT2(1.0f, 1.0f);
 
-	VertexData[4].Pos = XMFLOAT3(m_posX, m_posY - m_height, 0.0f); 
+	VertexData[4].Pos = XMFLOAT3(m_posX, m_posY - m_height, 0.0f);
 	VertexData[4].Tex = XMFLOAT2(0.0f, 1.0f);
 
-	VertexData[5].Pos = XMFLOAT3(m_posX, m_posY, 0.0f); 
+	VertexData[5].Pos = XMFLOAT3(m_posX, m_posY, 0.0f);
 	VertexData[5].Tex = XMFLOAT2(0.0f, 0.0f);
-
 
 	///////////////////////////Index Buffer ////////////////////////////////
 
 	// Set up the description of the static vertex buffer.
 	D3D11_BUFFER_DESC VertexBufferDesc;
-	VertexBufferDesc.Usage               = D3D11_USAGE_DEFAULT;
-	VertexBufferDesc.ByteWidth           = sizeof(Vertex) * m_VertexCount;
-	VertexBufferDesc.BindFlags           = D3D11_BIND_VERTEX_BUFFER;
-	VertexBufferDesc.CPUAccessFlags      = 0;
-	VertexBufferDesc.MiscFlags           = 0;
+	VertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	VertexBufferDesc.ByteWidth = sizeof(Vertex)* m_VertexCount;
+	VertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	VertexBufferDesc.CPUAccessFlags = 0;
+	VertexBufferDesc.MiscFlags = 0;
 	VertexBufferDesc.StructureByteStride = 0;
 
 	// Give the subresource structure a pointer to the vertex data.
 	D3D11_SUBRESOURCE_DATA VBO;
-	VBO.pSysMem          = VertexData;
-	VBO.SysMemPitch      = 0;
+	VBO.pSysMem = VertexData;
+	VBO.SysMemPitch = 0;
 	VBO.SysMemSlicePitch = 0;
 
 	// Now create the vertex buffer.
@@ -113,17 +118,17 @@ bool Deferred::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D
 
 	// Set up the description of the static index buffer.
 	D3D11_BUFFER_DESC IndexBufferDesc;
-	IndexBufferDesc.Usage               = D3D11_USAGE_DEFAULT;
-	IndexBufferDesc.ByteWidth           = sizeof(unsigned long) * m_IndexCount;
-	IndexBufferDesc.BindFlags           = D3D11_BIND_INDEX_BUFFER;
-	IndexBufferDesc.CPUAccessFlags      = 0;
-	IndexBufferDesc.MiscFlags           = 0;
+	IndexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	IndexBufferDesc.ByteWidth = sizeof(unsigned long)* m_IndexCount;
+	IndexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	IndexBufferDesc.CPUAccessFlags = 0;
+	IndexBufferDesc.MiscFlags = 0;
 	IndexBufferDesc.StructureByteStride = 0;
 
 	// Give the subresource structure a pointer to the index data.
 	D3D11_SUBRESOURCE_DATA IBO;
-	IBO.pSysMem          = IndexData;
-	IBO.SysMemPitch      = 0;
+	IBO.pSysMem = IndexData;
+	IBO.SysMemPitch = 0;
 	IBO.SysMemSlicePitch = 0;
 
 	hr = pD3D11Device->CreateBuffer(&IndexBufferDesc, &IBO, &m_pIndexBuffer);
@@ -131,14 +136,24 @@ bool Deferred::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D
 
 	////////////////////////////////MVP Buffer//////////////////////////////////////
 
-	D3D11_BUFFER_DESC mvpBufferDesc;	
+	D3D11_BUFFER_DESC mvpBufferDesc;
 	ZeroMemory(&mvpBufferDesc, sizeof(D3D11_BUFFER_DESC));
-	mvpBufferDesc.Usage          = D3D11_USAGE_DEFAULT;
-	mvpBufferDesc.ByteWidth      = sizeof(MatrixBuffer);
-	mvpBufferDesc.BindFlags      = D3D11_BIND_CONSTANT_BUFFER;
+	mvpBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	mvpBufferDesc.ByteWidth = sizeof(MatrixBuffer);
+	mvpBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	mvpBufferDesc.CPUAccessFlags = 0;
-	mvpBufferDesc.MiscFlags      = 0;
+	mvpBufferDesc.MiscFlags = 0;
 	hr = pD3D11Device->CreateBuffer(&mvpBufferDesc, NULL, &m_pMVPBuffer);
+	DebugHR(hr);
+
+	D3D11_BUFFER_DESC fadeBufferDesc;
+	ZeroMemory(&fadeBufferDesc, sizeof(D3D11_BUFFER_DESC));
+	fadeBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	fadeBufferDesc.ByteWidth = sizeof(FadeBuffer);
+	fadeBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	fadeBufferDesc.CPUAccessFlags = 0;
+	fadeBufferDesc.MiscFlags = 0;
+	hr = pD3D11Device->CreateBuffer(&fadeBufferDesc, NULL, &m_pFadeBuffer);
 	DebugHR(hr);
 
 	// Create a texture sampler state description.
@@ -165,7 +180,7 @@ bool Deferred::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D
 }
 
 
-bool Deferred::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
+bool Fade::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 {
 	HRESULT result;
 
@@ -188,13 +203,12 @@ bool Deferred::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 
 	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
 
-	D3DRTTShader.init(pD3D11Device, hWnd);
-	D3DRTTShader.attachVS(L"light.vsh", pInputLayoutDesc, numElements);
-	D3DRTTShader.attachPS(L"light.psh");
-	D3DRTTShader.end();
+	FadeShader.init(pD3D11Device, hWnd);
+	FadeShader.attachVS(L"fade.vsh", pInputLayoutDesc, numElements);
+	FadeShader.attachPS(L"fade.psh");
+	FadeShader.end();
 
 	return true;
-
 }
 
 }

@@ -6,6 +6,9 @@
 #include <d3d11.h>
 #include <xnamath.h>
 
+namespace byhj
+{
+
 class Deferred
 {
 public:
@@ -69,5 +72,6 @@ private:
 };
 
 
+}
 
 #endif

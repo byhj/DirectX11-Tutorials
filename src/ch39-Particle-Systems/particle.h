@@ -4,6 +4,10 @@
 #include "d3d/d3dApp.h"
 #include "d3d/d3dShader.h"
 
+namespace byhj
+{
+
+
 class Particle
 {
 public:
@@ -17,71 +21,67 @@ public:
 		m_pTexture            = NULL;
 	}
 
-	void Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMMATRIX &Model,  
-		        const XMMATRIX &View, const XMMATRIX &Proj)
+	void Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &Model,  
+		const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj)
 	{
 
 		int index, i;
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
-		Vertex* m_vertices;
-		memset(m_vertices, 0, (sizeof(Vertex) * m_VertexCount));
 
 		// Now build the vertex array from the particle list array.  Each particle is a quad made out of two triangles.
 		index = 0;
-
 		for(int i = 0; i < m_currentParticleCount; i++)
 		{
 			// Bottom left.
-			m_vertices[index].Position  = D3DXVECTOR3(m_particleList[i].positionX - m_particleSize, m_particleList[i].positionY - m_particleSize, m_particleList[i].positionZ);
-			m_vertices[index].TexCoord  = D3DXVECTOR2(0.0f, 1.0f);
-			m_vertices[index].Color     = D3DXVECTOR4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
+			m_vertices[index].Position  = XMFLOAT3(m_particleList[i].positionX - m_particleSize, m_particleList[i].positionY - m_particleSize, m_particleList[i].positionZ);
+			m_vertices[index].TexCoord  = XMFLOAT2(0.0f, 1.0f);
+			m_vertices[index].Color     = XMFLOAT4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
 			index++;
 
 			// Top left.
-			m_vertices[index].Position = D3DXVECTOR3(m_particleList[i].positionX - m_particleSize, m_particleList[i].positionY + m_particleSize, m_particleList[i].positionZ);
-			m_vertices[index].TexCoord = D3DXVECTOR2(0.0f, 0.0f);
-			m_vertices[index].Color    = D3DXVECTOR4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
+			m_vertices[index].Position = XMFLOAT3(m_particleList[i].positionX - m_particleSize, m_particleList[i].positionY + m_particleSize, m_particleList[i].positionZ);
+			m_vertices[index].TexCoord = XMFLOAT2(0.0f, 0.0f);
+			m_vertices[index].Color    = XMFLOAT4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
 			index++;
 
 			// Bottom right.
-			m_vertices[index].Position = D3DXVECTOR3(m_particleList[i].positionX + m_particleSize, m_particleList[i].positionY - m_particleSize, m_particleList[i].positionZ);
-			m_vertices[index].TexCoord = D3DXVECTOR2(1.0f, 1.0f);
-			m_vertices[index].Color    = D3DXVECTOR4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
+			m_vertices[index].Position = XMFLOAT3(m_particleList[i].positionX + m_particleSize, m_particleList[i].positionY - m_particleSize, m_particleList[i].positionZ);
+			m_vertices[index].TexCoord = XMFLOAT2(1.0f, 1.0f);
+			m_vertices[index].Color    = XMFLOAT4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
 			index++;
 
 			// Bottom right.
-			m_vertices[index].Position = D3DXVECTOR3(m_particleList[i].positionX + m_particleSize, m_particleList[i].positionY - m_particleSize, m_particleList[i].positionZ);
-			m_vertices[index].TexCoord = D3DXVECTOR2(1.0f, 1.0f);
-			m_vertices[index].Color    = D3DXVECTOR4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
+			m_vertices[index].Position = XMFLOAT3(m_particleList[i].positionX + m_particleSize, m_particleList[i].positionY - m_particleSize, m_particleList[i].positionZ);
+			m_vertices[index].TexCoord = XMFLOAT2(1.0f, 1.0f);
+			m_vertices[index].Color    = XMFLOAT4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
 			index++;
 
 			// Top left.
-			m_vertices[index].Position = D3DXVECTOR3(m_particleList[i].positionX - m_particleSize, m_particleList[i].positionY + m_particleSize, m_particleList[i].positionZ);
-			m_vertices[index].TexCoord = D3DXVECTOR2(0.0f, 0.0f);
-			m_vertices[index].Color    = D3DXVECTOR4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
+			m_vertices[index].Position = XMFLOAT3(m_particleList[i].positionX - m_particleSize, m_particleList[i].positionY + m_particleSize, m_particleList[i].positionZ);
+			m_vertices[index].TexCoord = XMFLOAT2(0.0f, 0.0f);
+			m_vertices[index].Color    = XMFLOAT4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
 			index++;
 
 			// Top right.
-			m_vertices[index].Position = D3DXVECTOR3(m_particleList[i].positionX + m_particleSize, m_particleList[i].positionY + m_particleSize, m_particleList[i].positionZ);
-			m_vertices[index].TexCoord = D3DXVECTOR2(1.0f, 0.0f);
-			m_vertices[index].Color    = D3DXVECTOR4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
+			m_vertices[index].Position = XMFLOAT3(m_particleList[i].positionX + m_particleSize, m_particleList[i].positionY + m_particleSize, m_particleList[i].positionZ);
+			m_vertices[index].TexCoord = XMFLOAT2(1.0f, 0.0f);
+			m_vertices[index].Color    = XMFLOAT4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
 			index++;
 		}
 
 		// Lock the vertex buffer.
 		result = pD3D11DeviceContext->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 
-		Vertex *verticesPtr;
-		verticesPtr = (Vertex*)mappedResource.pData;
-		memcpy(verticesPtr, (void*)m_vertices, (sizeof(Vertex) * m_VertexCount));
+		Vertex *vertexPtr = (Vertex*)mappedResource.pData;
+        memcpy(vertexPtr, m_vertices, m_VertexCount);
 
 		pD3D11DeviceContext->Unmap(m_pVertexBuffer, 0);
 
 		////////////////////////////////////////////////////////////////////////////////
-		cbMatrix.model  = XMMatrixTranspose(Model);
-		cbMatrix.view   = XMMatrixTranspose(View);
-		cbMatrix.proj   = XMMatrixTranspose(Proj);
+		cbMatrix.model = Model;
+		cbMatrix.view = View;
+		cbMatrix.proj = Proj;
 		pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
 		pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
 
@@ -114,7 +114,7 @@ public:
 	bool init_buffer (ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext);
 	bool init_shader (ID3D11Device *pD3D11Device, HWND hWnd);
 	void init_texture(ID3D11Device *pD3D11Device, LPCWSTR texFile);
-	
+
 	void EmitParticles(float);
 	void UpdateParticles(float);
 	void KillParticles();
@@ -139,15 +139,15 @@ private:
 
 	struct CameraBuffer
 	{
-		D3DXVECTOR3 camPos;
+		XMFLOAT3 camPos;
 		float padding;
 	};
 
 	struct MatrixBuffer
 	{
-		XMMATRIX  model;
-		XMMATRIX  view;
-		XMMATRIX  proj;
+		XMFLOAT4X4  model;
+		XMFLOAT4X4  view;
+		XMFLOAT4X4  proj;
 
 	};
 	MatrixBuffer cbMatrix;
@@ -155,9 +155,9 @@ private:
 
 	struct  Vertex
 	{
-		D3DXVECTOR3 Position;
-		D3DXVECTOR2 TexCoord;
-		D3DXVECTOR4 Color;
+		XMFLOAT3 Position;
+		XMFLOAT2 TexCoord;
+		XMFLOAT4 Color;
 	};
 
 	struct ModelVertex
@@ -181,8 +181,10 @@ private:
 
 	int m_VertexCount;
 	int m_IndexCount;
-
+    Vertex* m_vertices;
 	Shader ParticleShader;
 };
+
+}
 
 #endif

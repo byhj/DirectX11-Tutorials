@@ -1,5 +1,9 @@
 #include "object.h"
 
+namespace byhj
+{
+
+
 void Object::Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView *pDepthTexSRV,
 					const XMFLOAT4X4 &Model,  const XMFLOAT4X4 &View,  const XMFLOAT4X4 &Proj)
 {
@@ -307,4 +311,6 @@ bool Object::load_obj(char *objFile)
 	m_IndexCount = IndexData.size();
 
 	return true;
+}
+
 }

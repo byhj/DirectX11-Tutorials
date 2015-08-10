@@ -1,5 +1,8 @@
 #include "scene.h"
 
+namespace byhj
+{
+
 void Depth::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &Model, 
 				   const XMFLOAT4X4 &View,  const XMFLOAT4X4 &Proj)
 {
@@ -199,3 +202,5 @@ bool Depth::load_model(char *modelFile)
 	return true;
 }
 
+
+}
