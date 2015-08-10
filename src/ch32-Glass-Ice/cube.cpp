@@ -1,5 +1,8 @@
 #include "cube.h"
 
+namespace byhj
+{
+
 
 void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &Model,  
 				  const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj)
@@ -465,4 +468,7 @@ void Cube::CalculateNormal(VectorType tangent, VectorType binormal, VectorType& 
 	normal.z = normal.z / length;
 
 	return;
+}
+
+
 }

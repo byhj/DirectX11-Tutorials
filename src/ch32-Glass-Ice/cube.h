@@ -5,6 +5,9 @@
 #include "d3d/d3dDebug.h"
 #include <xnamath.h>
 
+namespace byhj
+{
+
 class Cube
 {
 public:
@@ -120,4 +123,5 @@ private:
 
 };
 
+}
 #endif

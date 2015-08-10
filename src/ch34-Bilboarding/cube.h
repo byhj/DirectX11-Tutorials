@@ -6,10 +6,10 @@
 namespace byhj
 {
 
-class Square
+class Cube
 {
 public:
-	Square()
+	Cube()
 	{
 		m_pInputLayout        = NULL;
 		m_pMVPBuffer          = NULL;
@@ -44,9 +44,9 @@ private:
 
 	struct MatrixBuffer
 	{
-		XMFLOAT4X4  model;
-		XMFLOAT4X4  view;
-		XMFLOAT4X4  proj;
+		XMFLOAT4X4 model;
+		XMFLOAT4X4 view;
+		XMFLOAT4X4 proj;
 
 	};
 	MatrixBuffer cbMatrix;
@@ -88,9 +88,8 @@ private:
 	int m_VertexCount;
 	int m_IndexCount;
 
-	Shader SquareShader;
+	Shader CubeShader;
 	std::vector<D3DPointLight> pointLights;
 };
-
 
 }
