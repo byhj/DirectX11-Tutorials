@@ -53,6 +53,9 @@
     <ClInclude Include="..\..\include\d3d\d3dRTT.h">
       <Filter>Framework</Filter>
     </ClInclude>
+    <ClInclude Include="RenderSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ch43-Projective-Texturing.cpp">
@@ -75,6 +78,15 @@
     </ClCompile>
     <ClCompile Include="..\..\include\d3d\d3dRTT.cpp">
       <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystem.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cube.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="plane.cpp">
+      <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -47,11 +47,8 @@
     <ClInclude Include="RenderSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ee.h">
-      <Filter>Resource Files</Filter>
-    </ClInclude>
     <ClInclude Include="plane.h">
-      <Filter>Resource Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -77,7 +74,7 @@
       <Filter>Header Files</Filter>
     </ClCompile>
     <ClCompile Include="plane.cpp">
-      <Filter>Resource Files</Filter>
+      <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

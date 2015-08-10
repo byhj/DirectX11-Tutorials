@@ -15,7 +15,6 @@ public:
 	void Render();
 	void Shutdown();
 
-private:
 };
 
 

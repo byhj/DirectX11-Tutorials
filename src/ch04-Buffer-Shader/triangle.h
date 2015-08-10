@@ -39,7 +39,6 @@ private:
 	ID3D11Buffer            *m_pVertexBuffer = nullptr;
 	ID3D11Buffer            *m_pIndexBuffer  = nullptr;
 
-
 	int m_VertexCount;
 	int m_IndexCount;
 
