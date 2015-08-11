@@ -77,12 +77,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="cube.psh" />
-    <None Include="cube.vsh" />
-    <None Include="normalCube.psh" />
-    <None Include="normalCube.vsh" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\..\include\d3d\d3dApp.cpp" />
     <ClCompile Include="..\..\include\d3d\d3dCamera.cpp" />
     <ClCompile Include="..\..\include\d3d\d3dFont.cpp" />
@@ -90,6 +84,7 @@
     <ClCompile Include="..\..\include\d3d\d3dShader.cpp" />
     <ClCompile Include="..\..\include\d3d\d3dTimer.cpp" />
     <ClCompile Include="ch45-Multi-Shader.cpp" />
+    <ClCompile Include="RenderSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\d3d\d3dApp.h" />
@@ -99,8 +94,7 @@
     <ClInclude Include="..\..\include\d3d\d3dRTT.h" />
     <ClInclude Include="..\..\include\d3d\d3dShader.h" />
     <ClInclude Include="..\..\include\d3d\d3dTimer.h" />
-    <ClInclude Include="cube.h" />
-    <ClInclude Include="NormalCube.h" />
+    <ClInclude Include="RenderSystem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

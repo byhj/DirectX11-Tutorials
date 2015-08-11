@@ -56,6 +56,9 @@
     <ClInclude Include="deferred.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RenderSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ch50-Deferred-Shading.cpp">
@@ -80,6 +83,9 @@
       <Filter>Header Files</Filter>
     </ClCompile>
     <ClCompile Include="deferred.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystem.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>

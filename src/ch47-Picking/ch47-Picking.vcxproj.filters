@@ -24,9 +24,6 @@
     <ClInclude Include="..\..\include\d3d\xnacollision.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="cube.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\d3d\d3dApp.h">
       <Filter>Framework</Filter>
     </ClInclude>
@@ -74,13 +71,5 @@
     <ClCompile Include="..\..\include\d3d\d3dTimer.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="cube.psh">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="cube.vsh">
-      <Filter>Resource Files</Filter>
-    </None>
   </ItemGroup>
 </Project>

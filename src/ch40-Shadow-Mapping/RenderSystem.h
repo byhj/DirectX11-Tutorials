@@ -7,7 +7,9 @@
 #include "d3d/d3dTimer.h"
 #include "d3d/d3dCamera.h"
 
-#include "object.h"
+#include "model.h"
+#include "depthShader.h"
+#include "sceneShader.h"
 
 namespace byhj
 {
@@ -41,10 +43,11 @@ private:
 	void DrawFps();
 	void DrawInfo(); 
 
-	Object cube;
-	Object sphere;
-	Object plane;
-
+	byhj::Model m_CubeModel;
+	byhj::Model m_SphereModel;
+	byhj::Model m_PlaneModel;
+	byhj::DepthShader depthShader;
+	byhj::SceneShader sceneShader;
 
 	byhj::D3DFont m_Font;
 	byhj::D3DTimer m_Timer;
@@ -53,20 +56,24 @@ private:
 	float fps = 0.0f;
 	int m_videoCardMemory;
 	std::wstring m_videoCardInfo;
-
-	IDXGISwapChain          *m_pSwapChain          = nullptr;     
-	ID3D11Device            *m_pD3D11Device        = nullptr;
-	ID3D11DeviceContext     *m_pD3D11DeviceContext = nullptr;
-	ID3D11RenderTargetView  *m_pRenderTargetView   = nullptr;
-	ID3D11DepthStencilView  *m_pDepthStencilView   = nullptr;
-	ID3D11Texture2D         *m_pDepthStencilBuffer = nullptr;
+						     
+	IDXGISwapChain           *m_pSwapChain          = nullptr;     
+	ID3D11Device             *m_pD3D11Device        = nullptr;
+	ID3D11DeviceContext      *m_pD3D11DeviceContext = nullptr;
+	ID3D11RenderTargetView   *m_pRenderTargetView   = nullptr;
+	ID3D11DepthStencilView   *m_pDepthStencilView   = nullptr;
+	ID3D11Texture2D          *m_pDepthStencilBuffer = nullptr;
 	ID3D11DepthStencilState  *m_pDepthStencilState;
 	ID3D11DepthStencilState  *m_pDepthDisabledStencilState;
-	ID3D11RasterizerState   *m_pRasterState        = nullptr;
+	ID3D11RasterizerState    *m_pRasterState        = nullptr;
 
 	ID3D11Texture2D          *m_pRttRenderTargetTexture;
 	ID3D11RenderTargetView   *m_pRttRenderTargetView;
 	ID3D11ShaderResourceView *m_pRttShaderResourceView;
+
+	ID3D11ShaderResourceView *m_pWallTex;
+	ID3D11ShaderResourceView *m_pIceTex;
+	ID3D11ShaderResourceView *m_pMetalTex;
 
 	MatrixBuffer m_Matrix;
 };

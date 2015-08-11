@@ -24,12 +24,8 @@ void RenderSystem::v_Init()
 void RenderSystem::v_Render()
 {
 
-	static float rot = 0.0f;
-	rot += m_Timer.GetDeltaTime();
 	UpdateScene();
 
-	XMMATRIX Model = XMMatrixRotationY(rot);
-	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
 	m_Matrix.view = m_Camera.GetViewMatrix();
 
 	float bgColor[4] = { 0.2f, 0.3f, 0.4f, 1.0f };
@@ -38,26 +34,28 @@ void RenderSystem::v_Render()
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRttRenderTargetView, bgColor);
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-	cube.Render(m_pD3D11DeviceContext, m_Model, m_View, m_Proj);
-
 	//Set normal render target view
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
 
+	depthShader.Use(m_pD3D11DeviceContext, m_Matrix);
+	m_CubeModel.Render(m_pD3D11DeviceContext);
+
+	depthShader.Use(m_pD3D11DeviceContext, m_Matrix);
+	m_SphereModel.Render(m_pD3D11DeviceContext);
+
+	depthShader.Use(m_pD3D11DeviceContext, m_Matrix);
+	m_PlaneModel.Render(m_pD3D11DeviceContext);
+
 	BeginScene();
 
-	cube.Render(m_pD3D11DeviceContext, m_Model, m_View, m_Proj);
+	sceneShader.Use(m_pD3D11DeviceContext, m_Matrix);
+	m_CubeModel.Render(m_pD3D11DeviceContext);
 
-	TurnZBufferOff();
+	sceneShader.Use(m_pD3D11DeviceContext, m_Matrix);
+	m_SphereModel.Render(m_pD3D11DeviceContext);
 
-	// Create an orthographic projection matrix for 2D rendering. 
-	Model = XMMatrixIdentity();
-	XMStoreFloat4x4(&m_Model, XMMatrixTranspose(Model));
-	XMMATRIX orthProj = XMMatrixOrthographicLH(m_ScreenWidth, m_ScreenHeight, 1.0f, 1000.0f);
-	XMFLOAT4X4 orth;
-	XMStoreFloat4x4(&orth, XMMatrixTranspose(orthProj));
-	d3dRtt.Render(m_pD3D11DeviceContext, pShaderResourceView, m_Model, m_View, orth);
-
-	TurnZBufferOn();
+	sceneShader.Use(m_pD3D11DeviceContext, m_Matrix);
+	m_PlaneModel.Render(m_pD3D11DeviceContext);
 
 	DrawInfo();
 	EndScene();
@@ -307,24 +305,21 @@ void RenderSystem::init_object()
 	m_Font.init(m_pD3D11Device);
 	m_Camera.SetRadius(5.0f);
 
-	cube.load_model("../../media/objects/cube.txt");
-	cube.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-	cube.init_shader(m_pD3D11Device, GetHwnd());
+	depthShader.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd());
+	sceneShader.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd());
 
-	sphere.load_model("../../media/objects/sphere.txt");
-	sphere.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-	sphere.init_shader(m_pD3D11Device, GetHwnd());
+	m_CubeModel.load_model("../../media/objects/cube.txt");
+	m_CubeModel.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
 
-	plane.load_model("../../media/objects/plane01.txt");
-	plane.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-	plane.init_shader(m_pD3D11Device, GetHwnd());
+	m_SphereModel.load_model("../../media/objects/sphere.txt");
+	m_SphereModel.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
 
-	font.init(m_pD3D11Device);
+	m_PlaneModel.load_model("../../media/objects/plane01.txt");
+	m_PlaneModel.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
 
-	d3dRtt.init_window(400.0f / m_ScreenWidth * 2.0f, 400.0f / m_ScreenHeight * 2.0f,
-		200.0f * GetAspect() / m_ScreenWidth * 2.0f, 200.0f / m_ScreenHeight * 2.0f, GetAspect());
-	d3dRtt.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-	d3dRtt.init_shader(m_pD3D11Device, GetHwnd());
+	D3DX11CreateShaderResourceViewFromFile(m_pD3D11Device, L"../../media/textures/wall01.dds",   NULL, NULL, &m_pWallTex, NULL);
+	D3DX11CreateShaderResourceViewFromFile(m_pD3D11Device, L"../../media/textures/ice.dds",      NULL, NULL, &m_pIceTex,  NULL);
+	D3DX11CreateShaderResourceViewFromFile(m_pD3D11Device, L"../../media/textures/metal001.dds", NULL, NULL, &m_pMetalTex, NULL);
 }
 
 void RenderSystem::init_fbo()

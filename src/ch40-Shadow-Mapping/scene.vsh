@@ -5,7 +5,7 @@ cbuffer MatrixBuffer : register(b0)
 	float4x4 view;
 	float4x4 proj;
 	float4x4 lightView;
-	float4x4 lightPorj;
+	float4x4 lightProj;
 };
 
 cbuffer LightBuffer : register(b1)
@@ -42,14 +42,14 @@ VS_OUT VS(VS_IN vs_in)
 
    vs_out.LightViewPos = mul(vs_in.Pos, model);
    vs_out.LightViewPos = mul(vs_out.LightViewPos, lightView);
-   vs_out.LightViewPos = mul(vs_out.LgihtViewPos, lgihtProj);
+   vs_out.LightViewPos = mul(vs_out.LightViewPos, lightProj);
 
    vs_out.Tex = vs_in.Tex;
 
    vs_out.Normal = mul(vs_in.Normal, (float3x3)model);
    vs_out.Normal = normalize(vs_out.Normal);
 
-   float4 worldPos = mul(ps_in.Pos, model);
+   float4 worldPos = mul(vs_in.Pos, model);
    vs_out.LightPos = LightPos.xyz - worldPos.xyz;
    vs_out.LightPos = normalize(vs_out.LightPos);
 

@@ -8,13 +8,15 @@ cbuffer MatrixObject : register(b0)
 
 struct VS_IN
 {
-   float4 Pos: POSITION; 
+	 float4 Pos       : POSITION;
+	 float2 Tex       :TEXCOORD0;
+	 float3 Normal    : NORMAL;
 };
 
 struct VS_OUT
 {
     float4 Pos       : SV_POSITION;
-    float2 DepthPos  : TEXCOORD0;
+    float4 DepthPos  : TEXCOORD0;
 };
 
 VS_OUT VS(VS_IN vs_in)
