@@ -27,6 +27,7 @@ void RenderSystem::v_Render()
 	UpdateScene();
 
 	m_Matrix.view = m_Camera.GetViewMatrix();
+	XMMATRIX Model = XMMatrixIdentity();
 
 	float bgColor[4] = { 0.2f, 0.3f, 0.4f, 1.0f };
 
@@ -37,23 +38,42 @@ void RenderSystem::v_Render()
 	//Set normal render target view
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
 
+	Model = XMMatrixTranslation(-2.0f, 2.0f, 0.0f);
+	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
+
 	depthShader.Use(m_pD3D11DeviceContext, m_Matrix);
 	m_CubeModel.Render(m_pD3D11DeviceContext);
 
+	Model = XMMatrixTranslation(2.0f, 2.0f, 0.0f);
+	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
+
 	depthShader.Use(m_pD3D11DeviceContext, m_Matrix);
 	m_SphereModel.Render(m_pD3D11DeviceContext);
+
+	Model = XMMatrixTranslation(0.0f, 1.0f, 0.0f);
+	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
 
 	depthShader.Use(m_pD3D11DeviceContext, m_Matrix);
 	m_PlaneModel.Render(m_pD3D11DeviceContext);
 
 	BeginScene();
+	m_pD3D11DeviceContext->PSSetShaderResources(1, 1, &m_pRttShaderResourceView);
 
+	m_pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pWallTex);
+	Model = XMMatrixTranslation(-2.0f, 2.0f, 0.0f);
+	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
 	sceneShader.Use(m_pD3D11DeviceContext, m_Matrix);
 	m_CubeModel.Render(m_pD3D11DeviceContext);
 
+	m_pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pIceTex);
+	Model = XMMatrixTranslation(2.0f, 2.0f, 0.0f);
+	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
 	sceneShader.Use(m_pD3D11DeviceContext, m_Matrix);
 	m_SphereModel.Render(m_pD3D11DeviceContext);
 
+	m_pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pMetalTex);
+	Model = XMMatrixTranslation(0.0f, 1.0f, 0.0f);
+	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
 	sceneShader.Use(m_pD3D11DeviceContext, m_Matrix);
 	m_PlaneModel.Render(m_pD3D11DeviceContext);
 
