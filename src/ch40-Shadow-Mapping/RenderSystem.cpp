@@ -34,7 +34,7 @@ void RenderSystem::v_Render()
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRttRenderTargetView, bgColor);
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-	float near_plane = 1.0f, far_plane = 7.5f;
+	float near_plane = 0.1f, far_plane = 10.0f;
 	XMMATRIX LightProj = XMMatrixOrthographicLH(10.0f, 10.0f, near_plane, far_plane);
 	static float lightPositionX = -5.0f;
 	lightPositionX += 0.0005f;
@@ -50,7 +50,7 @@ void RenderSystem::v_Render()
 	XMStoreFloat4x4(&lightView, XMMatrixTranspose(LightView));
 
 	m_Matrix.view = lightView;
-	//m_Matrix.proj = lightProj;
+	m_Matrix.proj = lightProj;
 
 	Model = XMMatrixTranslation(-2.0f, 2.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
@@ -74,6 +74,9 @@ void RenderSystem::v_Render()
 	BeginScene();
 
 	m_Matrix.view = m_Camera.GetViewMatrix();
+	XMMATRIX Proj = XMMatrixPerspectiveFovLH(0.4f*3.14f, GetAspect(), 1.0f, 1000.0f);
+	XMStoreFloat4x4(&m_Matrix.proj, XMMatrixTranspose(Proj));
+
 
 	m_pD3D11DeviceContext->PSSetShaderResources(1, 1, &m_pRttShaderResourceView);
 

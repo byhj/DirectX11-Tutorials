@@ -124,7 +124,7 @@ namespace byhj
 
 		 pD3D11DeviceContext->Unmap(m_pLightBuffer2, 0);
 
-		 pD3D11DeviceContext->VSSetConstantBuffers(1, 1, &m_pLightBuffer2);
+
 	}
 
 	void SceneShader::Use(ID3D11DeviceContext *pD3D11DeviceContext, const byhj::MatrixBuffer &matrix, const XMFLOAT4X4 &LightView, const XMFLOAT4X4 &LightProj)
@@ -139,6 +139,16 @@ namespace byhj
 
 		pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0);
 		pD3D11DeviceContext->VSSetConstantBuffers(0, 1, &m_pMVPBuffer);
+
+		static float lightPositionX = -5.0f;
+		lightPositionX += 0.0005f;
+		if (lightPositionX > 5.0f)
+		{
+			lightPositionX = -5.0f;
+		}
+		XMFLOAT3 lightPos = XMFLOAT3(lightPositionX, 8.0f, -5.0f);
+		pD3D11DeviceContext->UpdateSubresource(m_pLightBuffer2, 0, NULL, &lightPos, 0, 0);
+		pD3D11DeviceContext->VSSetConstantBuffers(1, 1, &m_pLightBuffer2);
 
 		pD3D11DeviceContext->PSSetSamplers(0, 1, &m_sampleStateClamp);
 		pD3D11DeviceContext->PSSetSamplers(1, 1, &m_sampleStateWrap);
