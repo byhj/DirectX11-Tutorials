@@ -150,7 +150,7 @@ void RenderSystem::init_device()
 	depthBufferDesc.MiscFlags          = 0;
 	// Create the texture for the depth buffer using the filled out description.
 	hr = m_pD3D11Device->CreateTexture2D(&depthBufferDesc, NULL, &m_pDepthStencilBuffer);
-
+	DebugHR(hr);
 
 	//////////////////////////// Initialize the description of the stencil state.///////////////////////////////////////////////
 	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;

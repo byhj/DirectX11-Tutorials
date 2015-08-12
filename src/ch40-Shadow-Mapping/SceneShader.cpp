@@ -20,7 +20,7 @@ namespace byhj
 		pInputLayoutDesc[1].SemanticIndex = 0;
 		pInputLayoutDesc[1].Format = DXGI_FORMAT_R32G32_FLOAT;
 		pInputLayoutDesc[1].InputSlot = 0;
-		pInputLayoutDesc[1].AlignedByteOffset = 0;
+		pInputLayoutDesc[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 		pInputLayoutDesc[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 		pInputLayoutDesc[1].InstanceDataStepRate = 0;
 
@@ -28,7 +28,7 @@ namespace byhj
 		pInputLayoutDesc[2].SemanticIndex = 0;
 		pInputLayoutDesc[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
 		pInputLayoutDesc[2].InputSlot = 0;
-		pInputLayoutDesc[2].AlignedByteOffset = 0;
+		pInputLayoutDesc[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 		pInputLayoutDesc[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 		pInputLayoutDesc[2].InstanceDataStepRate = 0;
 
@@ -57,7 +57,7 @@ namespace byhj
 
 		// Create the texture sampler state.
 		pD3D11Device->CreateSamplerState(&samplerDesc, &m_sampleStateWrap);
-
+		
 		// Create a clamp texture sampler state description.
 		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
 		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
@@ -79,7 +79,6 @@ namespace byhj
 
 
 		 D3D11_BUFFER_DESC lightBufferDesc;
-		 D3D11_BUFFER_DESC lightBufferDesc2;
 		 // Setup the description of the light dynamic constant buffer that is in the pixel shader.
 		 lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 		 lightBufferDesc.ByteWidth = sizeof(LightBufferType);
@@ -105,7 +104,7 @@ namespace byhj
 		 pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, &m_pLightBuffer);
 
 
-
+		 D3D11_BUFFER_DESC lightBufferDesc2;
 		 // Setup the description of the light dynamic constant buffer that is in the vertex shader.
 		 lightBufferDesc2.Usage = D3D11_USAGE_DYNAMIC;
 		 lightBufferDesc2.ByteWidth = sizeof(LightBufferType2);
@@ -123,19 +122,20 @@ namespace byhj
 		 dataPtr2->lightPosition = XMFLOAT3(0.0, 8.0f, -5.0f);
 		 dataPtr2->padding = 0.0f;
 
-		 pD3D11DeviceContext->Unmap(m_pLightBuffer, 0);
+		 pD3D11DeviceContext->Unmap(m_pLightBuffer2, 0);
 
-		 pD3D11DeviceContext->VSSetConstantBuffers(0, 1, &m_pLightBuffer);
-
+		 pD3D11DeviceContext->VSSetConstantBuffers(1, 1, &m_pLightBuffer2);
 	}
 
-	void SceneShader::Use(ID3D11DeviceContext *pD3D11DeviceContext, const byhj::MatrixBuffer &matrix)
+	void SceneShader::Use(ID3D11DeviceContext *pD3D11DeviceContext, const byhj::MatrixBuffer &matrix, const XMFLOAT4X4 &LightView, const XMFLOAT4X4 &LightProj)
 	{
 		sceneShader.use(pD3D11DeviceContext);
 
 		cbMatrix.model = matrix.model;
 		cbMatrix.view = matrix.view;
 		cbMatrix.proj = matrix.proj;
+		cbMatrix.lightView = LightView;
+		cbMatrix.lightPorj = LightProj;
 
 		pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0);
 		pD3D11DeviceContext->VSSetConstantBuffers(0, 1, &m_pMVPBuffer);

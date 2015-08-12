@@ -26,7 +26,6 @@ void RenderSystem::v_Render()
 
 	UpdateScene();
 
-	m_Matrix.view = m_Camera.GetViewMatrix();
 	XMMATRIX Model = XMMatrixIdentity();
 
 	float bgColor[4] = { 0.2f, 0.3f, 0.4f, 1.0f };
@@ -35,8 +34,23 @@ void RenderSystem::v_Render()
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRttRenderTargetView, bgColor);
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-	//Set normal render target view
-	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
+	float near_plane = 1.0f, far_plane = 7.5f;
+	XMMATRIX LightProj = XMMatrixOrthographicLH(10.0f, 10.0f, near_plane, far_plane);
+	static float lightPositionX = -5.0f;
+	lightPositionX += 0.0005f;
+	if (lightPositionX > 5.0f)
+	{
+		lightPositionX = -5.0f;
+	}
+	XMFLOAT4X4 lightProj;
+	XMFLOAT4X4 lightView;
+	XMVECTOR LightPos = XMVectorSet(lightPositionX, 8.0f, -5.0f, 1.0f);
+	XMMATRIX LightView = XMMatrixLookAtLH(LightPos, XMVectorSet(0.0, 0.0, 0.0, 1.0), XMVectorSet(0.0f, 1.0, 0.0, 1.0));
+	XMStoreFloat4x4(&lightProj, XMMatrixTranspose(LightProj));
+	XMStoreFloat4x4(&lightView, XMMatrixTranspose(LightView));
+
+	m_Matrix.view = lightView;
+	//m_Matrix.proj = lightProj;
 
 	Model = XMMatrixTranslation(-2.0f, 2.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
@@ -56,25 +70,29 @@ void RenderSystem::v_Render()
 	depthShader.Use(m_pD3D11DeviceContext, m_Matrix);
 	m_PlaneModel.Render(m_pD3D11DeviceContext);
 
+	////////////////////////////////////////////////////////////////////////////////
 	BeginScene();
+
+	m_Matrix.view = m_Camera.GetViewMatrix();
+
 	m_pD3D11DeviceContext->PSSetShaderResources(1, 1, &m_pRttShaderResourceView);
 
 	m_pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pWallTex);
 	Model = XMMatrixTranslation(-2.0f, 2.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	sceneShader.Use(m_pD3D11DeviceContext, m_Matrix);
+	sceneShader.Use(m_pD3D11DeviceContext, m_Matrix, lightView, lightProj);
 	m_CubeModel.Render(m_pD3D11DeviceContext);
 
 	m_pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pIceTex);
 	Model = XMMatrixTranslation(2.0f, 2.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	sceneShader.Use(m_pD3D11DeviceContext, m_Matrix);
+	sceneShader.Use(m_pD3D11DeviceContext, m_Matrix, lightView, lightProj);
 	m_SphereModel.Render(m_pD3D11DeviceContext);
 
 	m_pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pMetalTex);
 	Model = XMMatrixTranslation(0.0f, 1.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	sceneShader.Use(m_pD3D11DeviceContext, m_Matrix);
+	sceneShader.Use(m_pD3D11DeviceContext, m_Matrix, lightView, lightProj);
 	m_PlaneModel.Render(m_pD3D11DeviceContext);
 
 	DrawInfo();
@@ -285,7 +303,7 @@ void RenderSystem::BeginScene()
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
 	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
-	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH ,  1.0f, 0);
 
 }
 
@@ -323,7 +341,7 @@ void RenderSystem::init_object()
 
 	m_Timer.Reset();
 	m_Font.init(m_pD3D11Device);
-	m_Camera.SetRadius(5.0f);
+	m_Camera.SetRadius(7.0f);
 
 	depthShader.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd());
 	sceneShader.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd());
