@@ -16,20 +16,20 @@ namespace byhj
 		pInputLayoutDesc[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 		pInputLayoutDesc[0].InstanceDataStepRate = 0;
 
-		pInputLayoutDesc[1].SemanticName = "TEXCOORD";
-		pInputLayoutDesc[1].SemanticIndex = 0;
-		pInputLayoutDesc[1].Format = DXGI_FORMAT_R32G32_FLOAT;
-		pInputLayoutDesc[1].InputSlot = 0;
-		pInputLayoutDesc[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-		pInputLayoutDesc[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+		pInputLayoutDesc[1].SemanticName         = "TEXCOORD";
+		pInputLayoutDesc[1].SemanticIndex        = 0;
+		pInputLayoutDesc[1].Format               = DXGI_FORMAT_R32G32_FLOAT;
+		pInputLayoutDesc[1].InputSlot            = 0;
+		pInputLayoutDesc[1].AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
+		pInputLayoutDesc[1].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
 		pInputLayoutDesc[1].InstanceDataStepRate = 0;
 
-		pInputLayoutDesc[2].SemanticName = "NORMAL";
-		pInputLayoutDesc[2].SemanticIndex = 0;
-		pInputLayoutDesc[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-		pInputLayoutDesc[2].InputSlot = 0;
-		pInputLayoutDesc[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-		pInputLayoutDesc[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+		pInputLayoutDesc[2].SemanticName         = "NORMAL";
+		pInputLayoutDesc[2].SemanticIndex        = 0;
+		pInputLayoutDesc[2].Format               = DXGI_FORMAT_R32G32B32_FLOAT;
+		pInputLayoutDesc[2].InputSlot            = 0;
+		pInputLayoutDesc[2].AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
+		pInputLayoutDesc[2].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
 		pInputLayoutDesc[2].InstanceDataStepRate = 0;
 
 		unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
@@ -41,19 +41,19 @@ namespace byhj
 
 		D3D11_SAMPLER_DESC samplerDesc;
 		// Create a wrap texture sampler state description.
-		samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-		samplerDesc.MipLODBias = 0.0f;
-		samplerDesc.MaxAnisotropy = 1;
+		samplerDesc.Filter         = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		samplerDesc.AddressU       = D3D11_TEXTURE_ADDRESS_WRAP;
+		samplerDesc.AddressV       = D3D11_TEXTURE_ADDRESS_WRAP;
+		samplerDesc.AddressW       = D3D11_TEXTURE_ADDRESS_WRAP;
+		samplerDesc.MipLODBias     = 0.0f;
+		samplerDesc.MaxAnisotropy  = 1;
 		samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
 		samplerDesc.BorderColor[0] = 0;
 		samplerDesc.BorderColor[1] = 0;
 		samplerDesc.BorderColor[2] = 0;
 		samplerDesc.BorderColor[3] = 0;
-		samplerDesc.MinLOD = 0;
-		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+		samplerDesc.MinLOD         = 0;
+		samplerDesc.MaxLOD         = D3D11_FLOAT32_MAX;
 
 		// Create the texture sampler state.
 		pD3D11Device->CreateSamplerState(&samplerDesc, &m_sampleStateWrap);
@@ -69,22 +69,22 @@ namespace byhj
 		HRESULT hr;
 		D3D11_BUFFER_DESC mvpBufferDesc;
 		ZeroMemory(&mvpBufferDesc, sizeof(D3D11_BUFFER_DESC));
-		mvpBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-		mvpBufferDesc.ByteWidth = sizeof(MatrixLight);
-		mvpBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		mvpBufferDesc.Usage          = D3D11_USAGE_DEFAULT;
+		mvpBufferDesc.ByteWidth      = sizeof(MatrixLight);
+		mvpBufferDesc.BindFlags      = D3D11_BIND_CONSTANT_BUFFER;
 		mvpBufferDesc.CPUAccessFlags = 0;
-		mvpBufferDesc.MiscFlags = 0;
+		mvpBufferDesc.MiscFlags      = 0;
 		hr = pD3D11Device->CreateBuffer(&mvpBufferDesc, NULL, &m_pMVPBuffer);
 
 
 
 		 D3D11_BUFFER_DESC lightBufferDesc;
 		 // Setup the description of the light dynamic constant buffer that is in the pixel shader.
-		 lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-		 lightBufferDesc.ByteWidth = sizeof(LightBufferType);
-		 lightBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		 lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-		 lightBufferDesc.MiscFlags = 0;
+		 lightBufferDesc.Usage               = D3D11_USAGE_DYNAMIC;
+		 lightBufferDesc.ByteWidth           = sizeof(LightBufferType);
+		 lightBufferDesc.BindFlags           = D3D11_BIND_CONSTANT_BUFFER;
+		 lightBufferDesc.CPUAccessFlags      = D3D11_CPU_ACCESS_WRITE;
+		 lightBufferDesc.MiscFlags           = 0;
 		 lightBufferDesc.StructureByteStride = 0;
 
 		 // Create the constant buffer pointer so we can access the pixel shader constant buffer from within this class.
@@ -106,24 +106,15 @@ namespace byhj
 
 		 D3D11_BUFFER_DESC lightBufferDesc2;
 		 // Setup the description of the light dynamic constant buffer that is in the vertex shader.
-		 lightBufferDesc2.Usage = D3D11_USAGE_DYNAMIC;
-		 lightBufferDesc2.ByteWidth = sizeof(LightBufferType2);
-		 lightBufferDesc2.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		 lightBufferDesc2.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-		 lightBufferDesc2.MiscFlags = 0;
+		 lightBufferDesc2.Usage               = D3D11_USAGE_DEFAULT;
+		 lightBufferDesc2.ByteWidth           = sizeof(LightBufferType2);
+		 lightBufferDesc2.BindFlags           = D3D11_BIND_CONSTANT_BUFFER;
+		 lightBufferDesc2.CPUAccessFlags      = 0;
+		 lightBufferDesc2.MiscFlags           = 0;
 		 lightBufferDesc2.StructureByteStride = 0;
 
 		 // Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
 		 pD3D11Device->CreateBuffer(&lightBufferDesc2, NULL, &m_pLightBuffer2);
-
-		 hr = pD3D11DeviceContext->Map(m_pLightBuffer2, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-
-		 LightBufferType2 *dataPtr2 = (LightBufferType2*)mappedResource.pData;
-		 dataPtr2->lightPosition = XMFLOAT3(0.0, 8.0f, -5.0f);
-		 dataPtr2->padding = 0.0f;
-
-		 pD3D11DeviceContext->Unmap(m_pLightBuffer2, 0);
-
 
 	}
 

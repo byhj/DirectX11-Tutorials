@@ -34,8 +34,8 @@ void RenderSystem::v_Render()
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRttRenderTargetView, bgColor);
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-	float near_plane = 0.1f, far_plane = 10.0f;
-	XMMATRIX LightProj = XMMatrixOrthographicLH(10.0f, 10.0f, near_plane, far_plane);
+	float near_plane = 0.1f, far_plane = 1000.0f;
+	XMMATRIX LightProj = XMMatrixOrthographicLH(15.0f, 15.0f, near_plane, far_plane);
 	static float lightPositionX = -5.0f;
 	lightPositionX += 0.0005f;
 	if (lightPositionX > 5.0f)
