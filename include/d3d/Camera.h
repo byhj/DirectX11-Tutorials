@@ -1,5 +1,5 @@
-#ifndef D3DCAMERA_H
-#define D3DCAMERA_H
+#ifndef Camera_H
+#define Camera_H
 
 #ifdef _WIN32
 #define _XM_NO_INTRINSICS_
@@ -13,12 +13,15 @@
 namespace byhj
 {
 
+namespace d3d
+{
+
 const float Pi = 3.1415926535f;
 
-class D3DCamera
+class Camera
 {
 public:
-    D3DCamera():m_Theta(1.5f * Pi), m_Phi(0.25f * Pi), m_Radius(15.0f)
+    Camera():m_Theta(1.5f * Pi), m_Phi(0.25f * Pi), m_Radius(15.0f)
 	{
 		m_LastMousePos.x = 0;
 		m_LastMousePos.y = 0;
@@ -65,7 +68,7 @@ private:
 	float m_aspect;
 };
 
-
+}
 }
 
 #endif

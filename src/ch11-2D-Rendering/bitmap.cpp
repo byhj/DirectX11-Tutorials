@@ -22,8 +22,7 @@ Bitmap::~Bitmap()
 
 void Bitmap::Init(ID3D11Device *pD3D11Device, HWND hWnd)
 {
-	init_window(100, 100);
-	init_buffer(pD3D11Device, 256, 256);
+	init_buffer(pD3D11Device, 0, 0);
 	init_shader(pD3D11Device, hWnd);
 	init_texture(pD3D11Device);
 }
@@ -107,6 +106,10 @@ bool Bitmap::init_buffer(ID3D11Device *pD3D11Device, int posX, int posY)
 	// Calculate the screen coordinates of the bottom of the bitmap.
 	bottom = top - (float)bitmapHeight;
 
+	left /= screenWidth;
+	right /= screenWidth;
+	top /= screenHeight;
+	bottom /= screenHeight;
 	///////////////////////////Index Buffer ////////////////////////////////
 	VertexCount = 6;
 	Vertex *VertexData = new Vertex[VertexCount];

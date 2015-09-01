@@ -3,7 +3,7 @@
 
 #include "d3d/App.h"
 #include "d3d/Utility.h"
-#include "d3d/d3dFont.h"
+#include "d3d/Font.h"
 #include "Cube.h"
 #include "bitmap.h"
 
@@ -31,15 +31,15 @@ private:
 	byhj::Cube m_Cube;
 	byhj::Bitmap m_Bitmap;
 
-	IDXGISwapChain          *m_pSwapChain          = nullptr;     
-	ID3D11Device            *m_pD3D11Device        = nullptr;
-	ID3D11DeviceContext     *m_pD3D11DeviceContext = nullptr;
-	ID3D11RenderTargetView  *m_pRenderTargetView   = nullptr;
-	ID3D11DepthStencilView  *m_pDepthStencilView   = nullptr;
-	ID3D11Texture2D         *m_pDepthStencilBuffer = nullptr;
-	ID3D11DepthStencilState  *m_pDepthStencilState         = nullptr;
-	ID3D11DepthStencilState  *m_pDepthDisabledStencilState = nullptr;
-	ID3D11RasterizerState   *m_pRasterState        = nullptr;
+	IDXGISwapChain           *m_pSwapChain                  = nullptr;
+	ID3D11Device             *m_pD3D11Device                = nullptr;
+	ID3D11DeviceContext      *m_pD3D11DeviceContext         = nullptr;
+	ID3D11RenderTargetView   *m_pRenderTargetView           = nullptr;
+	ID3D11DepthStencilView   *m_pDepthStencilView           = nullptr;
+	ID3D11Texture2D          *m_pDepthStencilBuffer         = nullptr;
+	ID3D11DepthStencilState  *m_pDepthStencilState          = nullptr;
+	ID3D11DepthStencilState  *m_pDepthDisabledStencilState  = nullptr;
+	ID3D11RasterizerState    *m_pRasterState                = nullptr;
 	MatrixBuffer m_Matrix;
 };
 }

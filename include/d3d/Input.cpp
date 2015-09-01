@@ -1,15 +1,16 @@
-#include "d3dInput.h"
+#include "Input.h"
 
 namespace byhj
 {
-
+namespace d3d
+{
 
 float Clamp(const float& x, const float& low, const float& high)
 {
 	return x < low ? low : (x > high ? high : x); 
 }
 
-void D3DCamera::update()
+void Camera::update()
 {
 	// Convert Spherical to Cartesian coordinates.
 	float x = m_Radius * sinf(m_Phi) * cosf(m_Theta);
@@ -26,7 +27,7 @@ void D3DCamera::update()
 }
 
 
-bool D3DCamera::InitDirectInput(HWND hWnd, HINSTANCE hInstance)
+bool Camera::InitDirectInput(HWND hWnd, HINSTANCE hInstance)
 {
 	HRESULT hr;
 	hr = DirectInput8Create(hInstance,
@@ -47,7 +48,7 @@ bool D3DCamera::InitDirectInput(HWND hWnd, HINSTANCE hInstance)
 	return true;
 }
 
-void D3DCamera::DetectInput(HWND hWnd, double time)
+void Camera::DetectInput(HWND hWnd, double time)
 {
 	DIMOUSESTATE mouseCurrState;
 
@@ -107,6 +108,8 @@ void D3DCamera::DetectInput(HWND hWnd, double time)
 	update();
 
 	return;
+}
+
 }
 
 

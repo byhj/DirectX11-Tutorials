@@ -1,17 +1,24 @@
-#ifndef D3DFRUSTUM_H
-#define D3DFRUSTUM_H
+#ifndef Frustum_H
+#define Frustum_H
 
 #include <D3DX11.h>
 #include <d3d11.h>
 #include <D3DX10math.h>
 #include <xnamath.h>
 
-class D3DFrustum
+namespace byhj
+{
+
+namespace d3d
+{
+
+
+class Frustum
 {
 public:
-	D3DFrustum() {}
-	D3DFrustum(const D3DFrustum &) {}
-	~D3DFrustum() {}
+	Frustum() {}
+	Frustum(const Frustum &) {}
+	~Frustum() {}
 
 	void Construct(float screenDepth, D3DXMATRIX proj , D3DXMATRIX view);
 	
@@ -24,5 +31,8 @@ private:
 	D3DXPLANE m_Planes[6];
 };
 
+}
+
+}
 
 #endif

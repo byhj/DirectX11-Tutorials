@@ -1,10 +1,13 @@
-#include "d3dRTT.h"
+#include "RTT.h"
 
 namespace byhj
 {
 
+namespace d3d
+{
 
-void D3DRTT::init_window(float posX, float posY, float width, float height, float aspect)
+
+void RTT::init_window(float posX, float posY, float width, float height, float aspect)
 {
 	m_posX  = posX;
 	m_posY  = posY;
@@ -13,7 +16,7 @@ void D3DRTT::init_window(float posX, float posY, float width, float height, floa
 	m_aspect = aspect;
 }
 
-void D3DRTT::Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView *pTexture, const XMFLOAT4X4 &Model,  
+void RTT::Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView *pTexture, const XMFLOAT4X4 &Model,  
 					const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj)
 {
 
@@ -34,12 +37,12 @@ void D3DRTT::Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResour
 	pD3D11DeviceContext->PSSetShaderResources(0, 1, &pTexture);  
 	pD3D11DeviceContext->PSSetSamplers( 0, 1, &m_pTexSamplerState );
 
-	D3DRTTShader.use(pD3D11DeviceContext);
+	RTTShader.use(pD3D11DeviceContext);
 	pD3D11DeviceContext->DrawIndexed(m_IndexCount, 0, 0);
 
 }
 
-bool D3DRTT::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext)
+bool RTT::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext)
 {
 	HRESULT hr;
 
@@ -165,7 +168,7 @@ bool D3DRTT::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11
 }
 
 
-bool D3DRTT::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
+bool RTT::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 {
 	HRESULT result;
 
@@ -188,13 +191,15 @@ bool D3DRTT::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 
 	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
 
-	D3DRTTShader.init(pD3D11Device, hWnd);
-	D3DRTTShader.attachVS(L"rtt.vsh", pInputLayoutDesc, numElements);
-	D3DRTTShader.attachPS(L"rtt.psh");
-	D3DRTTShader.end();
+	RTTShader.init(pD3D11Device, hWnd);
+	RTTShader.attachVS(L"rtt.vsh", pInputLayoutDesc, numElements);
+	RTTShader.attachPS(L"rtt.psh");
+	RTTShader.end();
 
 	return true;
 }
 
+
+}
 
 }

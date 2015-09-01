@@ -47,7 +47,7 @@ float4 PS(VS_OUTPUT ps_in) : SV_TARGET
   float4 diffuse   = saturate(diffuseColor * intensity);
 
    result  =  diffuse;
-
+   //Use texture to determine the specular light instensity
    float4  specIntensity = specularTex.Sample(texSample, ps_in.tex);
    float3 reflection = normalize(2 * intensity * bumpNormal - lightDir);
    float4 specular = specIntensity * pow(saturate( dot(reflection, ps_in.viewDir) ), specularPower);

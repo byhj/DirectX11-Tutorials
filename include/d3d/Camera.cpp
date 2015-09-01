@@ -1,9 +1,11 @@
-#include "d3dCamera.h"
+#include "Camera.h"
 
 
 namespace byhj
 {
 
+namespace d3d
+{
 
 float Clamp(const float& x, const float& low, const float& high)
 {
@@ -11,7 +13,7 @@ float Clamp(const float& x, const float& low, const float& high)
 }
 
 
-void D3DCamera::update()
+void Camera::update()
 {
 	// Convert Spherical to Cartesian coordinates.
 	float x = m_Radius * sinf(m_Phi) * cosf(m_Theta);
@@ -33,7 +35,7 @@ void D3DCamera::update()
 	XMStoreFloat4x4(&m_Proj, XMMatrixTranspose(Proj) );
 }
 
-void D3DCamera::OnMouseWheel(WPARAM btnState, int x, int y, float aspect)
+void Camera::OnMouseWheel(WPARAM btnState, int x, int y, float aspect)
 {
 	static float zoom = 45.0f;
 	zoom += x * 0.01f;
@@ -41,7 +43,7 @@ void D3DCamera::OnMouseWheel(WPARAM btnState, int x, int y, float aspect)
 	XMStoreFloat4x4(&m_Proj, XMMatrixTranspose(Proj) );
 }
 
-void D3DCamera::OnMouseDown(WPARAM btnState, int x, int y, HWND hWnd)
+void Camera::OnMouseDown(WPARAM btnState, int x, int y, HWND hWnd)
 {
 	m_LastMousePos.x = x;
 	m_LastMousePos.y = y;
@@ -49,12 +51,12 @@ void D3DCamera::OnMouseDown(WPARAM btnState, int x, int y, HWND hWnd)
 	SetCapture(hWnd );
 }
 
-void D3DCamera::OnMouseUp(WPARAM btnState, int x, int y)
+void Camera::OnMouseUp(WPARAM btnState, int x, int y)
 {
 	ReleaseCapture();
 }
 
-void D3DCamera::OnMouseMove(WPARAM btnState, int x, int y)
+void Camera::OnMouseMove(WPARAM btnState, int x, int y)
 {
 	if( (btnState & MK_LBUTTON) != 0 )
 	{
@@ -87,5 +89,6 @@ void D3DCamera::OnMouseMove(WPARAM btnState, int x, int y)
 	m_LastMousePos.y = y;
 }
 
+}
 
 }

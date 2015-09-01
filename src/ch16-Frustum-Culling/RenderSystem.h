@@ -3,10 +3,10 @@
 
 #include "d3d/App.h"
 #include "d3d/Utility.h"
-#include "d3d/d3dFont.h"
-#include "d3d/d3dTimer.h"
-#include "d3d/d3dCamera.h"
-#include "d3d/d3dFrustum.h"
+#include "d3d/Font.h"
+#include "d3d/Timer.h"
+#include "d3d/Camera.h"
+#include "d3d/Frustum.h"
 
 #include "Cube.h"
 
@@ -38,10 +38,10 @@ private:
 	void DrawFps();
 
 	byhj::Cube m_Cube;
-	byhj::D3DFont m_Font;
-	D3DTimer m_Timer;
-	D3DCamera m_Camera;
-	D3DFrustum m_Frustum;
+	d3d::Font m_Font;
+	d3d::Timer m_Timer;
+	d3d::Camera m_Camera;
+	d3d::Frustum m_Frustum;
 
 	float fps = 0.0f;
 

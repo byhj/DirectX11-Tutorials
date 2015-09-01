@@ -1,5 +1,5 @@
-#ifndef D3DSOUND_H
-#define D3DSOUND_H
+#ifndef Sound_H
+#define Sound_H
 
 #pragma comment(lib, "dsound.lib")
 #pragma comment(lib, "dxguid.lib")
@@ -13,14 +13,16 @@
 namespace byhj
 {
 
+namespace d3d
+{
 
-class D3DSound
+class Sound
 {
 
 public:
-	D3DSound();
-	D3DSound(const D3DSound &);
-	~D3DSound();
+	Sound();
+	Sound(const Sound &);
+	~Sound();
 
 	bool Init(HWND, char *soundFile);
 	void Shutdown();
@@ -57,6 +59,7 @@ private:
 	IDirectSoundBuffer8  *pSecondaryBuffer;
 };
 
+}
 }
 
 #endif

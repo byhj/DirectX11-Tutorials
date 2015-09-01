@@ -34,7 +34,6 @@ VS_OUT VS(VS_IN vs_in)
    VS_OUT vs_out;
   // Make the position with mvp matrix
    vs_out.Pos = mul(vs_in.Pos, model);
-   vs_out.worldPos = vs_out.Pos;
    vs_out.Pos = mul(vs_out.Pos, view);
    vs_out.Pos = mul(vs_out.Pos, proj);
 
@@ -44,6 +43,7 @@ VS_OUT VS(VS_IN vs_in)
 
    //Calc the view direction
    float4 worldPos = mul(vs_in.Pos, model);
+   vs_out.worldPos = worldPos;
    vs_out.ViewDir  = camPos.xyz - worldPos.xyz;
    vs_out.ViewDir  = normalize(vs_out.ViewDir);
     

@@ -1,5 +1,5 @@
-#ifndef D3DFONT_H
-#define D3DFONT_H
+#ifndef Font_H
+#define Font_H
 
 #include <FW1FontWrapper.h>
 #pragma  comment(lib, "FW1FontWrapper.lib")
@@ -9,10 +9,14 @@
 namespace byhj
 {
 
-class D3DFont
+namespace d3d
+{
+
+
+class Font
 {
 public:
-	D3DFont(): m_pFW1Factory(NULL), m_pFontWrapper(NULL) {}
+	Font(): m_pFW1Factory(NULL), m_pFontWrapper(NULL) {}
 
     void init(ID3D11Device *pD3D11Device)
 	{
@@ -32,4 +36,7 @@ private:
 };
 
 }
+
+}
+
 #endif

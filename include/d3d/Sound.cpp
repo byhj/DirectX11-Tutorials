@@ -1,9 +1,13 @@
-#include "d3dSound.h"
+#include "Sound.h"
 
 namespace byhj
 {
 
-D3DSound::D3DSound()
+namespace d3d
+{
+
+
+Sound::Sound()
 	:pDirectSound(0),
 	pPrimaryBuffer(0),
 	pSecondaryBuffer(0)
@@ -11,17 +15,17 @@ D3DSound::D3DSound()
 
 }
 
-D3DSound::D3DSound(const D3DSound & rhs)
+Sound::Sound(const Sound & rhs)
 {
 
 }
 
-D3DSound::~D3DSound()
+Sound::~Sound()
 {
 
 }
 
-bool D3DSound::Init(HWND hWnd, char *soundFile)
+bool Sound::Init(HWND hWnd, char *soundFile)
 {
 	bool result ;
 	result = InitDirectSound(hWnd);
@@ -41,7 +45,7 @@ bool D3DSound::Init(HWND hWnd, char *soundFile)
 }
 
 
-void D3DSound::Shutdown()
+void Sound::Shutdown()
 {
 	ShutdownWaveFile(&pSecondaryBuffer);
 
@@ -50,7 +54,7 @@ void D3DSound::Shutdown()
 	return ;
 }
 
-bool D3DSound::InitDirectSound(HWND hWnd)
+bool Sound::InitDirectSound(HWND hWnd)
 {
 	HRESULT result;
 	DSBUFFERDESC bufferDesc;
@@ -103,7 +107,7 @@ bool D3DSound::InitDirectSound(HWND hWnd)
 	return true;
 }
 
-void D3DSound::ShutdownDirectSound()
+void Sound::ShutdownDirectSound()
 {
 	// Release the primary sound buffer pointer.
 	if(pPrimaryBuffer)
@@ -122,7 +126,7 @@ void D3DSound::ShutdownDirectSound()
 	return;
 }
 
-bool D3DSound::LoadWaveFile(char* filename, IDirectSoundBuffer8** secondaryBuffer)
+bool Sound::LoadWaveFile(char* filename, IDirectSoundBuffer8** secondaryBuffer)
 {
 	int error;
 	FILE* filePtr;
@@ -285,7 +289,7 @@ bool D3DSound::LoadWaveFile(char* filename, IDirectSoundBuffer8** secondaryBuffe
 	return true;
 }
 
-void D3DSound::ShutdownWaveFile(IDirectSoundBuffer8** secondaryBuffer)
+void Sound::ShutdownWaveFile(IDirectSoundBuffer8** secondaryBuffer)
 {
 	// Release the secondary sound buffer.
 	if(*secondaryBuffer)
@@ -297,7 +301,7 @@ void D3DSound::ShutdownWaveFile(IDirectSoundBuffer8** secondaryBuffer)
 	return;
 }
 
-bool D3DSound::PlayWaveFile()
+bool Sound::PlayWaveFile()
 {
 	HRESULT result;
 
@@ -324,6 +328,8 @@ bool D3DSound::PlayWaveFile()
 	}
 
 	return true;
+}
+
 }
 
 }

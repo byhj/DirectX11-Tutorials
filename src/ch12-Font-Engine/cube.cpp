@@ -53,8 +53,6 @@ void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const MatrixBuffer &
 void Cube::Shutdown()
 {
 	ReleaseCOM(m_pInputLayout)
-	ReleaseCOM(m_pVS)
-	ReleaseCOM(m_pPS)
 	ReleaseCOM(m_pMVPBuffer)
 	ReleaseCOM(m_pVertexBuffer)
 	ReleaseCOM(m_pIndexBuffer)

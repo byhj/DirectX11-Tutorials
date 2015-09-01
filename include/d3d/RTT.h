@@ -1,5 +1,5 @@
-#ifndef D3DRTT_H
-#define D3DRTT_H
+#ifndef RTT_H
+#define RTT_H
 
 #include "d3d/Shader.h"
 #include "d3d/d3dDebug.h"
@@ -9,10 +9,13 @@
 namespace byhj
 {
 
-class D3DRTT
+namespace d3d
+{
+
+class RTT
 {
 public:
-	D3DRTT()
+	RTT()
 	{
 		m_pInputLayout        = NULL;
 		m_pMVPBuffer          = NULL;
@@ -68,9 +71,10 @@ private:
 	float m_width ; 
 	float m_height;
 	float m_aspect;
-	Shader D3DRTTShader;
+	Shader RTTShader;
 };
 
+}
 
 }
 

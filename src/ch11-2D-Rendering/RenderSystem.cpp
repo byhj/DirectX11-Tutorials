@@ -23,16 +23,32 @@ void RenderSystem::v_Init()
 void RenderSystem::v_Render()
 {
 	BeginScene();
+
 	static float t = 0.0f;
-	t += 0.001f;
+	static ULONGLONG timeStart = 0;
+	ULONGLONG timeCur = GetTickCount64();
+	if ( timeStart==0 )
+		timeStart = timeCur;
+
+	t = ( timeCur-timeStart )/1000.0f;
+
+
+	///////////////////////Render Cube///////////////////////////////
 	XMMATRIX Model     = XMMatrixRotationY(t);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
+	XMMATRIX Proj      = XMMatrixPerspectiveFovLH(0.4f*3.14f, GetAspect(), 1.0f, 1000.0f);
+	XMStoreFloat4x4(&m_Matrix.proj, XMMatrixTranspose(Proj));
 
 	m_Cube.Render(m_pD3D11DeviceContext, m_Matrix);
-	////////////////////////////////////////////////////////////////////
+
+	///////////////////////Render Bitmap////////////////////////////////////
 
 	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthDisabledStencilState, 1);
 
+	Model     = XMMatrixIdentity();
+	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
+	XMMATRIX orthMat =  XMMatrixOrthographicLH(1000.0f, 1000.0f, 0.1f, 1000.0f);
+	XMStoreFloat4x4(&m_Matrix.proj, XMMatrixTranspose(orthMat));
 	m_Bitmap.Render(m_pD3D11DeviceContext, m_Matrix);
 
 	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
@@ -138,31 +154,11 @@ void RenderSystem::init_device()
 
 	// Create the depth stencil state.
 	hr = m_pD3D11Device->CreateDepthStencilState(&depthStencilDesc, &m_pDepthStencilState);
-	// Set the depth stencil state.
-	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
 
-	// ////////////Clear the second depth stencil state before setting the parameters.//////////////////////
-	D3D11_DEPTH_STENCIL_DESC depthDisabledStencilDesc;
-	ZeroMemory(&depthDisabledStencilDesc, sizeof(depthDisabledStencilDesc));
-	// Now create a second depth stencil state which turns off the Z buffer for 2D rendering.  The only difference is 
-	// that DepthEnable is set to false, all other parameters are the same as the other depth stencil state.
-	depthDisabledStencilDesc.DepthEnable = false;
-	depthDisabledStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	depthDisabledStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
-	depthDisabledStencilDesc.StencilEnable = true;
-	depthDisabledStencilDesc.StencilReadMask = 0xFF;
-	depthDisabledStencilDesc.StencilWriteMask = 0xFF;
-	depthDisabledStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	depthDisabledStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
-	depthDisabledStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-	depthDisabledStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-	depthDisabledStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	depthDisabledStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
-	depthDisabledStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-	depthDisabledStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depthStencilDesc.DepthEnable = false;
+	hr = m_pD3D11Device->CreateDepthStencilState(&depthStencilDesc, &m_pDepthDisabledStencilState);
 
-	// Create the state using the device.
-	hr = m_pD3D11Device->CreateDepthStencilState(&depthDisabledStencilDesc, &m_pDepthDisabledStencilState);
+	/////////////////////////////////////////////////////////////////////////////////////////
 
 	// Setup the raster description which will determine how and what polygons will be drawn.
 	D3D11_RASTERIZER_DESC rasterDesc;
@@ -187,7 +183,7 @@ void RenderSystem::BeginScene()
 {
 	//Render 
 	float bgColor[4] ={ 0.2f, 0.3f, 0.4f, 1.0f };
-
+	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
@@ -206,6 +202,8 @@ void RenderSystem::init_camera()
 	ZeroMemory(&vp, sizeof(D3D11_VIEWPORT));
 	vp.TopLeftX = 0;
 	vp.TopLeftY = 0;
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
 	vp.Width    = static_cast<FLOAT>(m_ScreenWidth);
 	vp.Height   = static_cast<FLOAT>(m_ScreenHeight);
 	m_pD3D11DeviceContext->RSSetViewports(1, &vp);
@@ -228,6 +226,7 @@ void RenderSystem::init_camera()
 void RenderSystem::init_object()
 {
 	m_Cube.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd());
+	m_Bitmap.init_window(m_ScreenWidth, m_ScreenHeight);
 	m_Bitmap.Init(m_pD3D11Device, GetHwnd()  );
 }
 

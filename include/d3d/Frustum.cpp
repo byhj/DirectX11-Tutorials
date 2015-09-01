@@ -1,6 +1,12 @@
-#include "d3dFrustum.h"
+#include "Frustum.h"
 
-void D3DFrustum::Construct(float screenDepth, D3DXMATRIX proj , D3DXMATRIX view)
+namespace byhj
+{
+
+namespace d3d
+{
+
+void Frustum::Construct(float screenDepth, D3DXMATRIX proj , D3DXMATRIX view)
 {
 	float zMinimum, r;
 	D3DXMATRIX matrix;
@@ -57,7 +63,7 @@ void D3DFrustum::Construct(float screenDepth, D3DXMATRIX proj , D3DXMATRIX view)
 	D3DXPlaneNormalize(&m_Planes[5], &m_Planes[5]);
 }
 
-bool D3DFrustum::CheckPoint(float x, float y, float z)
+bool Frustum::CheckPoint(float x, float y, float z)
 {
 	// Check if the point is inside all six planes of the view frustum.
 	for(int i=0; i<6; i++) 
@@ -71,7 +77,7 @@ bool D3DFrustum::CheckPoint(float x, float y, float z)
 	return true;
 }
 
-bool D3DFrustum::CheckCube(float xCenter, float yCenter, float zCenter, float radius)
+bool Frustum::CheckCube(float xCenter, float yCenter, float zCenter, float radius)
 {
 	// Check if any one point of the cube is in the view frustum.
 	for(int i=0; i<6; i++) 
@@ -122,7 +128,7 @@ bool D3DFrustum::CheckCube(float xCenter, float yCenter, float zCenter, float ra
 	return true;
 }
 
-bool D3DFrustum::CheckSphere(float xCenter, float yCenter, float zCenter, float radius)
+bool Frustum::CheckSphere(float xCenter, float yCenter, float zCenter, float radius)
 {
 	// Check if the radius of the sphere is inside the view frustum.
 	for(int i=0; i<6; i++) 
@@ -136,7 +142,7 @@ bool D3DFrustum::CheckSphere(float xCenter, float yCenter, float zCenter, float 
 	return true;
 }
 
-bool D3DFrustum::CheckRectangle(float xCenter, float yCenter, float zCenter, float xSize, float ySize, float zSize)
+bool Frustum::CheckRectangle(float xCenter, float yCenter, float zCenter, float xSize, float ySize, float zSize)
 {
 	// Check if any of the 6 planes of the rectangle are inside the view frustum.
 	for(int i=0; i<6; i++)
@@ -185,4 +191,7 @@ bool D3DFrustum::CheckRectangle(float xCenter, float yCenter, float zCenter, flo
 	}
 
 	return true;
+}	
+
+}
 }

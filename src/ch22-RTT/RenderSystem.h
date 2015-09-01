@@ -3,10 +3,10 @@
 
 #include "d3d/App.h"
 #include "d3d/Utility.h"
-#include "d3d/d3dFont.h"
-#include "d3d/d3dTimer.h"
-#include "d3d/d3dCamera.h"
-#include "d3d/d3dRTT.h"
+#include "d3d/Font.h"
+#include "d3d/Timer.h"
+#include "d3d/Camera.h"
+#include "d3d/RTT.h"
 
 #include "Cube.h"
 
@@ -43,10 +43,10 @@ private:
 	void DrawInfo(); 
 
 	byhj::Cube m_Cube;
-	byhj::D3DFont m_Font;
-	byhj::D3DTimer m_Timer;
-	byhj::D3DCamera m_Camera;
-	byhj::D3DRTT    m_Rtt;
+	d3d::Font m_Font;
+	d3d::Timer m_Timer;
+	d3d::Camera m_Camera;
+	d3d::RTT    m_Rtt;
 	float fps = 0.0f;
 	int m_videoCardMemory;
 	std::wstring m_videoCardInfo;

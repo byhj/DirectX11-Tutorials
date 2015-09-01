@@ -3,9 +3,9 @@
 
 #include "d3d/App.h"
 #include "d3d/Utility.h"
-#include "d3d/d3dFont.h"
-#include "d3d/d3dTimer.h"
-#include "d3d/d3dCamera.h"
+#include "d3d/Font.h"
+#include "d3d/Timer.h"
+#include "d3d/Camera.h"
 
 #include "cube.h"
 #include "fade.h"
@@ -44,9 +44,9 @@ private:
 
 	byhj::Cube cube;
 	byhj::Fade m_Fade;
-	byhj::D3DFont m_Font;
-	byhj::D3DTimer m_Timer;
-	byhj::D3DCamera m_Camera;
+	d3d::Font m_Font;
+	d3d::Timer m_Timer;
+	d3d::Camera m_Camera;
 
 	float fps = 0.0f;
 	int m_videoCardMemory;

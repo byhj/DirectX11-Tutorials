@@ -3,7 +3,7 @@
 
 #include "d3d/App.h"
 #include "d3d/Utility.h"
-#include "d3d/d3dFont.h"
+#include "d3d/Font.h"
 #include "Cube.h"
 
 namespace byhj
@@ -27,7 +27,7 @@ private:
 
 
 	byhj::Cube m_Cube;
-	byhj::D3DFont m_Font;
+	d3d::Font m_Font;
 
 	IDXGISwapChain          *m_pSwapChain          = nullptr;     
 	ID3D11Device            *m_pD3D11Device        = nullptr;

@@ -35,7 +35,13 @@ void RenderSystem::v_Render()
 
 
 	static float t = 0.0f;
-	t += 0.001f;
+	static ULONGLONG timeStart = 0;
+	ULONGLONG timeCur = GetTickCount64();
+	if (timeStart == 0)
+		timeStart = timeCur;
+
+	t = (timeCur - timeStart) / 1000.0f;
+
 	XMMATRIX Model     = XMMatrixRotationY(t);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
 

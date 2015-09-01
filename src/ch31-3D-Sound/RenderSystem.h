@@ -3,9 +3,9 @@
 
 #include "d3d/App.h"
 #include "d3d/Utility.h"
-#include "d3d/d3dFont.h"
-#include "d3d/d3dTimer.h"
-#include "d3d/d3dInput.h"
+#include "d3d/Font.h"
+#include "d3d/Timer.h"
+#include "d3d/Input.h"
 #include "SoundClass.h"
 
 #include "Cube.h"
@@ -31,9 +31,9 @@ private:
 	void DrawFps();
 
 	byhj::Cube m_Cube;
-	byhj::D3DFont m_Font;
-	byhj::D3DTimer m_Timer;
-	byhj::D3DCamera m_Camera;
+	d3d::Font m_Font;
+	d3d::Timer m_Timer;
+	d3d::Camera m_Camera;
 	SoundClass m_Sound;
 
 	float fps = 0.0f;
