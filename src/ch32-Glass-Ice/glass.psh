@@ -14,7 +14,7 @@ SamplerState TexState    : register(s0);
 
 float4 PS(VS_OUT ps_in) : SV_TARGET
 {
-   float refractionScale = 0.01f;
+   float refractionScale = 0.001f;
 
    //Convert the refraction tex from [-1, +1] to [0, 1]
    float2 refractTexCoord;
@@ -32,7 +32,7 @@ float4 PS(VS_OUT ps_in) : SV_TARGET
 
    float4 pixelColor = lerp(refractColor, textureColor, 0.5f);
 
-   return pixelColor ;
+   return pixelColor;
 
 }
 

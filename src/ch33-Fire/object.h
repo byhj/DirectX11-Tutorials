@@ -93,7 +93,7 @@ private:
 	int m_VertexCount;
 	int m_IndexCount;
 
-	Shader ObjectShader;
+	d3d::Shader ObjectShader;
 	std::vector<D3DPointLight> pointLights;
 };
 

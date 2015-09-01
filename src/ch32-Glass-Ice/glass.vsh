@@ -2,8 +2,8 @@
 struct MatrixBuffer
 {
    float4x4 model;
-   float4x4 proj;
    float4x4 view;
+   float4x4 proj;
 };
 
 cbuffer cbMatirxBuffer : register(b0)
@@ -35,7 +35,7 @@ VS_OUT VS(VS_IN vs_in)
 
    vs_out.Pos = mul(vs_in.Pos,  cbMatrix.model);
   // vs_out.Pos = mul(vs_out.Pos, cbMatrix.view);
-//  vs_out.Pos = mul(vs_out.Pos, cbMatrix.proj);
+   //vs_out.Pos = mul(vs_out.Pos, cbMatrix.proj);
 
    vs_out.Tex = vs_in.Tex;
    vs_out.RefractionPos = mul(vs_in.Pos, mvp);

@@ -71,7 +71,7 @@ private:
 	float m_width ; 
 	float m_height;
 	float m_aspect;
-	Shader GlassShader;
+	d3d::Shader GlassShader;
 };
 
 }

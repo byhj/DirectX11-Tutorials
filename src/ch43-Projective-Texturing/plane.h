@@ -79,7 +79,7 @@ private:
 	int m_VertexCount;
 	int m_IndexCount;
 
-	Shader PlaneShader;
+	d3d::Shader PlaneShader;
 };
 
 

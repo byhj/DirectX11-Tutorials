@@ -27,13 +27,13 @@ float4 PS(VS_OUTPUT ps_in) : SV_TARGET
 	float depthValue = ps_in.depthPos.z / ps_in.depthPos.w;
 	float4 color;
 	// First 10% of the depth buffer color red.
-	if(depthValue < 0.5f)
+	if(depthValue < 0.6f)
 	{
 		color = float4(1.0, 0.0f, 0.0f, 1.0f);
 	}
 	
 	// The next 0.025% portion of the depth buffer color green.
-	if(depthValue > 0.5f)
+	if(depthValue > 0.6f)
 	{
 		color = float4(0.0, 1.0f, 0.0f, 1.0f);
 	}

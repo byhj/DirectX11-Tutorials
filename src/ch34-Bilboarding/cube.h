@@ -88,7 +88,7 @@ private:
 	int m_VertexCount;
 	int m_IndexCount;
 
-	Shader CubeShader;
+	d3d::Shader CubeShader;
 	std::vector<D3DPointLight> pointLights;
 };
 

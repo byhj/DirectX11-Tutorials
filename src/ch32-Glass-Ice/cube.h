@@ -115,7 +115,7 @@ private:
 	int m_VertexCount;
 	int m_IndexCount;
 	ModelType  *pModelVertex;
-	Shader CubeShader;
+	d3d::Shader CubeShader;
 
 	void CalculateModelVectors();
 	void CalculateTangentBinormal(TempVertexType, TempVertexType, TempVertexType, VectorType&, VectorType&);

@@ -15,7 +15,7 @@ void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &Mo
 	XMVECTOR target = XMVectorZero();
 	XMVECTOR up     = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 	XMMATRIX view2  =  XMMatrixTranspose(XMMatrixLookAtLH(pos, target, up));
-	XMMATRIX proj2  = XMMatrixTranspose(XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0f), 1.0f, 1.0f, 1000.0f));
+	XMMATRIX proj2  = XMMatrixTranspose(XMMatrixPerspectiveFovLH(0.4f*3.14f, 1.0f, 1.0f, 1000.0f));
 	XMStoreFloat4x4(&cbMatrix.view2, view2);
 	XMStoreFloat4x4(&cbMatrix.proj2, proj2);
 	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0);

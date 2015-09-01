@@ -30,12 +30,9 @@ void RenderSystem::v_Render()
 	float bgColor[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRttRenderTargetView, m_pDepthStencilView);
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRttRenderTargetView, bgColor);
-	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	cube.Render(m_pD3D11DeviceContext, m_Matrix.model, m_Matrix.view, m_Matrix.proj);
-
-	//Set normal render target view
-	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
 
 	BeginScene();
 
@@ -48,7 +45,7 @@ void RenderSystem::v_Render()
 	XMFLOAT4X4 orth;
 	XMStoreFloat4x4(&orth, XMMatrixTranspose(orthProj));
 
-	glass.Render(m_pD3D11DeviceContext, m_pRttShaderResourceView, m_Matrix.model, m_Matrix.view, orth);
+	glass.Render(m_pD3D11DeviceContext, m_pRttShaderResourceView, m_Matrix.model, m_Matrix.view, m_Matrix.proj);
 
 	TurnZBufferOn();
 
@@ -253,7 +250,7 @@ void RenderSystem::init_device()
 void RenderSystem::BeginScene()
 {
 	//Render 
-	float bgColor[4] ={ 0.0f, 0.0f, 0.0f, 1.0f };
+	float bgColor[4] ={ 0.2f, 0.3f, 0.4f, 1.0f };
 
 	m_pD3D11DeviceContext->RSSetState(m_pRasterState);
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
@@ -302,7 +299,7 @@ void RenderSystem::init_object()
 	cube.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
 	cube.init_shader(m_pD3D11Device, GetHwnd());
 
-	glass.init_window(-1.0f, 1.0f, 2.0f, 2.0f, GetAspect());
+	glass.init_window(-0.5f, 0.5f, 0.6f, 0.6f, GetAspect());
 	glass.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
 	glass.init_shader(m_pD3D11Device, GetHwnd());
 }
