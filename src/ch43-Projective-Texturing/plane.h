@@ -3,7 +3,7 @@
 
 
 #include "d3d/App.h"
-#include <d3d/d3dShader.h>
+#include "d3d/Shader.h"
 #include "d3d/d3dLight.h"
 
 namespace byhj

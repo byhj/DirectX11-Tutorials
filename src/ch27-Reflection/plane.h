@@ -1,5 +1,5 @@
 #include "d3d/App.h"
-#include <d3d/d3dShader.h>
+#include "d3d/Shader.h"
 
 namespace byhj
 {
@@ -76,7 +76,7 @@ private:
 
 	int m_VertexCount;
 	int m_IndexCount;
-	Shader PlaneShader;
+	d3d::Shader PlaneShader;
 };
 
 

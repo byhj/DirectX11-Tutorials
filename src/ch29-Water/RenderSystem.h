@@ -6,7 +6,7 @@
 #include "d3d/Font.h"
 #include "d3d/Timer.h"
 #include "d3d/Camera.h"
-#include "d3d/d3dRTT.h"
+#include "d3d/RTT.h"
 
 #include "bath.h"
 #include "ground.h"
@@ -54,7 +54,7 @@ private:
 	d3d::Font m_Font;
 	d3d::Timer m_Timer;
 	d3d::Camera m_Camera;
-	byhj::D3DRTT    m_Rtt;
+	d3d::RTT    m_Rtt;
 	float fps = 0.0f;
 	int m_videoCardMemory;
 	std::wstring m_videoCardInfo;

@@ -35,7 +35,8 @@ void RenderSystem::v_Render()
 	float bgColor[4] ={ 0.2f, 0.3f, 0.4f, 1.0f };
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRttRenderTargetView, m_pDepthStencilView);
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRttRenderTargetView, bgColor);
-	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
+
 
 	m_Cube.Render(m_pD3D11DeviceContext, m_Matrix);
 
@@ -258,6 +259,7 @@ void RenderSystem::init_device()
 	// Create the rasterizer state from the description we just filled out.
 	hr = m_pD3D11Device->CreateRasterizerState(&rasterDesc, &m_pRasterState);
 	DebugHR(hr);
+	m_pD3D11DeviceContext->RSSetState(m_pRasterState);
 
 	///////////////////////////////////////////////////////////////////////////////
 
@@ -283,8 +285,6 @@ void RenderSystem::BeginScene()
 {
 	//Render 
 	float bgColor[4] ={ 0.2f, 0.3f, 0.4f, 1.0f };
-
-	m_pD3D11DeviceContext->RSSetState(m_pRasterState);
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);

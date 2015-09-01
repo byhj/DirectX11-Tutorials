@@ -8,10 +8,10 @@ namespace byhj
 
 	void Fade::Shutdown()
 	{
-		ReleaseCOM(m_pRenderTargetView)
 		ReleaseCOM(m_pMVPBuffer)
 		ReleaseCOM(m_pVertexBuffer)
 		ReleaseCOM(m_pIndexBuffer)
+		ReleaseCOM(m_pInputLayout)
 	}
 
 

@@ -2,7 +2,7 @@
 #define WALL_H
 
 #include "d3d/App.h"
-#include <d3d/d3dShader.h>
+#include "d3d/Shader.h"
 
 namespace byhj
 {
@@ -93,7 +93,7 @@ private:
 	int m_VertexCount;
 	int m_IndexCount;
 
-	Shader WallShader;
+	d3d::Shader WallShader;
 };
 
 

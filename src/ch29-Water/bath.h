@@ -92,7 +92,7 @@ private:
 	int m_VertexCount;
 	int m_IndexCount;
 
-	Shader BathShader;
+	d3d::Shader BathShader;
 };
 
 

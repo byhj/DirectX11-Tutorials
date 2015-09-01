@@ -32,6 +32,9 @@ void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const MatrixBuffer &
 	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0);
 	pD3D11DeviceContext->VSSetConstantBuffers(0, 1, &m_pMVPBuffer);
 
+	int lightSlot = 0;
+	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, &m_pLightBuffer);
+
 	// Set vertex buffer stride and offset
 	unsigned int stride;
 	unsigned int offset;
@@ -53,8 +56,6 @@ void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const MatrixBuffer &
 void Cube::Shutdown()
 {
 	ReleaseCOM(m_pInputLayout)
-	ReleaseCOM(m_pVS)
-	ReleaseCOM(m_pPS)
 	ReleaseCOM(m_pMVPBuffer)
 	ReleaseCOM(m_pVertexBuffer)
 	ReleaseCOM(m_pIndexBuffer)
@@ -173,8 +174,7 @@ void Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 
 	pD3D11DeviceContext->Unmap(m_pLightBuffer, 0);
 
-	int lightSlot = 0;
-	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, &m_pLightBuffer);
+
 
 
 	D3D11_BUFFER_DESC cameraBufferDesc;

@@ -52,7 +52,6 @@ private:
 	};
 	FadeBuffer cbFade;
 
-	ID3D11RenderTargetView   *m_pRenderTargetView;
 	ID3D11Buffer             *m_pMVPBuffer;
 	ID3D11Buffer             *m_pVertexBuffer;
 	ID3D11Buffer             *m_pIndexBuffer;
@@ -68,7 +67,7 @@ private:
 	float m_width ; 
 	float m_height;
 
-	Shader FadeShader;
+	d3d::Shader FadeShader;
 };
 
 }
