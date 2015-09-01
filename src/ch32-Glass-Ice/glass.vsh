@@ -27,15 +27,15 @@ struct VS_OUT
 VS_OUT VS(VS_IN vs_in)
 {
    vs_in.Pos.w = 1.0f;
-   vs_in.Pos.z = 0.0f;
    VS_OUT vs_out;
 
    float4x4 mvp = mul(cbMatrix.view, cbMatrix.proj);
    mvp =  mul(cbMatrix.model, mvp);
 
    vs_out.Pos = mul(vs_in.Pos,  cbMatrix.model);
-  // vs_out.Pos = mul(vs_out.Pos, cbMatrix.view);
-   //vs_out.Pos = mul(vs_out.Pos, cbMatrix.proj);
+   vs_out.Pos = mul(vs_out.Pos, cbMatrix.view);
+   vs_out.Pos = mul(vs_out.Pos, cbMatrix.proj);
+   vs_out.Pos.z = 1.0f;
 
    vs_out.Tex = vs_in.Tex;
    vs_out.RefractionPos = mul(vs_in.Pos, mvp);

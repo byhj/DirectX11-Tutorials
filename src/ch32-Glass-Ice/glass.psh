@@ -14,7 +14,7 @@ SamplerState TexState    : register(s0);
 
 float4 PS(VS_OUT ps_in) : SV_TARGET
 {
-   float refractionScale = 0.001f;
+   float refractionScale = 0.01f;
 
    //Convert the refraction tex from [-1, +1] to [0, 1]
    float2 refractTexCoord;
