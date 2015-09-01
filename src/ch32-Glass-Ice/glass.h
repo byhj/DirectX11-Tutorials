@@ -1,7 +1,7 @@
 #ifndef GLASS_H
 #define GLASS_H
 
-#include "d3d/d3dShader.h"
+#include "d3d/Shader.h"
 #include "d3d/d3dDebug.h"
 #include <d3d11.h>
 #include <xnamath.h>

@@ -1,7 +1,7 @@
 #ifndef CUBE_H
 #define CUBE_H
 
-#include "d3d/d3dShader.h"
+#include "d3d/Shader.h"
 #include "d3d/d3dDebug.h"
 #include <vector>
 #include <xnamath.h>
@@ -108,7 +108,7 @@ private:
 	std::vector<unsigned long> IndexData;
 	std::vector<XMFLOAT3> PosData;
 
-	byhj::Shader CubeShader;
+	d3d::Shader CubeShader;
 };
 
 

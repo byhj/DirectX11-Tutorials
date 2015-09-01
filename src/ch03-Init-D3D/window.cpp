@@ -18,6 +18,11 @@ void Window::Init()
 
 }
 
+void Window::Update()
+{
+
+}
+
 void Window::Render()
 {
 

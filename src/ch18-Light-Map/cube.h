@@ -5,8 +5,8 @@
 #include <xnamath.h>
 #include <vector>
 
-#include "d3d/d3dShader.h"
-#include "d3d/d3dUtility.h"
+#include "d3d/Shader.h"
+#include "d3d/Utility.h"
 
 
 namespace byhj
@@ -64,7 +64,7 @@ private:
 	ID3D11Buffer             *m_CameraBuffer      = nullptr;
 	ID3D11ShaderResourceView *m_pTextures[2];
 	ID3D11SamplerState       *m_pTexSamplerState  = nullptr;
-	byhj::Shader CubeShader;
+	d3d::Shader CubeShader;
 
 
 	std::vector<Vertex> m_VertexData;

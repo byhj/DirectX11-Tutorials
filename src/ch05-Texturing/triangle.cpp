@@ -43,8 +43,6 @@ void Triangle::Render(ID3D11DeviceContext *pD3D11DeviceContext, const MatrixBuff
 void Triangle::Shutdown()
 {
 	ReleaseCOM(m_pInputLayout)
-	ReleaseCOM(m_pVS)
-	ReleaseCOM(m_pPS)
 	ReleaseCOM(m_pMVPBuffer)
 	ReleaseCOM(m_pVertexBuffer)
 	ReleaseCOM(m_pIndexBuffer)

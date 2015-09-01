@@ -2,9 +2,9 @@
 #define _XM_NO_INTRINSICS_
 #endif 
 
-#include "d3d/d3dShader.h"
+#include "d3d/Shader.h"
 #include "d3d/d3dDebug.h"
-#include "d3d/d3dUtility.h"
+#include "d3d/Utility.h"
 
 #include <xnamath.h>
 
@@ -52,7 +52,7 @@ private:
 	int VertexCount;
 	int IndexCount;
 
-	byhj::Shader BitmapShader;
+	d3d::Shader BitmapShader;
 
 	int screenWidth, screenHeight;
 	int bitmapWidth, bitmapHeight;

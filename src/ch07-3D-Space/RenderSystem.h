@@ -1,14 +1,14 @@
 #ifndef RENDERSYSTEM_H
 #define RENDERSYSTEM_H
 
-#include "d3d/d3dApp.h"
-#include "d3d/d3dUtility.h"
-#include "Triangle.h"
+#include "d3d/App.h"
+#include "d3d/Utility.h"
+#include "Cube.h"
 
 namespace byhj
 {
 
-	class RenderSystem : public D3DApp
+	class RenderSystem : public d3d::App
 {
 public:
 	RenderSystem();
@@ -25,7 +25,7 @@ private:
 	void EndScene();
 
 
-	byhj::Triangle m_Triangle;
+	byhj::Cube m_Cube;
 
 	IDXGISwapChain          *m_pSwapChain          = nullptr;     
 	ID3D11Device            *m_pD3D11Device        = nullptr;

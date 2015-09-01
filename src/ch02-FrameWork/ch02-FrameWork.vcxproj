@@ -19,13 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\include\d3d\d3dApp.cpp" />
+    <ClCompile Include="..\..\include\d3d\App.cpp" />
     <ClCompile Include="ch02-FrameWork.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\include\d3d\d3dApp.h" />
+    <ClInclude Include="..\..\include\d3d\App.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="window.h" />
   </ItemGroup>

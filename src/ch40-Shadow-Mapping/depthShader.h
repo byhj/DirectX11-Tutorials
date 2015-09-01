@@ -1,5 +1,5 @@
-#include "d3d/d3dShader.h"
-#include "d3d/d3dUtility.h"
+#include "d3d/Shader.h"
+#include "d3d/Utility.h"
 
 #include <xnamath.h>
 
@@ -19,7 +19,7 @@ private:
 
 
 	byhj::MatrixBuffer cbMatrix;
-	byhj::Shader depthShader;
+	d3d::Shader depthShader;
 	ID3D11Buffer *m_pMVPBuffer;
 };
 

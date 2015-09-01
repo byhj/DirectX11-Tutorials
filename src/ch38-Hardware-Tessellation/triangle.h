@@ -3,8 +3,8 @@
 
 #include <windows.h>
 #include <xnamath.h>
-#include "d3d/d3dShader.h"
-#include "d3d/d3dUtility.h"
+#include "d3d/Shader.h"
+#include "d3d/Utility.h"
 
 namespace byhj
 {
@@ -45,7 +45,7 @@ private:
 	int m_VertexCount;
 	int m_IndexCount;
 
-	byhj::Shader TriangleShader;
+	d3d::Shader TriangleShader;
 };
 
 

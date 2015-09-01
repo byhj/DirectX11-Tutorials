@@ -23,18 +23,17 @@
     <None Include="triangle.vsh" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\include\d3d\d3dApp.cpp" />
-    <ClCompile Include="..\..\include\d3d\d3dShader.cpp" />
-    <ClCompile Include="..\..\include\d3d\d3dUtility.cpp" />
+    <ClCompile Include="..\..\include\d3d\App.cpp" />
+    <ClCompile Include="..\..\include\d3d\Shader.cpp" />
     <ClCompile Include="ch06-Diffuse-Light.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\include\d3d\d3dApp.h" />
+    <ClInclude Include="..\..\include\d3d\App.h" />
     <ClInclude Include="..\..\include\d3d\d3dDebug.h" />
-    <ClInclude Include="..\..\include\d3d\d3dShader.h" />
-    <ClInclude Include="..\..\include\d3d\d3dUtility.h" />
+    <ClInclude Include="..\..\include\d3d\Shader.h" />
+    <ClInclude Include="..\..\include\d3d\Utility.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="triangle.h" />
   </ItemGroup>

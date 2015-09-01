@@ -1,20 +1,20 @@
-#include "Triangle.h"
+#include "Cube.h"
 #include "d3d/d3dDebug.h"
 
 namespace byhj
 {
 
-Triangle::Triangle()
+Cube::Cube()
 {
 
 }
 
-Triangle::~Triangle()
+Cube::~Cube()
 {
 
 }
 
-void Triangle::Init(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext, HWND hWnd)
+void Cube::Init(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext, HWND hWnd)
 {
  
 	init_buffer(pD3D11Device, pD3D11DeviceContext);
@@ -22,7 +22,7 @@ void Triangle::Init(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11Devic
 	init_texture(pD3D11Device);
 }
 
-void Triangle::Render(ID3D11DeviceContext *pD3D11DeviceContext, const MatrixBuffer &matrix)
+void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const MatrixBuffer &matrix)
 {
 
 
@@ -40,11 +40,9 @@ void Triangle::Render(ID3D11DeviceContext *pD3D11DeviceContext, const MatrixBuff
 
 }
 
-void Triangle::Shutdown()
+void Cube::Shutdown()
 {
 	ReleaseCOM(m_pInputLayout)
-	ReleaseCOM(m_pVS)
-	ReleaseCOM(m_pPS)
 	ReleaseCOM(m_pMVPBuffer)
 	ReleaseCOM(m_pVertexBuffer)
 	ReleaseCOM(m_pIndexBuffer)
@@ -54,10 +52,10 @@ void Triangle::Shutdown()
 
 }
 
-void Triangle::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext)
+void Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext)
 {
 	HRESULT hr;
-	load_obj("../../media/objects/cube.obj");
+	load_model("../../media/objects/cube.txt");
 
 	///////////////////////////Index Buffer ////////////////////////////////
 
@@ -156,7 +154,7 @@ void Triangle::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D
 
 }
 
-void Triangle::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
+void Cube::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 {
 	D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc[3];
 	pInputLayoutDesc[0].SemanticName         = "POSITION";
@@ -186,14 +184,14 @@ void Triangle::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
 
 	TriangleShader.init(pD3D11Device, hWnd);
-	TriangleShader.attachVS(L"triangle.vsh", pInputLayoutDesc, numElements);
-	TriangleShader.attachPS(L"triangle.psh");
+	TriangleShader.attachVS(L"Cube.vsh", pInputLayoutDesc, numElements);
+	TriangleShader.attachPS(L"Cube.psh");
 	TriangleShader.end();
 }
 
 
 
-void Triangle::init_texture(ID3D11Device *pD3D11Device)
+void Cube::init_texture(ID3D11Device *pD3D11Device)
 {
 
 	HRESULT hr;
@@ -221,7 +219,7 @@ void Triangle::init_texture(ID3D11Device *pD3D11Device)
 	DebugHR(hr);
 }
 
-void Triangle::load_model(char *modelFile)
+void Cube::load_model(char *modelFile)
 {
 	std::ifstream fin;
 	char ch;
@@ -266,100 +264,5 @@ void Triangle::load_model(char *modelFile)
 
 }
 
-
-bool Triangle::load_obj(char *objFile)
-{
-	std::ifstream fin;
-	char ch;
-	fin.open(objFile);
-
-	if (fin.fail())
-	{
-		MessageBox(NULL, L"Can not open the Model File", L"Error", MB_OK | MB_ICONERROR);
-	}
-
-	// Read in the vertices, texture coordinates, and normals into the data structures.
-	// Important: Also convert to left hand coordinate system since Maya uses right hand coordinate system.
-	fin.get(ch);
-	Vertex vt;
-	XMFLOAT3 Pos;
-	XMFLOAT2 Tex;
-	XMFLOAT3 Normal;
-	std::vector<XMFLOAT3> vPos;
-	std::vector<XMFLOAT2> vTex;
-	std::vector<XMFLOAT3> vNormal;
-	std::vector<unsigned int> vPosIndex;
-	std::vector<unsigned int> vTexIndex;
-	std::vector<unsigned int> vNormalIndex;
-	unsigned int a[3], b[3], c[3];
-	char ct;
-
-	while (!fin.eof())
-	{
-		if (ch == 'v')
-		{
-			fin.get(ch);
-			if (ch == ' ')
-			{
-				fin >> Pos.x >> Pos.y >> Pos.z;
-				Pos.z *= -1.0f;
-				vPos.push_back(Pos);
-			}
-			if (ch == 't')
-			{
-				fin >> Tex.x >> Tex.y;
-				Tex.y = 1.0f - Tex.y;
-				vTex.push_back(Tex);
-			}
-			if (ch == 'n')
-			{
-				fin >> Normal.x >> Normal.y >> Normal.z;
-				//obj is right hand, convert to lefe hand
-				Normal.z *= -1.0f;
-				vNormal.push_back(Normal);
-			}
-		}
-		if (ch == 'f')
-		{
-			fin.get(ch);
-			if (ch == ' ')
-			{
-				for (int i = 0; i != 3; ++i)
-				{
-					fin >> a[i] >> ct >> b[i] >> ct >> c[i];
-				}
-				//After convert, Triangle mode is CCW, so is not show!!
-				//So, we should convert the index order too!!
-				for (int i = 2; i >= 0; --i)
-				{
-					vPosIndex.push_back(a[i]);
-					vTexIndex.push_back(b[i]);
-					vNormalIndex.push_back(c[i]);
-				}
-
-			}
-		}
-		// Read in the remainder of the line.
-		while (ch != '\n')
-		{
-			fin.get(ch);
-		}
-
-		// Start reading the beginning of the next line.
-		fin.get(ch);
-	}//While
-	fin.close();
-
-	for (int i = 0; i != vPosIndex.size(); ++i)
-	{
-		vt.Position = vPos[vPosIndex[i] - 1];
-		vt.TexCoord = vTex[vTexIndex[i] - 1];
-		vt.Normal   = vNormal[vNormalIndex[i] - 1];
-		m_VertexData.push_back(vt);
-		m_IndexData.push_back(i);
-	}
-
-	return true;
-}
 
 }

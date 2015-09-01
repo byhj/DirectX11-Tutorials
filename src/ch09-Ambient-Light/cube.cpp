@@ -1,20 +1,20 @@
-#include "Triangle.h"
+#include "Cube.h"
 #include "d3d/d3dDebug.h"
 
 namespace byhj
 {
 
-Triangle::Triangle()
+Cube::Cube()
 {
 
 }
 
-Triangle::~Triangle()
+Cube::~Cube()
 {
 
 }
 
-void Triangle::Init(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext, HWND hWnd)
+void Cube::Init(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext, HWND hWnd)
 {
  
 	init_buffer(pD3D11Device, pD3D11DeviceContext);
@@ -22,7 +22,7 @@ void Triangle::Init(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11Devic
 	init_texture(pD3D11Device);
 }
 
-void Triangle::Render(ID3D11DeviceContext *pD3D11DeviceContext, const MatrixBuffer &matrix)
+void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const MatrixBuffer &matrix)
 {
 
 
@@ -34,17 +34,15 @@ void Triangle::Render(ID3D11DeviceContext *pD3D11DeviceContext, const MatrixBuff
 	pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pTexture);
 	pD3D11DeviceContext->PSSetSamplers(0, 1, &m_pTexSamplerState);
 
-	TriangleShader.use(pD3D11DeviceContext);
+	CubeShader.use(pD3D11DeviceContext);
 	pD3D11DeviceContext->DrawIndexed(m_VertexData.size(), 0, 0);
 
 
 }
 
-void Triangle::Shutdown()
+void Cube::Shutdown()
 {
 	ReleaseCOM(m_pInputLayout)
-	ReleaseCOM(m_pVS)
-	ReleaseCOM(m_pPS)
 	ReleaseCOM(m_pMVPBuffer)
 	ReleaseCOM(m_pVertexBuffer)
 	ReleaseCOM(m_pIndexBuffer)
@@ -54,7 +52,7 @@ void Triangle::Shutdown()
 
 }
 
-void Triangle::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext)
+void Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext)
 {
 	HRESULT hr;
 	load_model("../../media/objects/cube.txt");
@@ -144,8 +142,9 @@ void Triangle::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D
 	// Get a pointer to the data in the constant buffer.
 	LightBuffer *dataPtr2 = (LightBuffer*)mappedResource.pData;
 
+	dataPtr2->ambientColor   = XMFLOAT4(0.15f, 0.15f, 0.15f, 0.15f);
 	dataPtr2->diffuseColor   = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	dataPtr2->lightDirection = XMFLOAT3(0.0f, 0.0f, 1.0f);
+	dataPtr2->lightDirection = XMFLOAT3(1.0f, 0.0f, 0.0f);
 	dataPtr2->padding = 0.0f;
 
 	pD3D11DeviceContext->Unmap(m_pLightBuffer, 0);
@@ -156,7 +155,7 @@ void Triangle::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D
 
 }
 
-void Triangle::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
+void Cube::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 {
 	D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc[3];
 	pInputLayoutDesc[0].SemanticName         = "POSITION";
@@ -185,15 +184,15 @@ void Triangle::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 
 	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
 
-	TriangleShader.init(pD3D11Device, hWnd);
-	TriangleShader.attachVS(L"triangle.vsh", pInputLayoutDesc, numElements);
-	TriangleShader.attachPS(L"triangle.psh");
-	TriangleShader.end();
+	CubeShader.init(pD3D11Device, hWnd);
+	CubeShader.attachVS(L"Cube.vsh", pInputLayoutDesc, numElements);
+	CubeShader.attachPS(L"Cube.psh");
+	CubeShader.end();
 }
 
 
 
-void Triangle::init_texture(ID3D11Device *pD3D11Device)
+void Cube::init_texture(ID3D11Device *pD3D11Device)
 {
 
 	HRESULT hr;
@@ -221,7 +220,7 @@ void Triangle::init_texture(ID3D11Device *pD3D11Device)
 	DebugHR(hr);
 }
 
-void Triangle::load_model(char *modelFile)
+void Cube::load_model(char *modelFile)
 {
 	std::ifstream fin;
 	char ch;

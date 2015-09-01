@@ -24,7 +24,6 @@ void Triangle::Init(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11Devic
 void Triangle::Render(ID3D11DeviceContext *pD3D11DeviceContext, const MatrixBuffer &matrix)
 {
 
-
 	cbMatrix.model = matrix.model;
 	cbMatrix.view  = matrix.view;
 	cbMatrix.proj  = matrix.proj;
@@ -40,8 +39,6 @@ void Triangle::Render(ID3D11DeviceContext *pD3D11DeviceContext, const MatrixBuff
 void Triangle::Shutdown()
 {
 	ReleaseCOM(m_pInputLayout)
-	ReleaseCOM(m_pVS)
-	ReleaseCOM(m_pPS)
 	ReleaseCOM(m_pMVPBuffer)
 	ReleaseCOM(m_pVertexBuffer)
 	ReleaseCOM(m_pIndexBuffer)

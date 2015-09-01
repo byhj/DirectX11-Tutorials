@@ -1,7 +1,7 @@
 #ifndef WALL_H
 #define WALL_H
 
-#include "d3d/d3dApp.h"
+#include "d3d/App.h"
 #include <d3d/d3dShader.h>
 
 namespace byhj

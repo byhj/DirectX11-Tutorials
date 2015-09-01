@@ -17,7 +17,7 @@ void RenderSystem::v_Init()
 {
 	init_device();
 	init_camera();
-	m_Triangle.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd() );
+	m_Cube.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd() );
 
 }
 
@@ -25,7 +25,7 @@ void RenderSystem::v_Render()
 {
 	BeginScene();
 
-	m_Triangle.Render(m_pD3D11DeviceContext, m_Matrix);
+	m_Cube.Render(m_pD3D11DeviceContext, m_Matrix);
 
 	EndScene();
 }
@@ -33,7 +33,7 @@ void RenderSystem::v_Render()
 void RenderSystem::v_Shutdown()
 {
 
-	m_Triangle.Shutdown();
+	m_Cube.Shutdown();
 
 	ReleaseCOM(m_pSwapChain);
 	ReleaseCOM(m_pD3D11Device);

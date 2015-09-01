@@ -1,8 +1,8 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
-#include "d3d/d3dApp.h"
-#include "d3d/d3dShader.h"
+#include "d3d/App.h"
+#include "d3d/Shader.h"
 
 namespace byhj
 {

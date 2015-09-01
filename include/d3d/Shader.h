@@ -10,6 +10,9 @@
 namespace byhj
 {
 
+namespace d3d
+{
+
 
 class Shader
 {
@@ -43,6 +46,7 @@ private:
 };
 
 
+}
 
 }
 

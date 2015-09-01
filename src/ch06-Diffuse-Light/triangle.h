@@ -3,8 +3,8 @@
 
 #include <windows.h>
 #include <xnamath.h>
-#include "d3d/d3dShader.h"
-#include "d3d/d3dUtility.h"
+#include "d3d/Shader.h"
+#include "d3d/Utility.h"
 
 namespace byhj
 {
@@ -43,8 +43,6 @@ private:
 
 	MatrixBuffer cbMatrix;
 	ID3D11InputLayout        *m_pInputLayout      = nullptr;
-	ID3D11VertexShader       *m_pVS               = nullptr;
-	ID3D11PixelShader        *m_pPS               = nullptr;
 	ID3D11Buffer             *m_pMVPBuffer        = nullptr;
 	ID3D11Buffer             *m_pVertexBuffer     = nullptr;
 	ID3D11Buffer             *m_pIndexBuffer      = nullptr;
@@ -55,7 +53,7 @@ private:
 	int m_VertexCount;
 	int m_IndexCount;
 
-	byhj::Shader TriangleShader;
+	d3d::Shader TriangleShader;
 };
 
 

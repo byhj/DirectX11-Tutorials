@@ -43,8 +43,6 @@ void Triangle::Render(ID3D11DeviceContext *pD3D11DeviceContext, const MatrixBuff
 void Triangle::Shutdown()
 {
 	ReleaseCOM(m_pInputLayout)
-	ReleaseCOM(m_pVS)
-	ReleaseCOM(m_pPS)
 	ReleaseCOM(m_pMVPBuffer)
 	ReleaseCOM(m_pVertexBuffer)
 	ReleaseCOM(m_pIndexBuffer)
@@ -167,7 +165,7 @@ void Triangle::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D
 	// Get a pointer to the data in the constant buffer.
 	LightBuffer *dataPtr2 = (LightBuffer*)mappedResource.pData;
 
-	dataPtr2->diffuseColor   = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
+	dataPtr2->diffuseColor   = XMFLOAT4(0.4f, 0.4f, 1.0f, 1.0f);
 	dataPtr2->lightDirection = XMFLOAT3(0.0f, 0.0f, 1.0f);
 	dataPtr2->padding = 0.0f;
 

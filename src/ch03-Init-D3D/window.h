@@ -12,10 +12,12 @@ public:
 	~Window();
 
 	void Init();
+	void Update();
 	void Render();
 	void Shutdown();
 
 private:
+
 };
 
 

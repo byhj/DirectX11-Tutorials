@@ -1,14 +1,14 @@
 #ifndef RENDERSYSTEM_H
 #define RENDERSYSTEM_H
 
-#include "d3d/d3dApp.h"
-#include "d3d/d3dUtility.h"
+#include "d3d/App.h"
+#include "d3d/Utility.h"
 #include "Triangle.h"
 
 namespace byhj
 {
 
-	class RenderSystem : public D3DApp
+	class RenderSystem : public d3d::App
 {
 public:
 	RenderSystem();

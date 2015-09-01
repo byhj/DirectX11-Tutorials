@@ -11,6 +11,8 @@ public:
 	Window();
 	~Window();
 
+public:
+
 	void Init();
 	void Render();
 	void Shutdown();

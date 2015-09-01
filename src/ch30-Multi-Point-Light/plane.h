@@ -5,8 +5,8 @@
 #include <xnamath.h>
 #include <vector>
 
-#include "d3d/d3dShader.h"
-#include "d3d/d3dUtility.h"
+#include "d3d/Shader.h"
+#include "d3d/Utility.h"
 #include "d3d/d3dLight.h"
 
 namespace byhj
@@ -63,7 +63,7 @@ private:
 	ID3D11Buffer             *m_pLightBuffer      = nullptr;
 	ID3D11ShaderResourceView *m_pTexture          = nullptr;
 	ID3D11SamplerState       *m_pTexSamplerState  = nullptr;
-	byhj::Shader PlaneShader;
+	d3d::Shader PlaneShader;
 
 	std::vector<Vertex> m_VertexData;
 	std::vector<DWORD> m_IndexData;

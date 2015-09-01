@@ -1,9 +1,9 @@
 
 cbuffer MatrixObject  : register(b0)
 {
-	float4x4 model;
-	float4x4 view;
-	float4x4 proj;
+	float4x4 g_World;
+	float4x4 g_View;
+	float4x4 g_Proj;
 };
 
 cbuffer CameraBuffer : register(b1)
@@ -32,16 +32,16 @@ VS_OUT VS(VS_IN vs_in)
  
    VS_OUT vs_out;
   // Make the position with mvp matrix
-   vs_out.Pos = mul(vs_in.Pos, model);
-   vs_out.Pos = mul(vs_out.Pos, view);
-   vs_out.Pos = mul(vs_out.Pos, proj);
+   vs_out.Pos = mul(vs_in.Pos,  g_World);
+   vs_out.Pos = mul(vs_out.Pos, g_View);
+   vs_out.Pos = mul(vs_out.Pos, g_Proj);
 
    vs_out.Tex = vs_in.Tex;
-   vs_out.Normal = mul(vs_in.Normal, (float3x3)model );
+   vs_out.Normal = mul(vs_in.Normal, (float3x3)g_World );
    vs_out.Normal = normalize(vs_out.Normal);
 
    //Calc the view direction
-   float4 worldPos = mul(vs_in.Pos, model);
+   float4 worldPos = mul(vs_in.Pos, g_World);
    vs_out.ViewDir  = camPos.xyz - worldPos.xyz;
    vs_out.ViewDir  = normalize(vs_out.ViewDir);
     

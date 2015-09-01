@@ -1,5 +1,5 @@
-#include "d3d/d3dShader.h"
-#include "d3d/d3dUtility.h"
+#include "d3d/Shader.h"
+#include "d3d/Utility.h"
 #include <xnamath.h>
 
 namespace byhj
@@ -43,7 +43,7 @@ namespace byhj
 		ID3D11Buffer* m_pLightBuffer2;
 
 
-		byhj::Shader sceneShader;
+		d3d::Shader sceneShader;
 	};
 
 }

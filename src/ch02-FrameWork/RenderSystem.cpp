@@ -19,6 +19,11 @@ void RenderSystem::v_Init()
 
 }
 
+void RenderSystem::v_Update()
+{
+
+}
+
 void RenderSystem::v_Render()
 {
 	m_Window.Render();
