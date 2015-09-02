@@ -51,17 +51,17 @@ private:
 		XMFLOAT2 distortion1;
 		XMFLOAT2 distortion2;
 		XMFLOAT2 distortion3;
-		float  distortionScale;
-		float  distortionBias;
+		FLOAT  distortionScale;
+		FLOAT  distortionBias;
 	};
 	DistortionBuffer cbDistortion;
 
 	struct NoiseBuffer
 	{
-		float   frameTime;
+		FLOAT   frameTime;
 		XMFLOAT3 scrollSpeeds;
 		XMFLOAT3 scales;
-		float    padding;
+		FLOAT    padding;
 	};
 	NoiseBuffer cbNoise;
 

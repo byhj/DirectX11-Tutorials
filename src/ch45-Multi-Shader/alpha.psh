@@ -1,0 +1,42 @@
+
+cbuffer LightBuffer	 : register(b0)
+{
+  float4 ambientColor;
+  float4 diffuseColor;
+  float3 lightDirection;
+
+};
+
+struct VS_OUTPUT 
+{
+    float4 Pos : SV_POSITION;
+   	float2 Tex : TEXCOORD0;
+	float3 Normal: NORMAL;
+};
+
+Texture2D tex0: register(t0);
+Texture2D tex1: register(t1);
+Texture2D tex2: register(t2);
+
+SamplerState texSample : register(s0);
+
+float4 PS(VS_OUTPUT ps_in) : SV_TARGET
+{
+
+  float4 ambient = ambientColor;
+  //Calc the diffuse light
+  float3 lightDir  = -lightDirection;
+  float  intensity = saturate( dot(ps_in.Normal, lightDir) ); 
+  float4 diffuse   = saturate(diffuseColor * intensity);
+  float4 result     = saturate(ambient + diffuse);
+   
+  float4 texColor0 = tex0.Sample(texSample, ps_in.Tex);
+  float4 texColor1 = tex1.Sample(texSample, ps_in.Tex);
+  float4 texAlpha  = tex2.Sample(texSample, ps_in.Tex);
+
+     // Combine the two textures based on the alpha value.
+  float4 texColor  = (texAlpha * texColor0) + ((1.0 - texAlpha) * texColor1);
+  float4 pixelColor =  saturate(result * texColor);
+
+  return pixelColor;
+}

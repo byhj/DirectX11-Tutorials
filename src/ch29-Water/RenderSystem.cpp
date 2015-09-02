@@ -46,8 +46,8 @@ void RenderSystem::v_Render()
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
 	// Translate to where the wall model will be rendered.
 	World = XMMatrixTranslation(0.0f, 6.0f, 8.0f);
-
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(World));
+
 	XMFLOAT4X4 View  = m_Camera.GetViewMatrix();
 	XMFLOAT3 camPos = m_Camera.GetPos();
 	camPos.y =  -camPos.y;

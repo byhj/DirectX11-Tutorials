@@ -4,6 +4,7 @@ cbuffer LightBuffer	 : register(b0)
   float4 ambientColor;
   float4 diffuseColor;
   float3 lightDirection;
+  float padding;
 };
 
 struct VS_OUTPUT 

@@ -51,7 +51,7 @@ float4 PS(VS_OUTPUT ps_in) : SV_TARGET
 
 	    // Perturb the input texture Y coordinates by the distortion scale and bias values.  
     // The perturbation gets stronger as you move up the texture which creates the flame flickering at the top effect.
-    float perturb = ((1.0f - ps_in.Tex.y) * cbDistort.distortionScale) + cbDistort.distortionBias;
+    float perturb = ( (1.0f - ps_in.Tex.y) * cbDistort.distortionScale) + cbDistort.distortionBias;
 
     // Now create the perturbed and distorted texture sampling coordinates that will be used to sample the fire color texture.
     float2 noiseCoords = (finalNoise.xy * perturb) + ps_in.Tex;

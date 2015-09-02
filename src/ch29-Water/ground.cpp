@@ -124,9 +124,8 @@ bool Ground::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11
 
 	dataPtr2->ambientColor   = XMFLOAT4(0.75f, 0.75f, 0.75f, 1.0f);
 	dataPtr2->diffuseColor   = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	dataPtr2->lightDirection = XMFLOAT3(0.0f, 0.0f, 1.0f);
-	dataPtr2->specularPower  = 32.0f;
-	dataPtr2->specularColor  = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
+	dataPtr2->lightDirection = XMFLOAT3(0.0f, -1.0f, 0.5f);
+
 
 	pD3D11DeviceContext->Unmap(m_pLightBuffer, 0);
 

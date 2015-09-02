@@ -35,6 +35,7 @@ void RenderSystem::v_Render()
 	m_Fire.Render(m_pD3D11DeviceContext, m_Matrix.model, m_Matrix.view, m_Matrix.proj);
 
 	TurnBlendingOff();
+
 	TurnZBufferOn();
 
 	DrawInfo();

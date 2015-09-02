@@ -58,8 +58,7 @@ private:
 		XMFLOAT4 ambientColor;
 		XMFLOAT4 diffuseColor;
 		XMFLOAT3 lightDirection;
-		float specularPower;
-		XMFLOAT4 specularColor;
+		FLOAT  padding;
 	};
 	LightBuffer cbLight;
 

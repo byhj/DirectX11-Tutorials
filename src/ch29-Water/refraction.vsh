@@ -8,7 +8,7 @@ cbuffer MatrixBuffer : register(b0)
 
 cbuffer ClipPlaneBufer
 {
-  float4 clipPlane= float4(0.0f, -1.0f, 0.0f, 2.75f + 0.1f);
+  float4 clipPlane = float4(0.0f, -1.0f, 0.0f, 2.75f + 0.1f);
 };
 
 struct VS_IN
