@@ -28,18 +28,49 @@ void RenderSystem::v_Render()
 	rot +=  m_Timer.GetDeltaTime();
 	UpdateScene();
 
-	BeginScene();
+	//////////////////////Render Refraction To Texture/////////////////////////////
 
-	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
-	m_pD3D11DeviceContext->RSSetState(m_pRasterState);
+	// Setup a clipping plane based on the height of the water to clip everything above it.
+	XMFLOAT4 clipPlane = XMFLOAT4(0.0f, -1.0f, 0.0f, 2.75f + 0.1f);
+	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRefractRTV, m_pDepthStencilView);
+	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
+	
+	XMMATRIX World = XMMatrixTranslation(0.0f, 2.0f, 0.0f);
+	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(World));
+	bathModel.Render(m_pD3D11DeviceContext, m_Matrix.model, m_Matrix.view, m_Matrix.proj);
+
+
+	//////////////////////Render Reflection To Texture////////////////////////////////
+	
+	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pReflectRTV, m_pDepthStencilView);
+	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
+	// Translate to where the wall model will be rendered.
+	World = XMMatrixTranslation(0.0f, 6.0f, 8.0f);
+
+	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(World));
+	XMFLOAT4X4 View  = m_Camera.GetViewMatrix();
+	XMFLOAT3 camPos = m_Camera.GetPos();
+	camPos.y =  -camPos.y;
+	XMVECTOR pos    = XMLoadFloat3(&camPos);
+	XMVECTOR target = XMVectorZero();
+	XMVECTOR up     = XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);
+	XMMATRIX reflectMat = XMMatrixLookAtLH(pos, target, up);
+	XMFLOAT4X4 Reflect;
+	XMStoreFloat4x4(&Reflect, XMMatrixTranspose(reflectMat));
+	m_Matrix.view = Reflect;
+	wallModel.Render(m_pD3D11DeviceContext, m_Matrix.model, m_Matrix.view, m_Matrix.proj);
+
+	///////////////////////////////Render Scene///////////////////////////////////////
+
+	BeginScene();
 
 	m_Matrix.view = m_Camera.GetViewMatrix();
 
 	/////////////////////Render the scene Model//////////////////////////////
 	XMMATRIX Model = XMMatrixTranslation(0.0f, 1.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-
 	groundModel.Render(m_pD3D11DeviceContext, m_Matrix.model, m_Matrix.view, m_Matrix.proj);
+	
 	Model = XMMatrixTranslation(0.0f, 6.0f, 8.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
 	wallModel.Render(m_pD3D11DeviceContext, m_Matrix.model, m_Matrix.view, m_Matrix.proj);
@@ -48,12 +79,17 @@ void RenderSystem::v_Render()
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
 	bathModel.Render(m_pD3D11DeviceContext, m_Matrix.model, m_Matrix.view, m_Matrix.proj);
 
+	/////////////////////////////////////////////////////////////////////////////
+
+
 	Model = XMMatrixTranslation(0.0f, 2.75f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	waterModel.Render(m_pD3D11DeviceContext, m_Matrix.model, m_Matrix.view, m_Matrix.proj);
+	m_pD3D11DeviceContext->PSSetShaderResources(1, 1, &m_pReflectSRV);
+	m_pD3D11DeviceContext->PSSetShaderResources(2, 1, &m_pRefractSRV);
+	waterModel.Render(m_pD3D11DeviceContext, m_Matrix.model, m_Matrix.view, m_Matrix.proj, Reflect);
 
-	/////////////////////////////////////////////////////////////////////////////
 	DrawInfo();
+
 	EndScene();
 
 }
@@ -91,6 +127,7 @@ void  RenderSystem::v_OnMouseWheel(WPARAM btnState, int x, int y)
 {
 	m_Camera.OnMouseWheel(btnState, x, y, GetAspect());
 }
+
 void RenderSystem::init_device()
 {
 
@@ -189,32 +226,7 @@ void RenderSystem::init_device()
 	hr = m_pD3D11Device->CreateDepthStencilView(m_pDepthStencilBuffer, &depthStencilViewDesc, &m_pDepthStencilView);
 	DebugHR(hr);
 
-	/*
-	// ////////////Clear the second depth stencil state before setting the parameters.//////////////////////
-	D3D11_DEPTH_STENCIL_DESC depthDisabledStencilDesc;
-	ZeroMemory(&depthDisabledStencilDesc, sizeof(depthDisabledStencilDesc));
-	// Now create a second depth stencil state which turns off the Z buffer for 2D rendering.  The only difference is
-	// that DepthEnable is set to false, all other parameters are the same as the other depth stencil state.
-	depthDisabledStencilDesc.DepthEnable = false;
-	depthDisabledStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	depthDisabledStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
-	depthDisabledStencilDesc.StencilEnable = true;
-	depthDisabledStencilDesc.StencilReadMask = 0xFF;
-	depthDisabledStencilDesc.StencilWriteMask = 0xFF;
-	depthDisabledStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	depthDisabledStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
-	depthDisabledStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-	depthDisabledStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-	depthDisabledStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	depthDisabledStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
-	depthDisabledStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-	depthDisabledStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
-	// Create the state using the device.
-	hr = m_pD3D11Device->CreateDepthStencilState(&depthDisabledStencilDesc, &m_pDepthDisabledStencilState);
-	DebugHR(hr);
-
-	*/
 	///////////////////////////////////////////////////////////////////////////////////////////
 	D3D11_RASTERIZER_DESC rasterDesc;
 	rasterDesc.AntialiasedLineEnable = false;
@@ -227,6 +239,7 @@ void RenderSystem::init_device()
 	rasterDesc.MultisampleEnable = false;
 	rasterDesc.ScissorEnable = false;
 	rasterDesc.SlopeScaledDepthBias = 0.0f;
+
 	///////////////////////////////////////////////////////////////////////////////
 
 	unsigned int numModes, i, numerator, denominator, stringLength;
@@ -337,22 +350,23 @@ void RenderSystem::init_fbo()
 	textureDesc.MiscFlags = 0;
 
 	//Create the render target texture
-	result = m_pD3D11Device->CreateTexture2D(&textureDesc, NULL, &m_pRttRenderTargetTexture);
-
+	result = m_pD3D11Device->CreateTexture2D(&textureDesc, NULL, &m_pReflectRTT);
+	result = m_pD3D11Device->CreateTexture2D(&textureDesc, NULL, &m_pRefractRTT);
 
 	//Setup the description of the render target view
 	renderTargetViewDesc.Format = textureDesc.Format;
 	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 	renderTargetViewDesc.Texture2D.MipSlice = 0;
 
-	result = m_pD3D11Device->CreateRenderTargetView(m_pRttRenderTargetTexture, &renderTargetViewDesc, &m_pRttRenderTargetView);
+	result = m_pD3D11Device->CreateRenderTargetView(m_pReflectRTT, &renderTargetViewDesc, &m_pReflectRTV);
+	result = m_pD3D11Device->CreateRenderTargetView(m_pRefractRTT, &renderTargetViewDesc, &m_pRefractRTV);
 
 	shaderResourceViewDesc.Format = textureDesc.Format;
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
-	result = m_pD3D11Device->CreateShaderResourceView(m_pRttRenderTargetTexture, &shaderResourceViewDesc, &m_pRttShaderResourceView);
-
+	result = m_pD3D11Device->CreateShaderResourceView(m_pReflectRTT, &shaderResourceViewDesc, &m_pReflectSRV);
+	result = m_pD3D11Device->CreateShaderResourceView(m_pRefractRTT, &shaderResourceViewDesc, &m_pRefractSRV);
 }
 
 void RenderSystem::TurnZBufferOn()

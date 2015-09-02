@@ -13,6 +13,9 @@ void Ground::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &
 	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0);
 	pD3D11DeviceContext->VSSetConstantBuffers(0, 1, &m_pMVPBuffer);
 
+	int lightSlot = 0;
+	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, &m_pLightBuffer);
+
 	unsigned int stride;
 	unsigned int offset;
 	stride = sizeof(Vertex);
@@ -127,8 +130,7 @@ bool Ground::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11
 
 	pD3D11DeviceContext->Unmap(m_pLightBuffer, 0);
 
-	int lightSlot = 0;
-	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, &m_pLightBuffer);
+
 
 	return true;
 }

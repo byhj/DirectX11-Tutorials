@@ -97,23 +97,25 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="reflect.psh">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="reflect.vsh">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="light.vsh">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="light.psh">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="water.vsh">
+    <None Include="refraction.vsh">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="water.psh">
+    <None Include="refraction.psh">
       <Filter>Resource Files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="water.psh">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="water.vsh">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

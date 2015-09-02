@@ -50,10 +50,16 @@
   <ItemGroup>
     <None Include="light.psh" />
     <None Include="light.vsh" />
-    <None Include="reflect.psh" />
-    <None Include="reflect.vsh" />
-    <None Include="water.psh" />
-    <None Include="water.vsh" />
+    <None Include="refraction.psh" />
+    <None Include="refraction.vsh" />
+    <FxCompile Include="water.psh">
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="water.vsh">
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A7FCD5BC-F4EF-43C6-8AD8-D378CE38E41F}</ProjectGuid>

@@ -69,9 +69,12 @@ private:
 	ID3D11DepthStencilState  *m_pDepthDisabledStencilState;
 	ID3D11RasterizerState   *m_pRasterState        = nullptr;
 
-	ID3D11Texture2D          *m_pRttRenderTargetTexture;
-	ID3D11RenderTargetView   *m_pRttRenderTargetView;
-	ID3D11ShaderResourceView *m_pRttShaderResourceView;
+	ID3D11Texture2D          *m_pReflectRTT;
+	ID3D11Texture2D          *m_pRefractRTT;
+	ID3D11RenderTargetView   *m_pReflectRTV;
+	ID3D11RenderTargetView   *m_pRefractRTV;
+	ID3D11ShaderResourceView *m_pReflectSRV;
+	ID3D11ShaderResourceView *m_pRefractSRV;
 
 	MatrixBuffer m_Matrix;
 };
