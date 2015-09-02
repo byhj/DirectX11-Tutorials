@@ -8,6 +8,7 @@
 #include "d3d/Camera.h"
 
 #include "cube.h"
+#include "plane.h"
 
 namespace byhj
 {
@@ -42,10 +43,13 @@ private:
 	void DrawInfo(); 
 
 	byhj::Cube cube;
+	byhj::Plane m_SmallPlane;
+	byhj::Plane m_FullPlane;
+
 	d3d::Font m_Font;
 	d3d::Timer m_Timer;
 	d3d::Camera m_Camera;
-
+	
 	float fps = 0.0f;
 	int m_videoCardMemory;
 	std::wstring m_videoCardInfo;

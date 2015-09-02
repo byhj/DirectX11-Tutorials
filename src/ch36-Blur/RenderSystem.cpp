@@ -40,10 +40,39 @@ void RenderSystem::v_Render()
 
 	cube.Render(m_pD3D11DeviceContext, m_Matrix);
 
+	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRttRenderTargetView, m_pDepthStencilView);
+	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRttRenderTargetView, bgColor);
+	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+	m_SmallPlane.Render(m_pD3D11DeviceContext, m_pRttShaderResourceView,
+		                m_Matrix.model, m_Matrix.view, m_Matrix.proj);
+
+
+	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRttRenderTargetView, m_pDepthStencilView);
+	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRttRenderTargetView, bgColor);
+	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	
+	m_SmallPlane.Render(m_pD3D11DeviceContext, m_pRttShaderResourceView,
+		m_Matrix.model, m_Matrix.view, m_Matrix.proj);
+
+	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRttRenderTargetView, m_pDepthStencilView);
+	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRttRenderTargetView, bgColor);
+	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+	m_SmallPlane.Render(m_pD3D11DeviceContext, m_pRttShaderResourceView,
+		m_Matrix.model, m_Matrix.view, m_Matrix.proj);
+
+	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRttRenderTargetView, m_pDepthStencilView);
+	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRttRenderTargetView, bgColor);
+	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+	m_SmallPlane.Render(m_pD3D11DeviceContext, m_pRttShaderResourceView,
+		m_Matrix.model, m_Matrix.view, m_Matrix.proj);
 
 	BeginScene();
 
-	cube.Render(m_pD3D11DeviceContext, m_Matrix);
+	m_FullPlane.Render(m_pD3D11DeviceContext, m_pRttShaderResourceView,
+		m_Matrix.model, m_Matrix.view, m_Matrix.proj);
 
 	DrawInfo();
 
@@ -295,6 +324,14 @@ void RenderSystem::init_object()
 	m_Camera.SetRadius(5.0f);
 
 	cube.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd());
+
+	m_SmallPlane.init_window(-1.0f, 1.0f, 1.0f, 1.0f, GetAspect());
+	m_SmallPlane.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
+	m_SmallPlane.init_shader(m_pD3D11Device, GetHwnd());
+
+	m_FullPlane.init_window(-1.0f, 1.0f, 2.0f, 2.0f, GetAspect());
+	m_FullPlane.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
+	m_FullPlane.init_shader(m_pD3D11Device, GetHwnd());
 
 }
 

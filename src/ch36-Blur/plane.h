@@ -1,32 +1,41 @@
-#include "d3d/App.h"
+#ifndef PLANE_H
+#define PLANE_H
+
 #include "d3d/Shader.h"
+#include "d3d/d3dDebug.h"
+#include <d3d11.h>
+#include <xnamath.h>
 
 namespace byhj
 {
 
-
 class Plane
 {
 public:
-	Plane();
-	~Plane();
+	Plane()
+	{
+		m_pInputLayout        = NULL;
+		m_pMVPBuffer          = NULL;
+		m_pVertexBuffer       = NULL;
+		m_pIndexBuffer        = NULL;
+	}
 
-	void Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView *pPlaneTexSRV, const XMFLOAT4X4 &Model,
-		const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj);
-	void Shutdown();
+	void Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView *pTexture,const XMFLOAT4X4 &Model,  
+		        const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj);
 
-	bool LoadModel(char *modelFile);
+	void shutdown()
+	{
+		    ReleaseCOM(m_pRenderTargetView  )
+			ReleaseCOM(m_pMVPBuffer         )
+			ReleaseCOM(m_pVertexBuffer      )
+			ReleaseCOM(m_pIndexBuffer       )
+	}
+
+	void init_window(float posX, float posY, float width, float height, float aspect);
 	bool init_buffer (ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext);
 	bool init_shader (ID3D11Device *pD3D11Device, HWND hWnd);
-	void init_texture(ID3D11Device *pD3D11Device, LPCWSTR texFile, ID3D11ShaderResourceView *m_pTexture);
 
 private:
-
-	struct CameraBuffer
-	{
-		XMFLOAT3 camPos;
-		float padding;
-	};
 
 	struct MatrixBuffer
 	{
@@ -37,46 +46,40 @@ private:
 	};
 	MatrixBuffer cbMatrix;
 
+	struct  Vertex
+	{
+		XMFLOAT3 Pos;
+		XMFLOAT2 Tex;
+	};
 	struct LightBuffer
 	{
 		XMFLOAT4 ambientColor;
 		XMFLOAT4 diffuseColor;
 		XMFLOAT3 lightDirection;
-		float specularPower;
-		XMFLOAT4 specularColor;
+		float padding;
 	};
 	LightBuffer cbLight;
 
-
-	struct ModelVertex
-	{
-		float x, y, z;
-		float tu, tv;
-		float nx, ny, nz;
-	};
-	ModelVertex  *pModelVertex;
-
-	struct Vertex
-	{
-		XMFLOAT3 Pos;
-		XMFLOAT2 Tex;
-		XMFLOAT3 Normal;
-	};
-
 	ID3D11RenderTargetView   *m_pRenderTargetView;
 	ID3D11Buffer             *m_pMVPBuffer;
-	ID3D11Buffer             *m_pLightBuffer;
-	ID3D11Buffer             *m_CameraBuffer;
 	ID3D11Buffer             *m_pVertexBuffer;
 	ID3D11Buffer             *m_pIndexBuffer;
-	ID3D11ShaderResourceView *m_pTexture;
 	ID3D11SamplerState       *m_pTexSamplerState;
 	ID3D11InputLayout        *m_pInputLayout;
+	ID3D11Buffer             *m_pLightBuffer      = nullptr;
 
 	int m_VertexCount;
 	int m_IndexCount;
-	d3d::Shader PlaneShader;
+
+    float m_posX  ;
+	float m_posY  ; 
+	float m_width ; 
+	float m_height;
+	float m_aspect;
+	d3d::Shader D3DRTTShader;
 };
 
 
 }
+
+#endif
