@@ -79,33 +79,34 @@
   <ItemGroup>
     <None Include="cube.psh" />
     <None Include="cube.vsh" />
-    <None Include="fade.psh" />
-    <None Include="fade.vsh" />
     <None Include="horizontalblur.psh" />
     <None Include="horizontalblur.vsh" />
     <None Include="verticalblur.psh" />
     <None Include="verticalblur.vsh" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\include\d3d\d3dApp.h" />
-    <ClInclude Include="..\..\include\d3d\d3dCamera.h" />
-    <ClInclude Include="..\..\include\d3d\d3dDebug.h" />
-    <ClInclude Include="..\..\include\d3d\d3dFont.h" />
-    <ClInclude Include="..\..\include\d3d\d3dShader.h" />
-    <ClInclude Include="..\..\include\d3d\d3dTimer.h" />
+    <ClInclude Include="..\..\include\d3d\App.h" />
+    <ClInclude Include="..\..\include\d3d\Camera.h" />
+    <ClInclude Include="..\..\include\d3d\Font.h" />
+    <ClInclude Include="..\..\include\d3d\RTT.h" />
+    <ClInclude Include="..\..\include\d3d\Shader.h" />
+    <ClInclude Include="..\..\include\d3d\Timer.h" />
+    <ClInclude Include="..\..\include\d3d\Utility.h" />
     <ClInclude Include="cube.h" />
-    <ClInclude Include="fade.h" />
+    <ClInclude Include="plane.h" />
     <ClInclude Include="RenderSystem.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\include\d3d\d3dApp.cpp" />
-    <ClCompile Include="..\..\include\d3d\d3dCamera.cpp" />
-    <ClCompile Include="..\..\include\d3d\d3dFont.cpp" />
-    <ClCompile Include="..\..\include\d3d\d3dShader.cpp" />
-    <ClCompile Include="..\..\include\d3d\d3dTimer.cpp" />
+    <ClCompile Include="..\..\include\d3d\App.cpp" />
+    <ClCompile Include="..\..\include\d3d\Camera.cpp" />
+    <ClCompile Include="..\..\include\d3d\Font.cpp" />
+    <ClCompile Include="..\..\include\d3d\RTT.cpp" />
+    <ClCompile Include="..\..\include\d3d\Shader.cpp" />
+    <ClCompile Include="..\..\include\d3d\Timer.cpp" />
+    <ClCompile Include="..\..\include\d3d\Utility.cpp" />
     <ClCompile Include="ch36-Blur.cpp" />
     <ClCompile Include="cube.cpp" />
-    <ClCompile Include="fade.cpp" />
+    <ClCompile Include="plane.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

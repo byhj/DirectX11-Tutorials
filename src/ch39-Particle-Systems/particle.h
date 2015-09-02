@@ -105,7 +105,7 @@ private:
 	int m_VertexCount;
 	int m_IndexCount;
     Vertex* m_vertices;
-	Shader ParticleShader;
+	d3d::Shader ParticleShader;
 };
 
 }

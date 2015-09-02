@@ -1,17 +1,10 @@
-////////////////////////////////////////////////////////////////////////////////
-// Filename: horizontalblur.vs
-////////////////////////////////////////////////////////////////////////////////
-
-
-/////////////
-// GLOBALS //
-/////////////
 cbuffer MatrixBuffer
 {
-	matrix worldMatrix;
-	matrix viewMatrix;
-	matrix projectionMatrix;
+	matrix world;
+	matrix view;
+	matrix proj;
 };
+
 
 cbuffer ScreenSizeBuffer
 {
@@ -20,19 +13,17 @@ cbuffer ScreenSizeBuffer
 };
 
 
-//////////////
-// TYPEDEFS //
-//////////////
-struct VertexInputType
+struct VS_IN
 {
-    float4 position : POSITION;
-    float2 tex : TEXCOORD0;
+	 float4 Pos       :POSITION;
+	 float2 Tex       :TEXCOORD0;
+	 float3 Normal    :NORMAL;
 };
 
-struct PixelInputType
+struct VS_OUT
 {
-    float4 position : SV_POSITION;
-    float2 tex : TEXCOORD0;
+    float4 Pos : SV_POSITION;
+    float2 Tex : TEXCOORD0;
 	float2 texCoord1 : TEXCOORD1;
 	float2 texCoord2 : TEXCOORD2;
 	float2 texCoord3 : TEXCOORD3;
@@ -44,40 +35,32 @@ struct PixelInputType
 	float2 texCoord9 : TEXCOORD9;
 };
 
-
-////////////////////////////////////////////////////////////////////////////////
-// Vertex Shader
-////////////////////////////////////////////////////////////////////////////////
 PixelInputType HorizontalBlurVertexShader(VertexInputType input)
 {
-    PixelInputType output;
+    VS_OUT vs_out;
+
 	float texelSize;
+    vs_in.Pos.w = 1.0f;
 
-
-	// Change the position vector to be 4 units for proper matrix calculations.
-    input.position.w = 1.0f;
-
-	// Calculate the position of the vertex against the world, view, and projection matrices.
-    output.position = mul(input.position, worldMatrix);
-    output.position = mul(output.position, viewMatrix);
-    output.position = mul(output.position, projectionMatrix);
+    vs_out.Pos = mul(vs_in.Pos, world);
+    vs_out.Pos = mul(vs_out.Pos, view);
+    vs_out.Pos = mul(vs_out.Pos, proj);
     
-	// Store the texture coordinates for the pixel shader.
-	output.tex = input.tex;
-    
-	// Determine the floating point size of a texel for a screen with this specific width.
+    vs_out.Tex = vs_in.Tex;
+
+	// Determine the floating point size of a texel for a screen with this specific height.
 	texelSize = 1.0f / screenWidth;
 
-	// Create UV coordinates for the pixel and its four horizontal neighbors on either side.
-	output.texCoord1 = input.tex + float2(texelSize * -4.0f, 0.0f);
-	output.texCoord2 = input.tex + float2(texelSize * -3.0f, 0.0f);
-	output.texCoord3 = input.tex + float2(texelSize * -2.0f, 0.0f);
-	output.texCoord4 = input.tex + float2(texelSize * -1.0f, 0.0f);
-	output.texCoord5 = input.tex + float2(texelSize *  0.0f, 0.0f);
-	output.texCoord6 = input.tex + float2(texelSize *  1.0f, 0.0f);
-	output.texCoord7 = input.tex + float2(texelSize *  2.0f, 0.0f);
-	output.texCoord8 = input.tex + float2(texelSize *  3.0f, 0.0f);
-	output.texCoord9 = input.tex + float2(texelSize *  4.0f, 0.0f);
+	// Create UV coordinates for the pixel and its four vertical neighbors on either side.
+	vs_out.texCoord1 = vs_in.Tex + float2(0.0f, texelSize * -4.0f);
+	vs_out.texCoord2 = vs_in.Tex + float2(0.0f, texelSize * -3.0f);
+	vs_out.texCoord3 = vs_in.Tex + float2(0.0f, texelSize * -2.0f);
+	vs_out.texCoord4 = vs_in.Tex + float2(0.0f, texelSize * -1.0f);
+	vs_out.texCoord5 = vs_in.Tex + float2(0.0f, texelSize *  0.0f);
+	vs_out.texCoord6 = vs_in.Tex + float2(0.0f, texelSize *  1.0f);
+	vs_out.texCoord7 = vs_in.Tex + float2(0.0f, texelSize *  2.0f);
+	vs_out.texCoord8 = vs_in.Tex + float2(0.0f, texelSize *  3.0f);
+	vs_out.texCoord9 = vs_in.Tex + float2(0.0f, texelSize *  4.0f);
 
-    return output;
+    return vs_out;
 }

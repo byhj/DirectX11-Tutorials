@@ -51,6 +51,14 @@ private:
 		XMFLOAT3 Pos;
 		XMFLOAT2 Tex;
 	};
+	struct LightBuffer
+	{
+		XMFLOAT4 ambientColor;
+		XMFLOAT4 diffuseColor;
+		XMFLOAT3 lightDirection;
+		float padding;
+	};
+	LightBuffer cbLight;
 
 	ID3D11RenderTargetView   *m_pRenderTargetView;
 	ID3D11Buffer             *m_pMVPBuffer;
@@ -58,7 +66,7 @@ private:
 	ID3D11Buffer             *m_pIndexBuffer;
 	ID3D11SamplerState       *m_pTexSamplerState;
 	ID3D11InputLayout        *m_pInputLayout;
-
+	ID3D11Buffer             *m_pLightBuffer      = nullptr;
 
 	int m_VertexCount;
 	int m_IndexCount;
@@ -68,7 +76,7 @@ private:
 	float m_width ; 
 	float m_height;
 	float m_aspect;
-	Shader D3DRTTShader;
+	d3d::Shader D3DRTTShader;
 };
 
 

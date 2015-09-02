@@ -38,49 +38,15 @@ void RenderSystem::v_Render()
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRttRenderTargetView, bgColor);
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-	cube.Render(m_pD3D11DeviceContext, m_Matrix.model, m_Matrix.view, m_Matrix.proj);
+	cube.Render(m_pD3D11DeviceContext, m_Matrix);
 
-	//Set normal render target view
-	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
-
-
-	static float fadeInTime = 3.0f;
-	static float accumulatedTime = 0.0f;
-	static float fadePercentage = 0.0f;
-	static bool fadeDone = false;
 
 	BeginScene();
-	if (fadeDone)
-	{
-		cube.Render(m_pD3D11DeviceContext, m_Matrix.model, m_Matrix.view, m_Matrix.proj);
-	}
-	else
-	{
-		TurnZBufferOff();
 
-		// Create an orthographic projection matrix for 2D rendering. 
-		Model = XMMatrixIdentity();
-		XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
+	cube.Render(m_pD3D11DeviceContext, m_Matrix);
 
-		XMMATRIX orthProj = XMMatrixOrthographicLH((float)m_ScreenWidth, (float)m_ScreenHeight, 0.1f, 1000.0f);
-		XMFLOAT4X4 orth;
-		XMStoreFloat4x4(&orth, XMMatrixTranspose(orthProj));
-		m_Fade.Render(m_pD3D11DeviceContext, m_pRttShaderResourceView, m_Matrix.model, m_Matrix.view, orth, fadePercentage);
-
-		TurnZBufferOn();
-
-		accumulatedTime += m_Timer.GetDeltaTime();
-		// While the time goes on increase the fade in amount by the time that is passing each frame.
-		if (accumulatedTime < fadeInTime)
-			fadePercentage = accumulatedTime / fadeInTime;
-		else
-		{
-			fadeDone = true;
-			// Set the percentage to 100%.
-			fadePercentage = 1.0f;
-		}
-	}
 	DrawInfo();
+
 	EndScene();
 }
 
@@ -282,7 +248,7 @@ void RenderSystem::init_device()
 void RenderSystem::BeginScene()
 {
 	//Render 
-	float bgColor[4] ={ 0.0f, 0.0f, 0.0f, 1.0f };
+	float bgColor[4] ={0.2f, 0.3f, 0.4f, 1.0f};
 
 	m_pD3D11DeviceContext->RSSetState(m_pRasterState);
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
@@ -328,12 +294,8 @@ void RenderSystem::init_object()
 	m_Font.init(m_pD3D11Device);
 	m_Camera.SetRadius(5.0f);
 
-	cube.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-	cube.init_shader(m_pD3D11Device, GetHwnd());
+	cube.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd());
 
-	m_Fade.init_window(-1.0f, 1.0f, 2.0f, 2.0f);
-	m_Fade.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-	m_Fade.init_shader(m_pD3D11Device, GetHwnd());
 }
 
 void RenderSystem::init_fbo()

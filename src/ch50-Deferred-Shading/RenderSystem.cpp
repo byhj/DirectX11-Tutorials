@@ -31,9 +31,11 @@ void RenderSystem::v_Render()
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
 	m_Matrix.view = m_Camera.GetViewMatrix();
 
-	float bgColor[4] ={ 0.5f, 0.5f, 0.5f, 1.0f };
-	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRttRenderTargetView, m_pDepthStencilView);
-	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRttRenderTargetView, bgColor);
+	float bgColor[4] ={ 0.0f, 0.0f, 0.0f, 1.0f };
+	m_pD3D11DeviceContext->OMSetRenderTargets(2, m_pColorRTV, m_pDepthStencilView);
+	for ( int i = 0; i!=2; ++i )
+	    m_pD3D11DeviceContext->ClearRenderTargetView(m_pColorRTV[i], bgColor);
+	
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 	m_Cube.Render(m_pD3D11DeviceContext, m_Matrix);
@@ -51,7 +53,7 @@ void RenderSystem::v_Render()
 	XMFLOAT4X4 orth;
 	XMStoreFloat4x4(&orth, XMMatrixTranspose(orthProj));
 
-	m_Rtt.Render(m_pD3D11DeviceContext, m_pRttShaderResourceView, m_Matrix.model, m_Matrix.view, orth);
+	m_Deferred.Render(m_pD3D11DeviceContext, m_pColorSRV, m_Matrix.model, m_Matrix.view, orth);
 
 	TurnZBufferOn();
 
@@ -308,10 +310,9 @@ void RenderSystem::init_object()
 	m_Cube.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd());
 	m_Font.init(m_pD3D11Device);
 
-	m_Rtt.init_window(500.0f / m_ScreenWidth, 500.0f / m_ScreenHeight,
-		              400.0f / m_ScreenWidth, 400.0f / m_ScreenHeight, GetAspect());
-	m_Rtt.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-	m_Rtt.init_shader(m_pD3D11Device, GetHwnd());
+	m_Deferred.init_window(-1.0f, 1.0f, 2.0f, 2.0f, GetAspect());
+	m_Deferred.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
+	m_Deferred.init_shader(m_pD3D11Device, GetHwnd());
 
 	m_Camera.SetRadius(5.0f);
 }
@@ -337,22 +338,26 @@ void RenderSystem::init_fbo()
 	textureDesc.MiscFlags = 0;
 
 	//Create the render target texture
-	result = m_pD3D11Device->CreateTexture2D(&textureDesc, NULL, &m_pRttRenderTargetTexture);
 
+	for ( int i = 0; i!=2; ++i)
+	  result = m_pD3D11Device->CreateTexture2D(&textureDesc, NULL, &m_pColorRTT[i]);
 
 	//Setup the description of the render target view
 	renderTargetViewDesc.Format = textureDesc.Format;
 	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 	renderTargetViewDesc.Texture2D.MipSlice = 0;
 
-	result = m_pD3D11Device->CreateRenderTargetView(m_pRttRenderTargetTexture, &renderTargetViewDesc, &m_pRttRenderTargetView);
+	for ( int i = 0; i!=2; ++i )
+	result = m_pD3D11Device->CreateRenderTargetView(m_pColorRTT[i], &renderTargetViewDesc, &m_pColorRTV[i]);
 
 	shaderResourceViewDesc.Format = textureDesc.Format;
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
-	result = m_pD3D11Device->CreateShaderResourceView(m_pRttRenderTargetTexture, &shaderResourceViewDesc, &m_pRttShaderResourceView);
 
+	for ( int i = 0; i!=2; ++i )
+	result = m_pD3D11Device->CreateShaderResourceView(m_pColorRTT[i], &shaderResourceViewDesc, &m_pColorSRV[i]);
+		
 }
 
 void RenderSystem::TurnZBufferOn()

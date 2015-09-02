@@ -6,7 +6,7 @@
 #include "d3d/Font.h"
 #include "d3d/Timer.h"
 #include "d3d/Camera.h"
-#include "d3d/d3dRTT.h"
+#include "d3d/RTT.h"
 
 #include "Cube.h"
 #include "deferred.h"
@@ -44,10 +44,12 @@ private:
 	void DrawInfo(); 
 
 	byhj::Cube m_Cube;
+	byhj::Deferred m_Deferred;
+
 	d3d::Font m_Font;
 	d3d::Timer m_Timer;
 	d3d::Camera m_Camera;
-	byhj::D3DRTT    m_Rtt;
+    	
 	float fps = 0.0f;
 	int m_videoCardMemory;
 	std::wstring m_videoCardInfo;
@@ -62,9 +64,10 @@ private:
 	ID3D11DepthStencilState  *m_pDepthDisabledStencilState;
 	ID3D11RasterizerState   *m_pRasterState        = nullptr;
 
-	ID3D11Texture2D          *m_pRttRenderTargetTexture;
-	ID3D11RenderTargetView   *m_pRttRenderTargetView;
-	ID3D11ShaderResourceView *m_pRttShaderResourceView;
+
+	ID3D11Texture2D          *m_pColorRTT[2];
+	ID3D11RenderTargetView   *m_pColorRTV[2];
+	ID3D11ShaderResourceView *m_pColorSRV[2];
 
 	MatrixBuffer m_Matrix;
 };

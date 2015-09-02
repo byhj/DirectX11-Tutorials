@@ -86,6 +86,8 @@
     <ClInclude Include="..\..\include\d3d\d3dShader.h" />
     <ClInclude Include="..\..\include\d3d\d3dTimer.h" />
     <ClInclude Include="..\..\include\d3d\xnacollision.h" />
+    <ClInclude Include="cube.h" />
+    <ClInclude Include="RenderSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\include\d3d\d3dApp.cpp" />
@@ -96,6 +98,12 @@
     <ClCompile Include="..\..\include\d3d\d3dTimer.cpp" />
     <ClCompile Include="..\..\include\d3d\xnacollision.cpp" />
     <ClCompile Include="ch47-Picking.cpp" />
+    <ClCompile Include="cube.cpp" />
+    <ClCompile Include="RenderSystem.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cube.psh" />
+    <None Include="cube.vsh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

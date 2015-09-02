@@ -23,6 +23,9 @@ void Deferred::Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderReso
 	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
 	pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
 
+	int lightSlot = 0;
+	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, &m_pLightBuffer);
+
 	unsigned int stride;
 	unsigned int offset;
 	stride = sizeof(Vertex); 
@@ -31,7 +34,7 @@ void Deferred::Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderReso
 	pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
 	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	pD3D11DeviceContext->PSSetShaderResources(0, 2, &pTexture[0]);  
+	pD3D11DeviceContext->PSSetShaderResources(0, 2, pTexture);  
 	pD3D11DeviceContext->PSSetSamplers( 0, 1, &m_pTexSamplerState );
 
 	D3DRTTShader.use(pD3D11DeviceContext);
@@ -131,15 +134,46 @@ bool Deferred::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D
 
 	////////////////////////////////MVP Buffer//////////////////////////////////////
 
-	D3D11_BUFFER_DESC mvpBufferDesc;	
-	ZeroMemory(&mvpBufferDesc, sizeof(D3D11_BUFFER_DESC));
+	D3D11_BUFFER_DESC mvpBufferDesc;
+	ZeroMemory(&mvpBufferDesc, sizeof( D3D11_BUFFER_DESC ));
 	mvpBufferDesc.Usage          = D3D11_USAGE_DEFAULT;
-	mvpBufferDesc.ByteWidth      = sizeof(MatrixBuffer);
+	mvpBufferDesc.ByteWidth      = sizeof( MatrixBuffer );
 	mvpBufferDesc.BindFlags      = D3D11_BIND_CONSTANT_BUFFER;
 	mvpBufferDesc.CPUAccessFlags = 0;
 	mvpBufferDesc.MiscFlags      = 0;
 	hr = pD3D11Device->CreateBuffer(&mvpBufferDesc, NULL, &m_pMVPBuffer);
 	DebugHR(hr);
+
+
+	D3D11_BUFFER_DESC lightBufferDesc;
+	ZeroMemory(&lightBufferDesc, sizeof( D3D11_BUFFER_DESC ));
+	lightBufferDesc.Usage          = D3D11_USAGE_DYNAMIC;
+	lightBufferDesc.ByteWidth      = sizeof( LightBuffer );
+	lightBufferDesc.BindFlags      = D3D11_BIND_CONSTANT_BUFFER;
+	lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	lightBufferDesc.MiscFlags      = 0;
+
+	hr = pD3D11Device->CreateBuffer(&lightBufferDesc, NULL, &m_pLightBuffer);
+	DebugHR(hr);
+
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	// Lock the light constant buffer so it can be written to.
+	hr = pD3D11DeviceContext->Map(m_pLightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	DebugHR(hr);
+
+	// Get a pointer to the data in the constant buffer.
+	LightBuffer *dataPtr2 = ( LightBuffer* )mappedResource.pData;
+
+	dataPtr2->ambientColor   = XMFLOAT4(0.15f, 0.15f, 0.15f, 0.15f);
+	dataPtr2->diffuseColor   = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	dataPtr2->lightDirection = XMFLOAT3(1.0f, 0.0f, 0.0f);
+	dataPtr2->padding = 0.0f;
+
+	pD3D11DeviceContext->Unmap(m_pLightBuffer, 0);
+
+
+
+	/////////////////////////////////////////////////////////////////////////////////
 
 	// Create a texture sampler state description.
 	D3D11_SAMPLER_DESC samplerDesc;
@@ -189,8 +223,8 @@ bool Deferred::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
 
 	D3DRTTShader.init(pD3D11Device, hWnd);
-	D3DRTTShader.attachVS(L"light.vsh", pInputLayoutDesc, numElements);
-	D3DRTTShader.attachPS(L"light.psh");
+	D3DRTTShader.attachVS(L"deferred.vsh", pInputLayoutDesc, numElements);
+	D3DRTTShader.attachPS(L"deferred.psh");
 	D3DRTTShader.end();
 
 	return true;

@@ -8,7 +8,6 @@
 #include "d3d/Camera.h"
 
 #include "cube.h"
-#include "fade.h"
 
 namespace byhj
 {
@@ -43,7 +42,6 @@ private:
 	void DrawInfo(); 
 
 	byhj::Cube cube;
-	byhj::Fade m_Fade;
 	d3d::Font m_Font;
 	d3d::Timer m_Timer;
 	d3d::Camera m_Camera;
