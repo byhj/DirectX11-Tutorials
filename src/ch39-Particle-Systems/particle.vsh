@@ -17,7 +17,7 @@ struct VS_OUT
 {
     float4 Pos  : SV_POSITION;
     float2 Tex  : TEXCOORD0;
-   float4 Color : TEXCOORD1;
+    float4 Color : TEXCOORD1;
 };
 
 VS_OUT VS(VS_IN vs_in)

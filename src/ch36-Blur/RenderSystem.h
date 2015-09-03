@@ -9,6 +9,9 @@
 
 #include "cube.h"
 #include "plane.h"
+#include "PlaneShader.h"
+#include "VerticalShader.h"
+#include "HorizontalShader.h"
 
 namespace byhj
 {
@@ -45,6 +48,9 @@ private:
 	byhj::Cube cube;
 	byhj::Plane m_SmallPlane;
 	byhj::Plane m_FullPlane;
+	byhj::PlaneShader m_PlaneShader;
+	byhj::HorizontalShader m_HorizontalShader;
+	byhj::VerticalShader m_VerticalShader;
 
 	d3d::Font m_Font;
 	d3d::Timer m_Timer;
@@ -54,15 +60,15 @@ private:
 	int m_videoCardMemory;
 	std::wstring m_videoCardInfo;
 
-	IDXGISwapChain          *m_pSwapChain          = nullptr;     
-	ID3D11Device            *m_pD3D11Device        = nullptr;
-	ID3D11DeviceContext     *m_pD3D11DeviceContext = nullptr;
-	ID3D11RenderTargetView  *m_pRenderTargetView   = nullptr;
-	ID3D11DepthStencilView  *m_pDepthStencilView   = nullptr;
-	ID3D11Texture2D         *m_pDepthStencilBuffer = nullptr;
+	IDXGISwapChain           *m_pSwapChain          = nullptr;     
+	ID3D11Device             *m_pD3D11Device        = nullptr;
+	ID3D11DeviceContext      *m_pD3D11DeviceContext = nullptr;
+	ID3D11RenderTargetView   *m_pRenderTargetView   = nullptr;
+	ID3D11DepthStencilView   *m_pDepthStencilView   = nullptr;
+	ID3D11Texture2D          *m_pDepthStencilBuffer = nullptr;
 	ID3D11DepthStencilState  *m_pDepthStencilState;
 	ID3D11DepthStencilState  *m_pDepthDisabledStencilState;
-	ID3D11RasterizerState   *m_pRasterState        = nullptr;
+	ID3D11RasterizerState    *m_pRasterState        = nullptr;
 
 	ID3D11Texture2D          *m_pRttRenderTargetTexture;
 	ID3D11RenderTargetView   *m_pRttRenderTargetView;

@@ -9,7 +9,7 @@ cbuffer MatrixBuffer
 
 cbuffer ScreenSizeBuffer
 {
-	float screenHeight;
+	float screenHeight = 400.0f;
 	float3 padding;
 };
 
@@ -17,7 +17,6 @@ struct VS_IN
 {
 	 float4 Pos       :POSITION;
 	 float2 Tex       :TEXCOORD0;
-	 float3 Normal    :NORMAL;
 };
 
 struct VS_OUT

@@ -51,6 +51,8 @@ float4 PS(VS_OUTPUT ps_in) : SV_TARGET
 				color = saturate(color);
 			}
 		}
+		else
+		  color = float4(0.0f, 0.0f, 0.0f, 1.0f);
    }
 
    float4 texColor = colorTex.Sample(texSampleWrap, ps_in.Tex);

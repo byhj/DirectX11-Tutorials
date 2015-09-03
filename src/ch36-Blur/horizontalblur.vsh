@@ -8,7 +8,7 @@ cbuffer MatrixBuffer
 
 cbuffer ScreenSizeBuffer
 {
-	float screenWidth;
+	float screenWidth = 500.0;
 	float3 padding;
 };
 
@@ -17,7 +17,6 @@ struct VS_IN
 {
 	 float4 Pos       :POSITION;
 	 float2 Tex       :TEXCOORD0;
-	 float3 Normal    :NORMAL;
 };
 
 struct VS_OUT
@@ -35,7 +34,7 @@ struct VS_OUT
 	float2 texCoord9 : TEXCOORD9;
 };
 
-PixelInputType HorizontalBlurVertexShader(VertexInputType input)
+VS_OUT VS(VS_IN vs_in)
 {
     VS_OUT vs_out;
 

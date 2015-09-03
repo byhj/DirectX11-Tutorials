@@ -95,8 +95,11 @@
     <ClInclude Include="..\..\include\d3d\Timer.h" />
     <ClInclude Include="..\..\include\d3d\Utility.h" />
     <ClInclude Include="cube.h" />
+    <ClInclude Include="HorizontalShader.h" />
     <ClInclude Include="plane.h" />
+    <ClInclude Include="PlaneShader.h" />
     <ClInclude Include="RenderSystem.h" />
+    <ClInclude Include="VerticalShader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\include\d3d\App.cpp" />
@@ -108,8 +111,11 @@
     <ClCompile Include="..\..\include\d3d\Utility.cpp" />
     <ClCompile Include="ch36-Blur.cpp" />
     <ClCompile Include="cube.cpp" />
+    <ClCompile Include="HorizontalShader.cpp" />
     <ClCompile Include="plane.cpp" />
+    <ClCompile Include="PlaneShader.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
+    <ClCompile Include="VerticalShader.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

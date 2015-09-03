@@ -36,43 +36,17 @@ void RenderSystem::v_Render()
 
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRttRenderTargetView, m_pDepthStencilView);
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRttRenderTargetView, bgColor);
-	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	cube.Render(m_pD3D11DeviceContext, m_Matrix);
 
-	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRttRenderTargetView, m_pDepthStencilView);
-	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRttRenderTargetView, bgColor);
-	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-
-	m_SmallPlane.Render(m_pD3D11DeviceContext, m_pRttShaderResourceView,
-		                m_Matrix.model, m_Matrix.view, m_Matrix.proj);
-
-
-	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRttRenderTargetView, m_pDepthStencilView);
-	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRttRenderTargetView, bgColor);
-	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-	
-	m_SmallPlane.Render(m_pD3D11DeviceContext, m_pRttShaderResourceView,
-		m_Matrix.model, m_Matrix.view, m_Matrix.proj);
-
-	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRttRenderTargetView, m_pDepthStencilView);
-	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRttRenderTargetView, bgColor);
-	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-
-	m_SmallPlane.Render(m_pD3D11DeviceContext, m_pRttShaderResourceView,
-		m_Matrix.model, m_Matrix.view, m_Matrix.proj);
-
-	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRttRenderTargetView, m_pDepthStencilView);
-	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRttRenderTargetView, bgColor);
-	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-
-	m_SmallPlane.Render(m_pD3D11DeviceContext, m_pRttShaderResourceView,
-		m_Matrix.model, m_Matrix.view, m_Matrix.proj);
-
 	BeginScene();
 
-	m_FullPlane.Render(m_pD3D11DeviceContext, m_pRttShaderResourceView,
-		m_Matrix.model, m_Matrix.view, m_Matrix.proj);
+	Model = XMMatrixIdentity();
+	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
+
+	m_PlaneShader.Use(m_pD3D11DeviceContext, m_Matrix);
+	m_FullPlane.Render(m_pD3D11DeviceContext, m_pRttShaderResourceView);
 
 	DrawInfo();
 
@@ -333,6 +307,9 @@ void RenderSystem::init_object()
 	m_FullPlane.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
 	m_FullPlane.init_shader(m_pD3D11Device, GetHwnd());
 
+	m_PlaneShader.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd());
+	m_HorizontalShader.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd());
+	m_VerticalShader.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd());
 }
 
 void RenderSystem::init_fbo()

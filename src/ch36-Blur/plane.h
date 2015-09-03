@@ -14,21 +14,17 @@ class Plane
 public:
 	Plane()
 	{
-		m_pInputLayout        = NULL;
-		m_pMVPBuffer          = NULL;
+
 		m_pVertexBuffer       = NULL;
 		m_pIndexBuffer        = NULL;
 	}
 
-	void Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView *pTexture,const XMFLOAT4X4 &Model,  
-		        const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj);
+	void Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView *pTexture);
 
-	void shutdown()
+	void Shutdown()
 	{
-		    ReleaseCOM(m_pRenderTargetView  )
-			ReleaseCOM(m_pMVPBuffer         )
-			ReleaseCOM(m_pVertexBuffer      )
-			ReleaseCOM(m_pIndexBuffer       )
+		ReleaseCOM(m_pVertexBuffer      )
+		ReleaseCOM(m_pIndexBuffer       )
 	}
 
 	void init_window(float posX, float posY, float width, float height, float aspect);
@@ -37,36 +33,17 @@ public:
 
 private:
 
-	struct MatrixBuffer
-	{
-		XMFLOAT4X4  model;
-		XMFLOAT4X4  view;
-		XMFLOAT4X4  proj;
 
-	};
-	MatrixBuffer cbMatrix;
 
 	struct  Vertex
 	{
 		XMFLOAT3 Pos;
 		XMFLOAT2 Tex;
 	};
-	struct LightBuffer
-	{
-		XMFLOAT4 ambientColor;
-		XMFLOAT4 diffuseColor;
-		XMFLOAT3 lightDirection;
-		float padding;
-	};
-	LightBuffer cbLight;
 
-	ID3D11RenderTargetView   *m_pRenderTargetView;
-	ID3D11Buffer             *m_pMVPBuffer;
 	ID3D11Buffer             *m_pVertexBuffer;
 	ID3D11Buffer             *m_pIndexBuffer;
 	ID3D11SamplerState       *m_pTexSamplerState;
-	ID3D11InputLayout        *m_pInputLayout;
-	ID3D11Buffer             *m_pLightBuffer      = nullptr;
 
 	int m_VertexCount;
 	int m_IndexCount;
@@ -76,7 +53,6 @@ private:
 	float m_width ; 
 	float m_height;
 	float m_aspect;
-	d3d::Shader D3DRTTShader;
 };
 
 
