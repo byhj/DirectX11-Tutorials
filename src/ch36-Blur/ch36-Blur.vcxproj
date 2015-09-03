@@ -81,6 +81,8 @@
     <None Include="cube.vsh" />
     <None Include="horizontalblur.psh" />
     <None Include="horizontalblur.vsh" />
+    <None Include="Plane.psh" />
+    <None Include="Plane.vsh" />
     <None Include="verticalblur.psh" />
     <None Include="verticalblur.vsh" />
   </ItemGroup>

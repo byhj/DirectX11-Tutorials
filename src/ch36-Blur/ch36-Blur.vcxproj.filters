@@ -36,6 +36,12 @@
     <None Include="horizontalblur.psh">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="Plane.vsh">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Plane.psh">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RenderSystem.h">

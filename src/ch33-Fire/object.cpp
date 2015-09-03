@@ -30,6 +30,9 @@ void Object::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &
 	pD3D11DeviceContext->UpdateSubresource(m_pNoiseBuffer, 0, NULL, &cbNoise, 0, 0 );
 	pD3D11DeviceContext->VSSetConstantBuffers(1, 1, &m_pNoiseBuffer);
 
+	int lightSlot = 0;
+	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, &m_pDistortBuffer);
+
 	///////////////////////////////////////////////////////////////////////////////
 	unsigned int stride;
 	unsigned int offset;
@@ -152,8 +155,6 @@ bool Object::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11
 	distortSub.SysMemSlicePitch = 0;
 	hr = pD3D11Device->CreateBuffer(&distortBufferDesc, &distortSub, &m_pDistortBuffer);
 	DebugHR(hr);
-	int lightSlot = 0;
-	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, &m_pNoiseBuffer);
 
 
 	// Create a texture sampler state description.

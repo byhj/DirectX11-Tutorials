@@ -48,8 +48,8 @@ VS_OUT VS(VS_IN vs_in)
    VS_OUT vs_out;
    vs_out.Pos.w = 1.0f;
    vs_out.Pos = mul(vs_in.Pos,  cbMatrix.model);
- //  vs_out.Pos = mul(vs_out.Pos, cbMatrix.view);
- //  vs_out.Pos = mul(vs_out.Pos, cbMatrix.proj);
+   vs_out.Pos = mul(vs_out.Pos, cbMatrix.view);
+   vs_out.Pos = mul(vs_out.Pos, cbMatrix.proj);
 
 
 	// Compute texture coordinates for first noise texture using the first scale and upward scrolling speed values.
