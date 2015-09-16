@@ -39,7 +39,8 @@ VS_OUT VS(VS_IN vs_in)
    vs_out.Normal = mul(vs_in.Normal, (float3x3)model );
    vs_out.Normal = normalize(vs_out.Normal);
 
-   // Set the clipping plane.
+   // Set the clipping plane, clip if < 0
+   // n*p + d > 0
    vs_out.Clip = dot(mul(vs_in.Pos, model), clipPlane);
 
    return vs_out;

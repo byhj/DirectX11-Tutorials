@@ -28,15 +28,15 @@ private:
 		float padding;
 	};
 
-	struct d3d::MatrixBuffer
+	struct ReflectMatrixBuffer
 	{
 		XMFLOAT4X4  model;
 		XMFLOAT4X4  view;
 		XMFLOAT4X4  proj;
-		XMFLOAT4X4  Plane;
+		XMFLOAT4X4  PlaneMat;
 
 	};
-	d3d::MatrixBuffer cbMatrix;
+	ReflectMatrixBuffer cbMatrix;
 
 	struct LightBuffer
 	{

@@ -21,6 +21,11 @@ void RenderSystem::v_Init()
 
 }
 
+void RenderSystem::v_Update()
+{
+	m_Cube.Update();
+}
+
 void RenderSystem::v_Render()
 {
 

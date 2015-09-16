@@ -21,6 +21,11 @@ void RenderSystem::v_Init()
 	init_fbo();
 }
 
+void RenderSystem::v_Update()
+{
+
+}
+
 void RenderSystem::v_Render()
 {
 
@@ -33,7 +38,7 @@ void RenderSystem::v_Render()
 	rot +=  m_Timer.GetDeltaTime();
 	UpdateScene();
 
-   XMFLOAT4X4 View  = m_Camera.GetViewMatrix();
+    XMFLOAT4X4 View  = m_Camera.GetViewMatrix();
 	XMFLOAT3 camPos = m_Camera.GetPos();
 	camPos.y =  -camPos.y;
 	XMVECTOR pos    = XMLoadFloat3(&camPos);

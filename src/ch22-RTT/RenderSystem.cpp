@@ -21,6 +21,11 @@ void RenderSystem::v_Init()
 	init_fbo();
 }
 
+void RenderSystem::v_Update()
+{
+	m_Cube.Update();
+}
+
 void RenderSystem::v_Render()
 {
 
@@ -47,7 +52,7 @@ void RenderSystem::v_Render()
 	// Create an orthographic projection matrix for 2D rendering. 
 	Model = XMMatrixIdentity();
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	XMMATRIX orthProj = XMMatrixOrthographicLH(m_ScreenWidth, m_ScreenHeight, 1.0f, 1000.0f);
+	XMMATRIX orthProj = XMMatrixOrthographicLH(2.0f, 2.0f, 1.0f, 1000.0f);
 	XMFLOAT4X4 orth;
 	XMStoreFloat4x4(&orth, XMMatrixTranspose(orthProj));
 

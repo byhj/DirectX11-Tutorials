@@ -22,6 +22,10 @@ void Cube::Init(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceCon
 	init_texture(pD3D11Device);
 }
 
+void Cube::Update()
+{
+
+}
 void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const d3d::MatrixBuffer &matrix)
 {
 

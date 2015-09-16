@@ -17,7 +17,7 @@ void Water::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &M
 		// Update the position of the water to simulate motion.
 		static FLOAT m_waterTranslation = 0.0f;
 
-		m_waterTranslation += 0.001f;
+		m_waterTranslation += 0.0001f;
 		if ( m_waterTranslation>1.0f )
 		{
 			m_waterTranslation -= 1.0f;
@@ -127,7 +127,7 @@ bool Water::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 	D3D11_BUFFER_DESC mvpBufferDesc;
 	ZeroMemory(&mvpBufferDesc, sizeof(D3D11_BUFFER_DESC));
 	mvpBufferDesc.Usage          = D3D11_USAGE_DEFAULT;
-	mvpBufferDesc.ByteWidth      = sizeof(d3d::MatrixBuffer);
+	mvpBufferDesc.ByteWidth      = sizeof(ReflectMatrixBuffer);
 	mvpBufferDesc.BindFlags      = D3D11_BIND_CONSTANT_BUFFER;
 	mvpBufferDesc.CPUAccessFlags = 0;
 	mvpBufferDesc.MiscFlags      = 0;

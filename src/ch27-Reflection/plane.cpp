@@ -25,12 +25,12 @@ namespace byhj
 	}
 
 	void Plane::Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView *pPlaneTexSRV, const XMFLOAT4X4 &Model,
-		const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj, XMFLOAT4X4 Plane)
+		const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj, XMFLOAT4X4 PlaneMat)
 	{
 		cbMatrix.model   = Model;
 		cbMatrix.view    = View;
 		cbMatrix.proj    = Proj;
-		cbMatrix.Plane = Plane;
+		cbMatrix.PlaneMat = PlaneMat;
 
 		pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0);
 		pD3D11DeviceContext->VSSetConstantBuffers(0, 1, &m_pMVPBuffer);
@@ -137,7 +137,7 @@ bool Plane::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 	D3D11_BUFFER_DESC mvpBufferDesc;
 	ZeroMemory(&mvpBufferDesc, sizeof(D3D11_BUFFER_DESC));
 	mvpBufferDesc.Usage          = D3D11_USAGE_DEFAULT;
-	mvpBufferDesc.ByteWidth      = sizeof(d3d::MatrixBuffer);
+	mvpBufferDesc.ByteWidth      = sizeof(ReflectMatrixBuffer);
 	mvpBufferDesc.BindFlags      = D3D11_BIND_CONSTANT_BUFFER;
 	mvpBufferDesc.CPUAccessFlags = 0;
 	mvpBufferDesc.MiscFlags      = 0;

@@ -33,7 +33,7 @@ public:
 private:
 
 
-	struct d3d::MatrixBuffer
+	struct ReflectMatrixBuffer
 	{
 		XMFLOAT4X4  model;
 		XMFLOAT4X4  view;
@@ -41,7 +41,7 @@ private:
 		XMFLOAT4X4  reflectMat;
 
 	};
-	d3d::MatrixBuffer cbMatrix;
+	ReflectMatrixBuffer cbMatrix;
 	struct WaterBufer
 	{
 		FLOAT waterTranslation;
