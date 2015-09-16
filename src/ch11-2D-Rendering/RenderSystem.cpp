@@ -20,6 +20,11 @@ void RenderSystem::v_Init()
 	init_object();
 }
 
+void RenderSystem::v_Update()
+{
+	m_Cube.Update();
+}
+
 void RenderSystem::v_Render()
 {
 	BeginScene();
@@ -29,9 +34,7 @@ void RenderSystem::v_Render()
 	ULONGLONG timeCur = GetTickCount64();
 	if ( timeStart==0 )
 		timeStart = timeCur;
-
 	t = ( timeCur-timeStart )/1000.0f;
-
 
 	///////////////////////Render Cube///////////////////////////////
 	XMMATRIX Model     = XMMatrixRotationY(t);
@@ -47,7 +50,7 @@ void RenderSystem::v_Render()
 
 	Model     = XMMatrixIdentity();
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	XMMATRIX orthMat =  XMMatrixOrthographicLH(1000.0f, 1000.0f, 0.1f, 1000.0f);
+	XMMATRIX orthMat =  XMMatrixOrthographicLH(1.0f, 1.0f, 0.1f, 1000.0f);
 	XMStoreFloat4x4(&m_Matrix.proj, XMMatrixTranspose(orthMat));
 	m_Bitmap.Render(m_pD3D11DeviceContext, m_Matrix);
 

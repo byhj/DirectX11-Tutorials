@@ -17,6 +17,7 @@ public:
 	~RenderSystem();
 
 	void v_Init();
+	void v_Update();
 	void v_Render();
 	void v_Shutdown();
 
@@ -40,7 +41,7 @@ private:
 	ID3D11DepthStencilState  *m_pDepthStencilState          = nullptr;
 	ID3D11DepthStencilState  *m_pDepthDisabledStencilState  = nullptr;
 	ID3D11RasterizerState    *m_pRasterState                = nullptr;
-	MatrixBuffer m_Matrix;
+	d3d::MatrixBuffer m_Matrix;
 };
 }
 #endif

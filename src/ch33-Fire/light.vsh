@@ -6,7 +6,7 @@ struct Matrix
 	float4x4 proj;
 };
 
-cbuffer MatrixBuffer : register(b0)
+cbuffer d3d::MatrixBuffer : register(b0)
 {
     Matrix cbMatrix;
 };

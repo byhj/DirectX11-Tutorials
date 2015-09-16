@@ -118,7 +118,7 @@ namespace byhj
 
 	}
 
-	void SceneShader::Use(ID3D11DeviceContext *pD3D11DeviceContext, const byhj::MatrixBuffer &matrix, const XMFLOAT4X4 &LightView, const XMFLOAT4X4 &LightProj)
+	void SceneShader::Use(ID3D11DeviceContext *pD3D11DeviceContext, const byhj::d3d::MatrixBuffer &matrix, const XMFLOAT4X4 &LightView, const XMFLOAT4X4 &LightProj)
 	{
 		sceneShader.use(pD3D11DeviceContext);
 

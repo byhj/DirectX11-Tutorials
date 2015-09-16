@@ -21,7 +21,7 @@ void RenderSystem::v_Init()
 
 void RenderSystem::v_Update()
 {
-
+	m_Window.Update();
 }
 
 void RenderSystem::v_Render()

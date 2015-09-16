@@ -15,6 +15,7 @@ public:
 	~RenderSystem();
 
 	void v_Init();
+	void v_Update();
 	void v_Render();
 	void v_Shutdown();
 
@@ -33,7 +34,7 @@ private:
 	ID3D11RenderTargetView  *m_pRenderTargetView   = nullptr;
 	ID3D11DepthStencilView  *m_pDepthStencilView   = nullptr;
 	ID3D11Texture2D         *m_pDepthStencilBuffer = nullptr;
-	MatrixBuffer m_Matrix;
+	d3d::MatrixBuffer m_Matrix;
 };
 }
 #endif

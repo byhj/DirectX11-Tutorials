@@ -21,6 +21,10 @@ void RenderSystem::v_Init()
 
 }
 
+void RenderSystem::v_Update()
+{
+	m_Cube.Update();
+}
 void RenderSystem::v_Render()
 {
 	BeginScene();
@@ -35,10 +39,13 @@ void RenderSystem::v_Shutdown()
 
 	m_Cube.Shutdown();
 
-	ReleaseCOM(m_pSwapChain);
-	ReleaseCOM(m_pD3D11Device);
-	ReleaseCOM(m_pD3D11DeviceContext);
-	ReleaseCOM(m_pRenderTargetView);
+	ReleaseCOM(m_pSwapChain)
+	ReleaseCOM(m_pD3D11Device)
+	ReleaseCOM(m_pD3D11DeviceContext)
+	ReleaseCOM(m_pRenderTargetView)
+	ReleaseCOM(m_pDepthStencilView)
+	ReleaseCOM(m_pDepthStencilBuffer)
+	ReleaseCOM(m_pRasterState)
 }
 
 void RenderSystem::init_device()

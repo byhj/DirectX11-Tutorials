@@ -27,6 +27,11 @@ void RenderSystem::v_Init()
 	m_Sound.PlayWaveFile();
 }
 
+void RenderSystem::v_Update()
+{
+	m_Cube.Update();
+}
+
 void RenderSystem::v_Render()
 {
 	BeginScene();

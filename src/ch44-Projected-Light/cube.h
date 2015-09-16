@@ -41,7 +41,7 @@ public:
 private:
 
 
-	struct MatrixBuffer
+	struct d3d::MatrixBuffer
 	{
 		XMFLOAT4X4  model;
 		XMFLOAT4X4  view;
@@ -49,7 +49,7 @@ private:
 		XMFLOAT4X4  view2;
 		XMFLOAT4X4  proj2;
 	};
-	MatrixBuffer cbMatrix;
+	d3d::MatrixBuffer cbMatrix;
 
 	struct Vertex
 	{

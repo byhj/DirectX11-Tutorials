@@ -13,7 +13,7 @@ class LightShader
 {
 public:
 	void Init(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext, HWND hWnd);
-    void Render(ID3D11DeviceContext *pD3D11DeviceContext, const MatrixBuffer &matrix);
+    void Render(ID3D11DeviceContext *pD3D11DeviceContext, const d3d::MatrixBuffer &matrix);
 	void Shutdown();
 
 private:
@@ -36,7 +36,7 @@ struct CameraBuffer
 	float padding;
 };
 
-     MatrixBuffer cbMatrix;
+     d3d::MatrixBuffer cbMatrix;
      ID3D11InputLayout        *m_pInputLayout      = nullptr;
      ID3D11Buffer             *m_pMVPBuffer        = nullptr;
      ID3D11Buffer             *m_pLightBuffer      = nullptr;

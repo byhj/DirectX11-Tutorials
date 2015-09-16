@@ -61,7 +61,7 @@ private:
 	ID3D11RasterizerState   *m_pRasterState        = nullptr;
 	ID3D11BlendState         *m_pBlendEnable;
 
-	MatrixBuffer m_Matrix;
+	d3d::MatrixBuffer m_Matrix;
 };
 }
 #endif

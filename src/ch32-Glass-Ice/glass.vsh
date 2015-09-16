@@ -1,5 +1,5 @@
 
-struct MatrixBuffer
+struct d3d::MatrixBuffer
 {
    float4x4 model;
    float4x4 view;
@@ -8,7 +8,7 @@ struct MatrixBuffer
 
 cbuffer cbMatirxBuffer : register(b0)
 {
-   MatrixBuffer cbMatrix;
+   d3d::MatrixBuffer cbMatrix;
 };
   
 struct VS_IN

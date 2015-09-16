@@ -24,7 +24,7 @@ VS_OUT VS( VS_IN vs_in)
  
    VS_OUT vs_out;
 
-   vs_out.Pos = mul(vs_in.Pos, g_World);
+   vs_out.Pos = mul(vs_in.Pos,  g_World);
    vs_out.Pos = mul(vs_out.Pos, g_View);
    vs_out.Pos = mul(vs_out.Pos, g_Proj);
 

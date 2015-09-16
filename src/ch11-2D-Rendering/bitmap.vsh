@@ -1,7 +1,9 @@
 
 cbuffer cbPerObject	: register(b0)
 {
-	float4x4 MVP;
+	float4x4 g_World;
+	float4x4 g_View;
+	float4x4 g_Proj;
 };
 
 struct VS_IN
@@ -20,7 +22,11 @@ VS_OUT VS(VS_IN vs_in)
 {	
  
    VS_OUT vs_out;
-   vs_out.Pos = mul(vs_in.Pos, MVP); 
+   vs_in.Pos.w = 1.0f;
+   vs_out.Pos = mul(vs_in.Pos, g_World);
+   vs_out.Pos = mul(vs_out.Pos, g_View);
+   vs_out.Pos = mul(vs_out.Pos, g_Proj);
+    
    vs_out.Tex = vs_in.Tex;
  
    return vs_out;

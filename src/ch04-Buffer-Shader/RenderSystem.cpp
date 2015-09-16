@@ -21,6 +21,11 @@ void RenderSystem::v_Init()
 
 }
 
+void RenderSystem::v_Update()
+{
+	m_Triangle.Update();
+}
+
 void RenderSystem::v_Render()
 {
 	BeginScene();
@@ -85,7 +90,7 @@ void RenderSystem::init_device()
 	DebugHR(hr);
 
 
-	//Describe our Depth/Stencil Buffer
+	///////////////////////////Creaete Depth/Stencil Buffer/////////////////////////////////
 	D3D11_TEXTURE2D_DESC depthStencilDesc;
 
 	depthStencilDesc.Width              = m_ScreenWidth;
@@ -128,6 +133,8 @@ void RenderSystem::init_camera()
 	ZeroMemory(&vp, sizeof(D3D11_VIEWPORT));
 	vp.TopLeftX = 0;
 	vp.TopLeftY = 0;
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
 	vp.Width    = static_cast<FLOAT>(m_ScreenWidth);
 	vp.Height   = static_cast<FLOAT>(m_ScreenHeight);
 	m_pD3D11DeviceContext->RSSetViewports(1, &vp);

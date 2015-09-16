@@ -3,6 +3,7 @@
 
 #include "d3d/Shader.h"
 #include "d3d/d3dDebug.h"
+#include "d3d/Utility.h"
 #include <d3d11.h>
 #include <xnamath.h>
 
@@ -40,14 +41,7 @@ public:
 
 private:
 
-	struct MatrixBuffer
-	{
-		XMFLOAT4X4  model;
-		XMFLOAT4X4  view;
-		XMFLOAT4X4  proj;
-
-	};
-	MatrixBuffer cbMatrix;
+	d3d::MatrixBuffer cbMatrix;
 
 	struct  Vertex
 	{

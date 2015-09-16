@@ -76,7 +76,7 @@ private:
 	ID3D11ShaderResourceView *m_pReflectSRV;
 	ID3D11ShaderResourceView *m_pRefractSRV;
 
-	MatrixBuffer m_Matrix;
+	d3d::MatrixBuffer m_Matrix;
 };
 }
 #endif

@@ -1,6 +1,6 @@
 
 
-cbuffer MatrixBuffer
+cbuffer d3d::MatrixBuffer
 {
 	matrix world;
 	matrix view;

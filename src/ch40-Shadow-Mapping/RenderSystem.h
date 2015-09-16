@@ -75,7 +75,7 @@ private:
 	ID3D11ShaderResourceView *m_pIceTex;
 	ID3D11ShaderResourceView *m_pMetalTex;
 
-	MatrixBuffer m_Matrix;
+	d3d::MatrixBuffer m_Matrix;
 };
 }
 #endif

@@ -39,7 +39,7 @@ private:
 	ID3D11BlendState         *m_pBlendEnable;
 	ID3D11BlendState         *m_pBlendDisable;
 
-	MatrixBuffer m_Matrix;
+	d3d::MatrixBuffer m_Matrix;
 };
 }
 #endif

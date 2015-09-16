@@ -10,7 +10,7 @@ namespace byhj
 		init_buffer(pD3D11Device, pD3D11DeviceContext);
 	}
 
-	void LightShader::Render(ID3D11DeviceContext *pD3D11DeviceContext ,const MatrixBuffer &matrix)
+	void LightShader::Render(ID3D11DeviceContext *pD3D11DeviceContext ,const d3d::MatrixBuffer &matrix)
 	{
 		cbMatrix.model = matrix.model;
 		cbMatrix.view  = matrix.view;
@@ -73,7 +73,7 @@ namespace byhj
 		D3D11_BUFFER_DESC mvpDesc;
 		ZeroMemory(&mvpDesc, sizeof( D3D11_BUFFER_DESC ));
 		mvpDesc.Usage          = D3D11_USAGE_DEFAULT;
-		mvpDesc.ByteWidth      = sizeof( MatrixBuffer );
+		mvpDesc.ByteWidth      = sizeof( d3d::MatrixBuffer );
 		mvpDesc.BindFlags      = D3D11_BIND_CONSTANT_BUFFER;
 		mvpDesc.CPUAccessFlags = 0;
 		mvpDesc.MiscFlags      = 0;

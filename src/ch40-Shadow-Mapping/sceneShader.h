@@ -10,7 +10,7 @@ namespace byhj
 	{
 	public:
 		void Init(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext, HWND hWnd);
-		void Use(ID3D11DeviceContext *pD3D11DeviceContext, const byhj::MatrixBuffer &matrix, const XMFLOAT4X4 &LightView, const XMFLOAT4X4 &LightProj);
+		void Use(ID3D11DeviceContext *pD3D11DeviceContext, const byhj::d3d::MatrixBuffer &matrix, const XMFLOAT4X4 &LightView, const XMFLOAT4X4 &LightProj);
 		void Shutdown();
 
 	private:

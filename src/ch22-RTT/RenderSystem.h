@@ -65,7 +65,7 @@ private:
 	ID3D11RenderTargetView   *m_pRttRenderTargetView;
 	ID3D11ShaderResourceView *m_pRttShaderResourceView;
 
-	MatrixBuffer m_Matrix;
+	d3d::MatrixBuffer m_Matrix;
 };
 }
 #endif

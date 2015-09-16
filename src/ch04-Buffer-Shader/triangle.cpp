@@ -21,7 +21,12 @@ void Triangle::Init(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11Devic
 	init_shader(pD3D11Device, hWnd);
 }
 
-void Triangle::Render(ID3D11DeviceContext *pD3D11DeviceContext, const MatrixBuffer &matrix)
+void Triangle::Update()
+{
+
+}
+
+void Triangle::Render(ID3D11DeviceContext *pD3D11DeviceContext, const d3d::MatrixBuffer &matrix)
 {
 
 	cbMatrix.model = matrix.model;
@@ -49,7 +54,7 @@ void Triangle::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D
 {
 	HRESULT hr;
 
-	///////////////////////////Index Buffer ////////////////////////////////
+	///////////////////////////Vertex Buffer ////////////////////////////////
 	m_VertexCount = 3;
 	Vertex *VertexData = new Vertex[m_VertexCount];
 
@@ -111,7 +116,7 @@ void Triangle::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D
 	delete[] IndexData;
 	IndexData = 0;
 
-	// Set vertex buffer stride and offset.=
+	// Set vertex buffer stride and offset
 	unsigned int stride;
 	unsigned int offset;
 	stride = sizeof(Vertex);
@@ -125,7 +130,7 @@ void Triangle::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D
 	D3D11_BUFFER_DESC mvpDesc;
 	ZeroMemory(&mvpDesc, sizeof(D3D11_BUFFER_DESC));
 	mvpDesc.Usage          = D3D11_USAGE_DEFAULT;
-	mvpDesc.ByteWidth      = sizeof(MatrixBuffer);
+	mvpDesc.ByteWidth      = sizeof(d3d::MatrixBuffer);
 	mvpDesc.BindFlags      = D3D11_BIND_CONSTANT_BUFFER;
 	mvpDesc.CPUAccessFlags = 0;
 	mvpDesc.MiscFlags      = 0;

@@ -19,7 +19,7 @@ public:
 	~Bitmap();
 
 	void Init(ID3D11Device *pD3D11Device,  HWND hWnd);
-	void Render(ID3D11DeviceContext *pD3D11DeviceContext, const MatrixBuffer &matrix);
+	void Render(ID3D11DeviceContext *pD3D11DeviceContext, const d3d::MatrixBuffer &matrix);
 	void Shutdown();
 	bool init_window(int sw, int sh);
 
@@ -31,7 +31,7 @@ public:
 
 private:
 
-	MatrixBuffer cbMatrix;
+	d3d::MatrixBuffer cbMatrix;
 
 	struct Vertex
 	{

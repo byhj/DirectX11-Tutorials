@@ -69,7 +69,7 @@ private:
 	ID3D11RenderTargetView   *m_pColorRTV[2];
 	ID3D11ShaderResourceView *m_pColorSRV[2];
 
-	MatrixBuffer m_Matrix;
+	d3d::MatrixBuffer m_Matrix;
 };
 }
 #endif

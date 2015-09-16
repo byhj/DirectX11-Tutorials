@@ -33,7 +33,7 @@ private:
 	ID3D11DepthStencilView  *m_pDepthStencilView   = nullptr;
 	ID3D11Texture2D         *m_pDepthStencilBuffer = nullptr;
 	ID3D11RasterizerState   *m_pRasterState        = nullptr;
-	MatrixBuffer m_Matrix;
+	d3d::MatrixBuffer m_Matrix;
 };
 
 }

@@ -60,7 +60,7 @@ private:
 	ID3D11DepthStencilState  *m_pDepthDisabledStencilState;
 	ID3D11RasterizerState   *m_pRasterState        = nullptr;
 
-	MatrixBuffer m_Matrix;
+	d3d::MatrixBuffer m_Matrix;
 };
 }
 #endif

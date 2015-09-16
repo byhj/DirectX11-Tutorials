@@ -17,9 +17,14 @@ void RenderSystem::v_Init()
 {
 	init_device();
 	init_camera();
-	m_Cube.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd() );
 
+	m_Cube.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd() );
 	m_Font.init(m_pD3D11Device);
+}
+
+void RenderSystem::v_Update()
+{
+	m_Cube.Update();
 }
 
 void RenderSystem::v_Render()

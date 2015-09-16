@@ -137,7 +137,7 @@ bool Deferred::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D
 	D3D11_BUFFER_DESC mvpBufferDesc;
 	ZeroMemory(&mvpBufferDesc, sizeof( D3D11_BUFFER_DESC ));
 	mvpBufferDesc.Usage          = D3D11_USAGE_DEFAULT;
-	mvpBufferDesc.ByteWidth      = sizeof( MatrixBuffer );
+	mvpBufferDesc.ByteWidth      = sizeof( d3d::MatrixBuffer );
 	mvpBufferDesc.BindFlags      = D3D11_BIND_CONSTANT_BUFFER;
 	mvpBufferDesc.CPUAccessFlags = 0;
 	mvpBufferDesc.MiscFlags      = 0;
