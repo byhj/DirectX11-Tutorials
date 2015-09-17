@@ -3,6 +3,7 @@
 
 #include "d3d/App.h"
 #include "d3d/Shader.h"
+#include "d3d/Utility.h"
 #include "d3d/d3dLight.h"
 
 namespace byhj
@@ -37,13 +38,6 @@ public:
 	void init_texture(ID3D11Device *pD3D11Device, LPCWSTR texFile, ID3D11ShaderResourceView *m_pTexture);
 private:
 
-	struct d3d::MatrixBuffer
-	{
-		XMFLOAT4X4  model;
-		XMFLOAT4X4  view;
-		XMFLOAT4X4  proj;
-
-	};
 	d3d::MatrixBuffer cbMatrix;
 
 	struct DistortionBuffer

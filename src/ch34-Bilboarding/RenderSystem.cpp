@@ -21,6 +21,11 @@ void RenderSystem::v_Init()
 	init_fbo();
 }
 
+void RenderSystem::v_Update()
+{
+
+}
+
 void RenderSystem::v_Render()
 {
 	BeginScene();

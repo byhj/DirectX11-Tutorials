@@ -28,10 +28,10 @@ public:
 	void shutdown()
 	{
 		ReleaseCOM(m_pRenderTargetView  )
-			ReleaseCOM(m_pMVPBuffer         )
-			ReleaseCOM(m_pLightBuffer       )
-			ReleaseCOM(m_pVertexBuffer      )
-			ReleaseCOM(m_pIndexBuffer       )
+		ReleaseCOM(m_pMVPBuffer         )
+		ReleaseCOM(m_pLightBuffer       )
+		ReleaseCOM(m_pVertexBuffer      )
+		ReleaseCOM(m_pIndexBuffer       )
 	}
 
 	bool load_model(char *modelFile);

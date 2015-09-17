@@ -1,5 +1,7 @@
 #include "Input.h"
 
+#define SHADER_DEBUG
+
 namespace byhj
 {
 namespace d3d
@@ -40,10 +42,15 @@ bool Camera::InitDirectInput(HWND hWnd, HINSTANCE hInstance)
 	hr = m_DirectInput->CreateDevice(GUID_SysMouse, &m_pDIMouse, NULL);
 
 	hr = m_pDIKeyboard->SetDataFormat(&c_dfDIKeyboard);
-	hr = m_pDIKeyboard->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
-
 	hr = m_pDIMouse->SetDataFormat(&c_dfDIMouse);
+
+#ifdef SHADER_DEBUG
+	hr = m_pDIKeyboard->SetCooperativeLevel(hWnd, DISCL_FOREGROUND);
+	hr = m_pDIMouse->SetCooperativeLevel(hWnd, DISCL_FOREGROUND);
+#else
+	hr = m_pDIKeyboard->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
 	hr = m_pDIMouse->SetCooperativeLevel(hWnd,  DISCL_NOWINKEY | DISCL_FOREGROUND);
+#endif
 
 	return true;
 }

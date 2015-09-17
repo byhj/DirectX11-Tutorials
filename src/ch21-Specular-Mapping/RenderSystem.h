@@ -1,6 +1,7 @@
 #ifndef RENDERSYSTEM_H
 #define RENDERSYSTEM_H
 
+
 #include "d3d/App.h"
 #include "d3d/Utility.h"
 #include "d3d/Font.h"
@@ -19,6 +20,7 @@ public:
 	~RenderSystem();
 
 	void v_Init();
+	void v_Update();
 	void v_Render();
 	void v_Shutdown();
 

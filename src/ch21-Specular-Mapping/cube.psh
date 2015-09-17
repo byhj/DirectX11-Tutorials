@@ -42,7 +42,7 @@ float4 PS(VS_OUTPUT ps_in) : SV_TARGET
 
   //Calc the diffuse light
   float4 ambient = ambientColor;
-  float3 lightDir = float3(0.0f, 0.0f, -1.0f);
+  float3 lightDir = float3(0.0f, 0.0f, -4.0f);
   float  intensity = saturate( dot(bumpNormal, lightDir) ); 
   float4 diffuse   = saturate(diffuseColor * intensity);
 

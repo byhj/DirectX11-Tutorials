@@ -21,6 +21,11 @@ void RenderSystem::v_Init()
 	//init_fbo();
 }
 
+void RenderSystem::v_Update()
+{
+
+}
+
 void RenderSystem::v_Render()
 {
 
@@ -30,12 +35,11 @@ void RenderSystem::v_Render()
 	TurnZBufferOff();
 	TurnBlendingOn();
 
-	m_Matrix.view = m_Camera.GetViewMatrix();
+	//m_Matrix.view = m_Camera.GetViewMatrix();
 	m_pD3D11DeviceContext->RSSetState(m_pRasterState);
 	m_Fire.Render(m_pD3D11DeviceContext, m_Matrix.model, m_Matrix.view, m_Matrix.proj);
 
 	TurnBlendingOff();
-
 	TurnZBufferOn();
 
 	DrawInfo();

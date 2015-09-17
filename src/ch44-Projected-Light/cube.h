@@ -28,10 +28,9 @@ public:
 	void shutdown()
 	{
 		ReleaseCOM(m_pRenderTargetView  )
-			ReleaseCOM(m_pMVPBuffer         )
-
-			ReleaseCOM(m_pVertexBuffer      )
-			ReleaseCOM(m_pIndexBuffer       )
+		ReleaseCOM(m_pMVPBuffer         )
+		ReleaseCOM(m_pVertexBuffer      )
+		ReleaseCOM(m_pIndexBuffer       )
 	}
 
 	bool LoadModel(char *modelFile);
@@ -41,7 +40,7 @@ public:
 private:
 
 
-	struct d3d::MatrixBuffer
+	struct MatrixBuffer
 	{
 		XMFLOAT4X4  model;
 		XMFLOAT4X4  view;
@@ -49,7 +48,7 @@ private:
 		XMFLOAT4X4  view2;
 		XMFLOAT4X4  proj2;
 	};
-	d3d::MatrixBuffer cbMatrix;
+	MatrixBuffer cbMatrix;
 
 	struct Vertex
 	{

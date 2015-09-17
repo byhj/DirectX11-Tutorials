@@ -21,6 +21,11 @@ void RenderSystem::v_Init()
 	m_Triangle.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd());
 }
 
+void RenderSystem::v_Update()
+{
+
+}
+
 void RenderSystem::v_Render()
 {
 	BeginScene();

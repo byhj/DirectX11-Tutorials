@@ -26,6 +26,11 @@ void RenderSystem::v_Init()
 	m_Sound.Init(GetHwnd(), "sound02.wav");
 }
 
+void RenderSystem::v_Update()
+{
+	m_Cube.Update();
+}
+
 void RenderSystem::v_Render()
 {
 	BeginScene();
@@ -34,10 +39,9 @@ void RenderSystem::v_Render()
 	m_Camera.DetectInput(GetHwnd(), m_Timer.GetDeltaTime());
 	m_Matrix.view = m_Camera.GetViewMatrix();
 
+	auto currTime = GetTickCount64() / 1000.0f;
+	XMMATRIX Model     = XMMatrixRotationY(currTime);
 
-	static float t = 0.0f;
-	t += 0.001f;
-	XMMATRIX Model     = XMMatrixRotationY(t);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
 
 	m_Cube.Render(m_pD3D11DeviceContext, m_Matrix);
