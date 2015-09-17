@@ -69,9 +69,11 @@ private:
 	ID3D11RasterizerState    *m_pRasterState        = nullptr;
 
 	ID3D11Texture2D          *m_pRttRenderTargetTexture;
+	ID3D11Texture2D          *m_pRttRenderTargetTexture2;
 	ID3D11RenderTargetView   *m_pRttRenderTargetView;
+	ID3D11RenderTargetView   *m_pRttRenderTargetView2;
 	ID3D11ShaderResourceView *m_pRttShaderResourceView;
-
+	ID3D11ShaderResourceView *m_pRttShaderResourceView2;
 	ID3D11ShaderResourceView *m_pWallTex;
 	ID3D11ShaderResourceView *m_pIceTex;
 	ID3D11ShaderResourceView *m_pMetalTex;

@@ -46,7 +46,7 @@ void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const d3d::MatrixBuf
 	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	CubeShader.use(pD3D11DeviceContext);
-	pD3D11DeviceContext->DrawIndexed(m_VertexData.size(), 0, 0);
+	pD3D11DeviceContext->DrawIndexed(m_IndexData.size(), 0, 0);
 
 
 }

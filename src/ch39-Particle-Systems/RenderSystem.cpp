@@ -21,13 +21,18 @@ void RenderSystem::v_Init()
 
 }
 
+void RenderSystem::v_Update()
+{
+
+}
+
 void RenderSystem::v_Render()
 {
 
 	BeginScene();
 
 	UpdateScene();
-	m_Matrix.view = m_Camera.GetViewMatrix();
+	//m_Matrix.view = m_Camera.GetViewMatrix();
 
 	m_Particle.Frame(m_Timer.GetDeltaTime());
 	m_Particle.Render(m_pD3D11DeviceContext, m_Matrix.model, m_Matrix.view, m_Matrix.proj);

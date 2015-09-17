@@ -22,6 +22,11 @@ void Cube::Init(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceCon
 	init_texture(pD3D11Device);
 }
 
+void Cube::Update()
+{
+
+}
+
 void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const d3d::MatrixBuffer &matrix)
 {
 
@@ -31,6 +36,16 @@ void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const d3d::MatrixBuf
 	cbMatrix.proj  = matrix.proj;
 	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0);
 	pD3D11DeviceContext->VSSetConstantBuffers(0, 1, &m_pMVPBuffer);
+
+	// Set vertex buffer stride and offset
+	unsigned int stride;
+	unsigned int offset;
+	stride = sizeof(Vertex);
+	offset = 0;
+	pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
+	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 	pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pTexture);
 	pD3D11DeviceContext->PSSetSamplers(0, 1, &m_pTexSamplerState);
 
@@ -47,6 +62,7 @@ void Cube::Shutdown()
 	ReleaseCOM(m_pVertexBuffer)
 	ReleaseCOM(m_pIndexBuffer)
 	ReleaseCOM(m_pLightBuffer)
+	ReleaseCOM(m_CameraBuffer)
 	ReleaseCOM(m_pTexSamplerState)
 	ReleaseCOM(m_pTexture)
 
@@ -98,16 +114,7 @@ void Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	hr = pD3D11Device->CreateBuffer(&IndexBufferDesc, &IBO, &m_pIndexBuffer);
 	DebugHR(hr);
 
-	////////////////////////////////////////////////////////////////////////////////////////
 
-	// Set vertex buffer stride and offset.=
-	unsigned int stride;
-	unsigned int offset;
-	stride = sizeof(Vertex);
-	offset = 0;
-	pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
-	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	////////////////////////////////Const Buffer//////////////////////////////////////
 
@@ -142,15 +149,43 @@ void Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	// Get a pointer to the data in the constant buffer.
 	LightBuffer *dataPtr2 = (LightBuffer*)mappedResource.pData;
 
+
 	dataPtr2->ambientColor   = XMFLOAT4(0.15f, 0.15f, 0.15f, 0.15f);
 	dataPtr2->diffuseColor   = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	dataPtr2->lightDirection = XMFLOAT3(1.0f, 0.0f, 0.0f);
-	dataPtr2->padding = 0.0f;
+	dataPtr2->lightDirection = XMFLOAT3(0.0f, 0.0f, 1.0f);
+	dataPtr2->specularPower  = 32.0f;
+	dataPtr2->specularColor  = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
 
 	pD3D11DeviceContext->Unmap(m_pLightBuffer, 0);
 
 	int lightSlot = 0;
 	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, &m_pLightBuffer);
+
+
+	D3D11_BUFFER_DESC cameraBufferDesc;
+	cameraBufferDesc.Usage               = D3D11_USAGE_DYNAMIC;
+	cameraBufferDesc.ByteWidth           = sizeof(CameraBuffer);
+	cameraBufferDesc.BindFlags           = D3D11_BIND_CONSTANT_BUFFER;
+	cameraBufferDesc.CPUAccessFlags      = D3D11_CPU_ACCESS_WRITE;
+	cameraBufferDesc.MiscFlags           = 0;
+	cameraBufferDesc.StructureByteStride = 0;
+
+	// Create the camera constant buffer pointer so we can access the vertex shader constant buffer from within this class.
+	hr = pD3D11Device->CreateBuffer(&cameraBufferDesc, NULL, &m_CameraBuffer);
+	DebugHR(hr);
+
+	// Lock the camera constant buffer so it can be written to.
+	hr = pD3D11DeviceContext->Map(m_CameraBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	DebugHR(hr);
+
+	// Get a pointer to the data in the constant buffer.
+	CameraBuffer *dataPtr3 = (CameraBuffer*)mappedResource.pData;
+	dataPtr3->camPos = XMFLOAT3(0.0f, 2.0f, -3.0f);
+	dataPtr3->padding = 0.0f;
+	pD3D11DeviceContext->Unmap(m_CameraBuffer, 0);
+
+	int bufferSlot = 1;
+	pD3D11DeviceContext->VSSetConstantBuffers(bufferSlot, 1, &m_CameraBuffer);
 
 
 }

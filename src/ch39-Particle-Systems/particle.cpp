@@ -87,7 +87,7 @@ bool Particle::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D
 {
 	// Set the random deviation of where the particles can be located when emitted.
 	m_particleDeviationX = 0.5f;
-	m_particleDeviationY = 0.1f;
+	m_particleDeviationY = 2.0f;
 	m_particleDeviationZ = 2.0f;
 
 	// Set the speed and speed variation of particles.
@@ -282,7 +282,7 @@ void Particle::KillParticles()
 	// Kill all the particles that have gone below a certain height range.
 	for (i=0; i < m_maxParticles; i++)
 	{
-		if ((m_particleList[i].active == true) && (m_particleList[i].positionY < -3.0f))
+		if ((m_particleList[i].active == true) && (m_particleList[i].positionY < -5.0f))
 		{
 			m_particleList[i].active = false;
 			m_currentParticleCount--;

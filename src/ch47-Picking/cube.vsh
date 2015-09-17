@@ -1,31 +1,38 @@
 
-cbuffer cbMatrix : register(b0)
+cbuffer MatrixObject  : register(b0)
 {
 	float4x4 g_World;
 	float4x4 g_View;
 	float4x4 g_Proj;
 };
 
+cbuffer CameraBuffer : register(b1)
+{
+  float3 camPos;
+  float  padding;
+}
+
 struct VS_IN
 {
-   float4 Pos   : POSITION; 
-   float2 Tex   : TEXCOORD0;
+   float4 Pos: POSITION; 
+   float2 Tex: TEXCOORD0;
    float3 Normal: NORMAL;
 };
 
 struct VS_OUT
 {
-    float4 Pos   : SV_POSITION;
-    float2 Tex   : TEXCOORD0;
+    float4 Pos : SV_POSITION;
+    float2 Tex : TEXCOORD0;
 	float3 Normal: NORMAL;
+	float3 ViewDir: TEXCOORD1;
 };
 
 VS_OUT VS(VS_IN vs_in)
 {	
  
    VS_OUT vs_out;
-
-   vs_out.Pos = mul(vs_in.Pos, g_World);
+  // Make the position with mvp matrix
+   vs_out.Pos = mul(vs_in.Pos,  g_World);
    vs_out.Pos = mul(vs_out.Pos, g_View);
    vs_out.Pos = mul(vs_out.Pos, g_Proj);
 
@@ -33,5 +40,10 @@ VS_OUT VS(VS_IN vs_in)
    vs_out.Normal = mul(vs_in.Normal, (float3x3)g_World );
    vs_out.Normal = normalize(vs_out.Normal);
 
+   //Calc the view direction
+   float4 worldPos = mul(vs_in.Pos, g_World);
+   vs_out.ViewDir  = camPos.xyz - worldPos.xyz;
+   vs_out.ViewDir  = normalize(vs_out.ViewDir);
+    
    return vs_out;
 }

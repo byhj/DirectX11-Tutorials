@@ -41,15 +41,10 @@ void RenderSystem::v_Render()
 
 	float near_plane = 0.1f, far_plane = 1000.0f;
 	XMMATRIX LightProj = XMMatrixOrthographicLH(20.0f, 20.0f, near_plane, far_plane);
-	static float lightPositionX = -5.0f;
-	lightPositionX += 0.0005f;
-	if (lightPositionX > 5.0f)
-	{
-		lightPositionX = -5.0f;
-	}
+
 	XMFLOAT4X4 lightProj;
 	XMFLOAT4X4 lightView;
-	XMVECTOR LightPos = XMVectorSet(lightPositionX, 8.0f, -5.0f, 1.0f);
+	XMVECTOR LightPos = XMVectorSet(5.0, 8.0f, -5.0f, 1.0f);
 	XMMATRIX LightView = XMMatrixLookAtLH(LightPos, XMVectorSet(0.0, 0.0, 0.0, 1.0), XMVectorSet(0.0f, 1.0, 0.0, 1.0));
 	XMStoreFloat4x4(&lightProj, XMMatrixTranspose(LightProj));
 	XMStoreFloat4x4(&lightView, XMMatrixTranspose(LightView));
@@ -76,6 +71,42 @@ void RenderSystem::v_Render()
 	m_PlaneModel.Render(m_pD3D11DeviceContext);
 
 	////////////////////////////////////////////////////////////////////////////////
+	
+
+	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRttRenderTargetView2, m_pDepthStencilView);
+	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRttRenderTargetView2, bgColor);
+	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+	LightProj = XMMatrixOrthographicLH(20.0f, 20.0f, near_plane, far_plane);
+	LightPos = XMVectorSet(-5.0, 8.0f, -5.0f, 1.0f);
+	XMFLOAT4X4 lightView2, lightProj2;
+	LightView = XMMatrixLookAtLH(LightPos, XMVectorSet(0.0, 0.0, 0.0, 1.0), XMVectorSet(0.0f, 1.0, 0.0, 1.0));
+	XMStoreFloat4x4(&lightProj2, XMMatrixTranspose(LightProj));
+	XMStoreFloat4x4(&lightView2, XMMatrixTranspose(LightView));
+	m_Matrix.view = lightView2;
+	m_Matrix.proj = lightProj2;
+
+	Model = XMMatrixTranslation(-2.0f, 2.0f, 0.0f);
+	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
+
+	depthShader.Use(m_pD3D11DeviceContext, m_Matrix);
+	m_CubeModel.Render(m_pD3D11DeviceContext);
+
+	Model = XMMatrixTranslation(2.0f, 2.0f, 0.0f);
+	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
+
+	depthShader.Use(m_pD3D11DeviceContext, m_Matrix);
+	m_SphereModel.Render(m_pD3D11DeviceContext);
+
+	Model = XMMatrixTranslation(0.0f, 1.0f, 0.0f);
+	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
+
+	depthShader.Use(m_pD3D11DeviceContext, m_Matrix);
+	m_PlaneModel.Render(m_pD3D11DeviceContext);
+
+	////////////////////////////////////////////////////////////////////////////////
+
+
 	BeginScene();
 
 	m_Matrix.view = m_Camera.GetViewMatrix();
@@ -84,23 +115,24 @@ void RenderSystem::v_Render()
 
 
 	m_pD3D11DeviceContext->PSSetShaderResources(1, 1, &m_pRttShaderResourceView);
+	m_pD3D11DeviceContext->PSSetShaderResources(2, 1, &m_pRttShaderResourceView2);
 
 	m_pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pWallTex);
 	Model = XMMatrixTranslation(-2.0f, 2.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	sceneShader.Use(m_pD3D11DeviceContext, m_Matrix, lightView, lightProj);
+	sceneShader.Use(m_pD3D11DeviceContext, m_Matrix, lightView, lightProj, lightView2, lightProj2);
 	m_CubeModel.Render(m_pD3D11DeviceContext);
 
 	m_pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pIceTex);
 	Model = XMMatrixTranslation(2.0f, 2.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	sceneShader.Use(m_pD3D11DeviceContext, m_Matrix, lightView, lightProj);
+	sceneShader.Use(m_pD3D11DeviceContext, m_Matrix, lightView, lightProj, lightView2, lightProj2);
 	m_SphereModel.Render(m_pD3D11DeviceContext);
 
 	m_pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pMetalTex);
 	Model = XMMatrixTranslation(0.0f, 1.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	sceneShader.Use(m_pD3D11DeviceContext, m_Matrix, lightView, lightProj);
+	sceneShader.Use(m_pD3D11DeviceContext, m_Matrix, lightView, lightProj, lightView2, lightProj2);
 	m_PlaneModel.Render(m_pD3D11DeviceContext);
 
 	DrawInfo();
@@ -392,6 +424,7 @@ void RenderSystem::init_fbo()
 
 	//Create the render target texture
 	result = m_pD3D11Device->CreateTexture2D(&textureDesc, NULL, &m_pRttRenderTargetTexture);
+	result = m_pD3D11Device->CreateTexture2D(&textureDesc, NULL, &m_pRttRenderTargetTexture2);
 
 
 	//Setup the description of the render target view
@@ -400,12 +433,14 @@ void RenderSystem::init_fbo()
 	renderTargetViewDesc.Texture2D.MipSlice = 0;
 
 	result = m_pD3D11Device->CreateRenderTargetView(m_pRttRenderTargetTexture, &renderTargetViewDesc, &m_pRttRenderTargetView);
+	result = m_pD3D11Device->CreateRenderTargetView(m_pRttRenderTargetTexture2, &renderTargetViewDesc, &m_pRttRenderTargetView2);
 
 	shaderResourceViewDesc.Format = textureDesc.Format;
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
 	result = m_pD3D11Device->CreateShaderResourceView(m_pRttRenderTargetTexture, &shaderResourceViewDesc, &m_pRttShaderResourceView);
+	result = m_pD3D11Device->CreateShaderResourceView(m_pRttRenderTargetTexture2, &shaderResourceViewDesc, &m_pRttShaderResourceView2);
 
 }
 

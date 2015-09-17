@@ -12,13 +12,8 @@ namespace byhj
 class Plane
 {
 public:
-	Plane()
-	{
-
-		m_pVertexBuffer       = NULL;
-		m_pIndexBuffer        = NULL;
-	}
-
+	Plane(){}
+	~Plane(){}
 	void Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView *pTexture);
 
 	void Shutdown()
@@ -41,9 +36,9 @@ private:
 		XMFLOAT2 Tex;
 	};
 
-	ID3D11Buffer             *m_pVertexBuffer;
-	ID3D11Buffer             *m_pIndexBuffer;
-	ID3D11SamplerState       *m_pTexSamplerState;
+	ID3D11Buffer             *m_pVertexBuffer    = nullptr;
+	ID3D11Buffer             *m_pIndexBuffer     = nullptr;
+	ID3D11SamplerState       *m_pTexSamplerState = nullptr;
 
 	int m_VertexCount;
 	int m_IndexCount;

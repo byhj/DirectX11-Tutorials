@@ -13,5 +13,95 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Framework">
+      <UniqueIdentifier>{e93fa2e0-335c-49e8-9a3b-c6bc8b20bd0c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="depthShader.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="model.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystem.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneShader.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\include\d3d\App.cpp">
+      <Filter>Header Files\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\include\d3d\Camera.cpp">
+      <Filter>Header Files\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\include\d3d\Font.cpp">
+      <Filter>Header Files\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\include\d3d\RTT.cpp">
+      <Filter>Header Files\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\include\d3d\Shader.cpp">
+      <Filter>Header Files\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\include\d3d\Timer.cpp">
+      <Filter>Header Files\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\include\d3d\Utility.cpp">
+      <Filter>Header Files\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="ch48-Directional-Shadow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="depthShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sceneShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\d3d\App.h">
+      <Filter>Header Files\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\d3d\Camera.h">
+      <Filter>Header Files\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\d3d\Font.h">
+      <Filter>Header Files\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\d3d\RTT.h">
+      <Filter>Header Files\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\d3d\Shader.h">
+      <Filter>Header Files\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\d3d\Timer.h">
+      <Filter>Header Files\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\d3d\Utility.h">
+      <Filter>Header Files\Framework</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="scene.vsh">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="scene.psh">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="depth.vsh">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="depth.psh">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

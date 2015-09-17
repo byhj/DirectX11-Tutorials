@@ -3,6 +3,7 @@
 
 #include "d3d/App.h"
 #include "d3d/Utility.h"
+#include "d3d/Font.h"
 #include "Cube.h"
 
 namespace byhj
@@ -15,6 +16,7 @@ public:
 	~RenderSystem();
 
 	void v_Init();
+	void v_Update();
 	void v_Render();
 	void v_Shutdown();
 
@@ -26,6 +28,7 @@ private:
 
 
 	byhj::Cube m_Cube;
+	d3d::Font m_Font;
 
 	IDXGISwapChain          *m_pSwapChain          = nullptr;     
 	ID3D11Device            *m_pD3D11Device        = nullptr;
