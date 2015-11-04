@@ -30,7 +30,7 @@ void RenderSystem::v_Render()
 {
 	BeginScene();
 
-	m_Triangle.Render(m_pD3D11DeviceContext, m_Matrix);
+	m_Triangle.Render(m_pD3D11DeviceContext.Get(), m_Matrix);
 
 	EndScene();
 }

@@ -17,8 +17,8 @@ namespace byhj
 		cbMatrix.proj  = matrix.proj;
 		pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer.Get(), 0, NULL, &cbMatrix, 0, 0);
 		pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.Get() );
-		pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pTexture);
-		pD3D11DeviceContext->PSSetSamplers(0, 1, &m_pTexSamplerState);
+		pD3D11DeviceContext->PSSetShaderResources(0, 1, m_pTexture.GetAddressOf());
+		pD3D11DeviceContext->PSSetSamplers(0, 1, m_pTexSamplerState.GetAddressOf());
 
 		CubeShader.use(pD3D11DeviceContext);
 	}

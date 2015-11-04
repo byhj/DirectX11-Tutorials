@@ -47,7 +47,7 @@ void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const d3d::MatrixBuf
 	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	pD3D11DeviceContext->PSSetShaderResources(0, 3, m_pTextures);
-	pD3D11DeviceContext->PSSetSamplers(0, 1, &m_pTexSamplerState);
+	pD3D11DeviceContext->PSSetSamplers(0, 1, m_pTexSamplerState.GetAddressOf());
 
 	CubeShader.use(pD3D11DeviceContext);
 	pD3D11DeviceContext->DrawIndexed(m_VertexData.size(), 0, 0);

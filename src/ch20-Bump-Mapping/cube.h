@@ -93,8 +93,8 @@ private:
 	d3d::MatrixBuffer cbMatrix;
 	ComPtr<ID3D11InputLayout> m_pInputLayout;
 	ComPtr<ID3D11Buffer> m_pMVPBuffer;
-	ComPtr<ID3D11Buffer> m_pVertexBufferr;
-	ComPtr<ID3D11Buffer> m_pVertexBufferr;
+	ComPtr<ID3D11Buffer> m_pVertexBuffer;
+	ComPtr<ID3D11Buffer> m_pVertexBuffer;
 	ID3D11Buffer             *m_pLightBuffer      = nullptr;
 	ID3D11Buffer             *m_CameraBuffer      = nullptr;
 	ID3D11ShaderResourceView *m_pTextures[2];

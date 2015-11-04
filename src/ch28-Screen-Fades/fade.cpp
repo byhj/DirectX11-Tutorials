@@ -49,7 +49,7 @@ namespace byhj
 		pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0); 
 		pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		pD3D11DeviceContext->PSSetShaderResources(0, 1, &pTexture);
-		pD3D11DeviceContext->PSSetSamplers(0, 1, &m_pTexSamplerState);
+		pD3D11DeviceContext->PSSetSamplers(0, 1, m_pTexSamplerState.GetAddressOf());
 
 		FadeShader.use(pD3D11DeviceContext);
 		pD3D11DeviceContext->DrawIndexed(m_IndexCount, 0, 0);
