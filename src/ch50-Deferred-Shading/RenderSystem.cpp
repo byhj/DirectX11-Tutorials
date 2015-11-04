@@ -41,7 +41,7 @@ void RenderSystem::v_Render()
 	for ( int i = 0; i!=2; ++i )
 	    m_pD3D11DeviceContext->ClearRenderTargetView(m_pColorRTV[i], bgColor);
 	
-	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 	m_Cube.Render(m_pD3D11DeviceContext, m_Matrix);
 
@@ -136,14 +136,14 @@ void RenderSystem::init_device()
 		NULL, NULL, NULL, NULL, D3D11_SDK_VERSION,
 		&swapChainDesc, &m_pSwapChain, &m_pD3D11Device,
 		NULL, &m_pD3D11DeviceContext);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	//Create back buffer, buffer also is a texture
 	ID3D11Texture2D *pBackBuffer;
 	hr = m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBuffer);
 	hr = m_pD3D11Device->CreateRenderTargetView(pBackBuffer, NULL, &m_pRenderTargetView);
 	pBackBuffer->Release();
-	DebugHR(hr);
+	//DebugHR(hr);
 	
 	//////////////////////////// Initialize the description of the stencil state.///////////////////////////////////////////////
 	D3D11_TEXTURE2D_DESC depthBufferDesc;
@@ -190,7 +190,7 @@ void RenderSystem::init_device()
 	hr = m_pD3D11Device->CreateDepthStencilState(&depthStencilDesc, &m_pDepthStencilState);
 	// Set the depth stencil state.
 
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 	// Initialize the depth stencil view.
@@ -202,8 +202,8 @@ void RenderSystem::init_device()
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
 
 	// Create the depth stencil view.
-	hr = m_pD3D11Device->CreateDepthStencilView(m_pDepthStencilBuffer, &depthStencilViewDesc, &m_pDepthStencilView);
-	DebugHR(hr);
+	hr = m_pD3D11Device->CreateDepthStencilView(m_pDepthStencilBuffer.Get(), &depthStencilViewDesc, &m_pDepthStencilView);
+	//DebugHR(hr);
 
 	// ////////////Clear the second depth stencil state before setting the parameters.//////////////////////
 	D3D11_DEPTH_STENCIL_DESC depthDisabledStencilDesc;
@@ -227,7 +227,7 @@ void RenderSystem::init_device()
 
 	// Create the state using the device.
 	hr = m_pD3D11Device->CreateDepthStencilState(&depthDisabledStencilDesc, &m_pDepthDisabledStencilState);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	// Setup the raster description which will determine how and what polygons will be drawn.
 	D3D11_RASTERIZER_DESC rasterDesc;
@@ -243,7 +243,7 @@ void RenderSystem::init_device()
 	rasterDesc.SlopeScaledDepthBias  = 0.0f;
 	// Create the rasterizer state from the description we just filled out.
 	hr = m_pD3D11Device->CreateRasterizerState(&rasterDesc, &m_pRasterState);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	///////////////////////////////////////////////////////////////////////////////
 
@@ -271,9 +271,9 @@ void RenderSystem::BeginScene()
 	float bgColor[4] ={ 0.2f, 0.3f, 0.4f, 1.0f };
 
 	m_pD3D11DeviceContext->RSSetState(m_pRasterState);
-	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
-	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
-	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	m_pD3D11DeviceContext->OMSetRenderTargets(1, m_pRenderTargetView.GetAddressOf(), m_pDepthStencilView.Get());
+	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView.Get(), bgColor);
+	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 }
 

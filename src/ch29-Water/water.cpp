@@ -10,8 +10,8 @@ void Water::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &M
 		cbMatrix.view   = View;
 		cbMatrix.proj   = Proj;
 		cbMatrix.reflectMat = relfectMat;
-		pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0);
-		pD3D11DeviceContext->VSSetConstantBuffers(0, 1, &m_pMVPBuffer);
+		pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer.Get(), 0, NULL, &cbMatrix, 0, 0);
+		pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.Get() );
 
 
 		// Update the position of the water to simulate motion.
@@ -32,8 +32,8 @@ void Water::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &M
 		stride = sizeof( Vertex );
 		offset = 0;
 
-		pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
-		pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+		pD3D11DeviceContext->IASetVertexBuffers(0, 1, m_pVertexBuffer.GetAddressOf(), &stride, &offset);
+		pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0); 
 		pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pTexture);
 		pD3D11DeviceContext->PSSetSamplers(0, 1, &m_pTexSamplerState);
@@ -99,7 +99,7 @@ bool Water::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 
 	// Now create the vertex buffer.
 	hr = pD3D11Device->CreateBuffer(&VertexBufferDesc, &VBO, &m_pVertexBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	/////////////////////////////////Index Buffer ///////////////////////////////////////
 
@@ -119,7 +119,7 @@ bool Water::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 	IBO.SysMemSlicePitch = 0;
 
 	hr = pD3D11Device->CreateBuffer(&IndexBufferDesc, &IBO, &m_pIndexBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 
 	////////////////////////////////MVP Buffer//////////////////////////////////////
@@ -132,7 +132,7 @@ bool Water::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 	mvpBufferDesc.CPUAccessFlags = 0;
 	mvpBufferDesc.MiscFlags      = 0;
 	hr = pD3D11Device->CreateBuffer(&mvpBufferDesc, NULL, &m_pMVPBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	D3D11_BUFFER_DESC waterBufferDesc;
 	ZeroMemory(&waterBufferDesc, sizeof( D3D11_BUFFER_DESC ));
@@ -162,10 +162,10 @@ bool Water::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 
 	// Create the texture sampler state.
 	hr = pD3D11Device->CreateSamplerState(&samplerDesc, &m_pTexSamplerState);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/water01.dds", NULL, NULL, &m_pTexture, NULL);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 
 	return true;

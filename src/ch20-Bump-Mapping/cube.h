@@ -91,14 +91,14 @@ private:
 	};
 
 	d3d::MatrixBuffer cbMatrix;
-	ID3D11InputLayout        *m_pInputLayout      = nullptr;
-	ID3D11Buffer             *m_pMVPBuffer        = nullptr;
-	ID3D11Buffer             *m_pVertexBuffer     = nullptr;
-	ID3D11Buffer             *m_pIndexBuffer      = nullptr;
+	ComPtr<ID3D11InputLayout> m_pInputLayout;
+	ComPtr<ID3D11Buffer> m_pMVPBuffer;
+	ComPtr<ID3D11Buffer> m_pVertexBufferr;
+	ComPtr<ID3D11Buffer> m_pVertexBufferr;
 	ID3D11Buffer             *m_pLightBuffer      = nullptr;
 	ID3D11Buffer             *m_CameraBuffer      = nullptr;
 	ID3D11ShaderResourceView *m_pTextures[2];
-	ID3D11SamplerState       *m_pTexSamplerState  = nullptr;
+	ComPtr<ID3D11SamplerState> m_pTexSamplerState;
 	d3d::Shader CubeShader;
 };
 

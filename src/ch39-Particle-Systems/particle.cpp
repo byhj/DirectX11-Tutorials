@@ -64,16 +64,16 @@ void Particle::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4
 		cbMatrix.model = Model;
 		cbMatrix.view = View;
 		cbMatrix.proj = Proj;
-		pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0);
-		pD3D11DeviceContext->VSSetConstantBuffers(0, 1, &m_pMVPBuffer);
+		pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer.Get(), 0, NULL, &cbMatrix, 0, 0);
+		pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.Get() );
 
 		unsigned int stride;
 		unsigned int offset;
 		stride = sizeof(Vertex);
 		offset = 0;
 		// Set the vertex buffer to active in the input assembler so it can be rendered.
-		pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
-		pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+		pD3D11DeviceContext->IASetVertexBuffers(0, 1, m_pVertexBuffer.GetAddressOf(), &stride, &offset);
+		pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0); 
 		pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pTexture);
 		pD3D11DeviceContext->PSSetSamplers(0, 1, &m_pTexSamplerState);
@@ -149,7 +149,7 @@ bool Particle::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D
 	VBO.SysMemPitch = 0;
 	VBO.SysMemSlicePitch = 0;
 	hr = pD3D11Device->CreateBuffer(&VertexBufferDesc, &VBO, &m_pVertexBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	/////////////////////////////////Index Buffer ///////////////////////////////////////
 	unsigned long  *indices = new unsigned long[m_IndexCount];
@@ -174,7 +174,7 @@ bool Particle::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D
 	IBO.SysMemSlicePitch = 0;
 
 	hr = pD3D11Device->CreateBuffer(&IndexBufferDesc, &IBO, &m_pIndexBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	delete [] indices;
 	indices = 0;
@@ -189,7 +189,7 @@ bool Particle::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D
 	mvpBufferDesc.CPUAccessFlags = 0;
 	mvpBufferDesc.MiscFlags      = 0;
 	hr = pD3D11Device->CreateBuffer(&mvpBufferDesc, NULL, &m_pMVPBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	return true;
 }
@@ -238,7 +238,7 @@ void Particle::init_texture(ID3D11Device *pD3D11Device, LPCWSTR texFile)
 {
 	HRESULT hr;
 	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, texFile, NULL,NULL, &m_pTexture, NULL);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	// Create a texture sampler state description.
 	D3D11_SAMPLER_DESC samplerDesc;
@@ -258,7 +258,7 @@ void Particle::init_texture(ID3D11Device *pD3D11Device, LPCWSTR texFile)
 
 	// Create the texture sampler state.
 	hr = pD3D11Device->CreateSamplerState(&samplerDesc, &m_pTexSamplerState);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 }
 void Particle::Frame(float frameTime)

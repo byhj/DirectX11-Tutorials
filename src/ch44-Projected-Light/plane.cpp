@@ -19,16 +19,16 @@ void Plane::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &M
 	XMStoreFloat4x4(&cbMatrix.view2, view2);
 	XMStoreFloat4x4(&cbMatrix.proj2, proj2);
 
-	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0);
-	pD3D11DeviceContext->VSSetConstantBuffers(0, 1, &m_pMVPBuffer);
+	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer.Get(), 0, NULL, &cbMatrix, 0, 0);
+	pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.Get() );
 
 	unsigned int stride;
 	unsigned int offset;
 	stride = sizeof(Vertex);
 	offset = 0;
 
-	pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
-	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	pD3D11DeviceContext->IASetVertexBuffers(0, 1, m_pVertexBuffer.GetAddressOf(), &stride, &offset);
+	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0); 
 	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	pD3D11DeviceContext->PSSetShaderResources(0, 2, m_pTextures);
 	pD3D11DeviceContext->PSSetSamplers(0, 1, &m_pTexSamplerState);
@@ -74,7 +74,7 @@ bool Plane::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 
 	// Now create the vertex buffer.
 	hr = pD3D11Device->CreateBuffer(&VertexBufferDesc, &VBO, &m_pVertexBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	/////////////////////////////////Index Buffer ///////////////////////////////////////
 
@@ -94,7 +94,7 @@ bool Plane::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 	IBO.SysMemSlicePitch = 0;
 
 	hr = pD3D11Device->CreateBuffer(&IndexBufferDesc, &IBO, &m_pIndexBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 
 	////////////////////////////////MVP Buffer//////////////////////////////////////
@@ -107,7 +107,7 @@ bool Plane::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 	mvpBufferDesc.CPUAccessFlags = 0;
 	mvpBufferDesc.MiscFlags      = 0;
 	hr = pD3D11Device->CreateBuffer(&mvpBufferDesc, NULL, &m_pMVPBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	
 	// Create a texture sampler state description.
@@ -128,13 +128,13 @@ bool Plane::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 
 	// Create the texture sampler state.
 	hr = pD3D11Device->CreateSamplerState(&samplerDesc, &m_pTexSamplerState);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 
 	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/metal001.dds", NULL, NULL, &m_pTextures[0], NULL);
-	DebugHR(hr);
+	//DebugHR(hr);
 	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/grate.dds", NULL, NULL, &m_pTextures[1], NULL);
-	DebugHR(hr);
+	//DebugHR(hr);
 	return true;
 }
 

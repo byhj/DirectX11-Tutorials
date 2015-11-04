@@ -25,10 +25,10 @@ private:
 
 	byhj::Window m_Window;
 
-	IDXGISwapChain          *m_pSwapChain          = nullptr;     
-	ID3D11Device            *m_pD3D11Device        = nullptr;
-	ID3D11DeviceContext     *m_pD3D11DeviceContext = nullptr;
-	ID3D11RenderTargetView  *m_pRenderTargetView   = nullptr; 
+	ComPtr<IDXGISwapChain> m_pSwapChain ;    
+	ComPtr<ID3D11Device>   m_pD3D11Device;
+	ComPtr<ID3D11DeviceContext> m_pD3D11DeviceContext;
+	ComPtr<ID3D11RenderTargetView> m_pRenderTargetView; 
 };
 }
 #endif

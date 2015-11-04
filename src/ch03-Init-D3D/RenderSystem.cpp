@@ -41,11 +41,6 @@ void RenderSystem::v_Shutdown()
 {
 
 	m_Window.Shutdown();
-
-	ReleaseCOM(m_pSwapChain);
-	ReleaseCOM(m_pD3D11Device);
-	ReleaseCOM(m_pD3D11DeviceContext);
-	ReleaseCOM(m_pRenderTargetView);
 }
 
 void RenderSystem::InitDevice()
@@ -82,14 +77,14 @@ void RenderSystem::InitDevice()
 		NULL, NULL, NULL, NULL, D3D11_SDK_VERSION,
 		&swapChainDesc, &m_pSwapChain, &m_pD3D11Device,
 		NULL, &m_pD3D11DeviceContext);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	//Create back buffer, buffer also is a texture
 	ID3D11Texture2D *pBackBuffer;
 	hr = m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBuffer);
 	hr = m_pD3D11Device->CreateRenderTargetView(pBackBuffer, NULL, &m_pRenderTargetView);
 	pBackBuffer->Release();
-	DebugHR(hr);
+	//DebugHR(hr);
 
 }
 
@@ -98,8 +93,8 @@ void RenderSystem::BeginScene()
 	//Render 
 	float bgColor[4] ={ 0.2f, 0.3f, 0.4f, 1.0f };
 
-	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, NULL);
-	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
+	m_pD3D11DeviceContext->OMSetRenderTargets(1, m_pRenderTargetView.GetAddressOf(), NULL);
+	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView.Get(), bgColor);
 
 
 }

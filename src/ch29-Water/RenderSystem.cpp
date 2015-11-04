@@ -38,7 +38,7 @@ void RenderSystem::v_Render()
 	// Setup a clipping plane based on the height of the water to clip everything above it.
 	XMFLOAT4 clipPlane = XMFLOAT4(0.0f, -1.0f, 0.0f, 2.75f + 0.1f);
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRefractRTV, m_pDepthStencilView);
-	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
+	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
 	
 	XMMATRIX World = XMMatrixTranslation(0.0f, 2.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(World));
@@ -48,7 +48,7 @@ void RenderSystem::v_Render()
 	//////////////////////Render Reflection To Texture////////////////////////////////
 	
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pReflectRTV, m_pDepthStencilView);
-	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
+	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
 	// Translate to where the wall model will be rendered.
 	World = XMMatrixTranslation(0.0f, 6.0f, 8.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(World));
@@ -167,14 +167,14 @@ void RenderSystem::init_device()
 		NULL, NULL, NULL, NULL, D3D11_SDK_VERSION,
 		&swapChainDesc, &m_pSwapChain, &m_pD3D11Device,
 		NULL, &m_pD3D11DeviceContext);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	//Create back buffer, buffer also is a texture
 	ID3D11Texture2D *pBackBuffer;
 	hr = m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBuffer);
 	hr = m_pD3D11Device->CreateRenderTargetView(pBackBuffer, NULL, &m_pRenderTargetView);
 	pBackBuffer->Release();
-	DebugHR(hr);
+	//DebugHR(hr);
 	
 	///////////////////// Set up the description of the depth buffer.////////////////////////
 	D3D11_TEXTURE2D_DESC depthBufferDesc;
@@ -192,7 +192,7 @@ void RenderSystem::init_device()
 	depthBufferDesc.MiscFlags          = 0;
 	// Create the texture for the depth buffer using the filled out description.
 	hr = m_pD3D11Device->CreateTexture2D(&depthBufferDesc, NULL, &m_pDepthStencilBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	//////////////////////////// Initialize the description of the stencil state.///////////////////////////////////////////////
 	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
@@ -219,7 +219,7 @@ void RenderSystem::init_device()
 
 	// Create the depth stencil state.
 	hr = m_pD3D11Device->CreateDepthStencilState(&depthStencilDesc, &m_pDepthStencilState);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	// Initialize the depth stencil view.
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
@@ -228,8 +228,8 @@ void RenderSystem::init_device()
 	depthStencilViewDesc.ViewDimension      = D3D11_DSV_DIMENSION_TEXTURE2D;
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
 
-	hr = m_pD3D11Device->CreateDepthStencilView(m_pDepthStencilBuffer, &depthStencilViewDesc, &m_pDepthStencilView);
-	DebugHR(hr);
+	hr = m_pD3D11Device->CreateDepthStencilView(m_pDepthStencilBuffer.Get(), &depthStencilViewDesc, &m_pDepthStencilView);
+	//DebugHR(hr);
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -272,9 +272,9 @@ void RenderSystem::BeginScene()
 
 	m_pD3D11DeviceContext->RSSetState(m_pRasterState);
 	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
-	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
-	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView, bgColor);
-	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	m_pD3D11DeviceContext->OMSetRenderTargets(1, m_pRenderTargetView.GetAddressOf(), m_pDepthStencilView.Get());
+	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView.Get(), bgColor);
+	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 }
 

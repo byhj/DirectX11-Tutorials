@@ -32,8 +32,8 @@ void Triangle::Render(ID3D11DeviceContext *pD3D11DeviceContext, const d3d::Matri
 	cbMatrix.model = matrix.model;
 	cbMatrix.view  = matrix.view;
 	cbMatrix.proj  = matrix.proj;
-	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0);
-	pD3D11DeviceContext->VSSetConstantBuffers(0, 1, &m_pMVPBuffer);
+	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer.Get(), 0, NULL, &cbMatrix, 0, 0);
+	pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.GetAddressOf());
 
 	TriangleShader.use(pD3D11DeviceContext);
 	pD3D11DeviceContext->DrawIndexed(3, 0, 0);
@@ -43,10 +43,6 @@ void Triangle::Render(ID3D11DeviceContext *pD3D11DeviceContext, const d3d::Matri
 
 void Triangle::Shutdown()
 {
-	ReleaseCOM(m_pInputLayout)
-	ReleaseCOM(m_pMVPBuffer)
-	ReleaseCOM(m_pVertexBuffer)
-	ReleaseCOM(m_pIndexBuffer)
 
 }
 
@@ -82,7 +78,7 @@ void Triangle::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D
 
 	// Now create the vertex buffer.
 	hr = pD3D11Device->CreateBuffer(&VertexBufferDesc, &VBO, &m_pVertexBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	/////////////////////////////////Index Buffer ///////////////////////////////////////
 	m_IndexCount = 3;
@@ -107,7 +103,7 @@ void Triangle::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D
 	IBO.SysMemSlicePitch = 0;
 
 	hr = pD3D11Device->CreateBuffer(&IndexBufferDesc, &IBO, &m_pIndexBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	////////////////////////////////////////////////////////////////////////////////////////
 	// Release the arrays now that the vertex and index buffers have been created and loaded.
@@ -121,8 +117,8 @@ void Triangle::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D
 	unsigned int offset;
 	stride = sizeof(Vertex);
 	offset = 0;
-	pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
-	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	pD3D11DeviceContext->IASetVertexBuffers(0, 1, m_pVertexBuffer.GetAddressOf(), &stride, &offset);
+	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0); 
 	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	////////////////////////////////Const Buffer//////////////////////////////////////
@@ -135,33 +131,36 @@ void Triangle::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D
 	mvpDesc.CPUAccessFlags = 0;
 	mvpDesc.MiscFlags      = 0;
 	hr = pD3D11Device->CreateBuffer(&mvpDesc, NULL, &m_pMVPBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 }
 
 void Triangle::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 {
-	D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc[2];
-	pInputLayoutDesc[0].SemanticName         = "POSITION";
-	pInputLayoutDesc[0].SemanticIndex        = 0;
-	pInputLayoutDesc[0].Format               = DXGI_FORMAT_R32G32B32_FLOAT;
-	pInputLayoutDesc[0].InputSlot            = 0;
-	pInputLayoutDesc[0].AlignedByteOffset    = 0;
-	pInputLayoutDesc[0].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[0].InstanceDataStepRate = 0;
+	D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc;
+	std::vector<D3D11_INPUT_ELEMENT_DESC> vInputLayoutDesc;
+	    
+	pInputLayoutDesc.SemanticName         = "POSITION";
+	pInputLayoutDesc.SemanticIndex        = 0;
+	pInputLayoutDesc.Format               = DXGI_FORMAT_R32G32B32_FLOAT;
+	pInputLayoutDesc.InputSlot            = 0;
+	pInputLayoutDesc.AlignedByteOffset    = 0;
+	pInputLayoutDesc.InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc.InstanceDataStepRate = 0;
+	vInputLayoutDesc.push_back(pInputLayoutDesc);
 
-	pInputLayoutDesc[1].SemanticName         = "COLOR";
-	pInputLayoutDesc[1].SemanticIndex        = 0;
-	pInputLayoutDesc[1].Format               = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	pInputLayoutDesc[1].InputSlot            = 0;
-	pInputLayoutDesc[1].AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
-	pInputLayoutDesc[1].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[1].InstanceDataStepRate = 0;
-	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
+	pInputLayoutDesc.SemanticName         = "COLOR";
+	pInputLayoutDesc.SemanticIndex        = 0;
+	pInputLayoutDesc.Format               = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	pInputLayoutDesc.InputSlot            = 0;
+	pInputLayoutDesc.AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
+	pInputLayoutDesc.InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc.InstanceDataStepRate = 0;
+	vInputLayoutDesc.push_back(pInputLayoutDesc);
 
-	TriangleShader.init(pD3D11Device, hWnd);
-	TriangleShader.attachVS(L"triangle.vsh", pInputLayoutDesc, numElements);
-	TriangleShader.attachPS(L"triangle.psh");
+	TriangleShader.init(pD3D11Device, vInputLayoutDesc);
+	TriangleShader.attachVS(L"triangle.vsh", "VS", "vs_5_0");
+	TriangleShader.attachPS(L"triangle.psh", "PS", "ps_5_0");
 	TriangleShader.end();
 }
 

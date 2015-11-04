@@ -33,8 +33,8 @@ void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const d3d::MatrixBuf
 	cbMatrix.model = matrix.model;
 	cbMatrix.view  = matrix.view;
 	cbMatrix.proj  = matrix.proj;
-	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0);
-	pD3D11DeviceContext->VSSetConstantBuffers(0, 1, &m_pMVPBuffer);
+	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer.Get(), 0, NULL, &cbMatrix, 0, 0);
+	pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.Get() );
 	pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pTexture);
 	pD3D11DeviceContext->PSSetSamplers(0, 1, &m_pTexSamplerState);
 
@@ -85,7 +85,7 @@ void Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 
 	// Now create the vertex buffer.
 	hr = pD3D11Device->CreateBuffer(&VertexBufferDesc, &VBO, &m_pVertexBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	/////////////////////////////////Index Buffer ///////////////////////////////////////
 
@@ -105,7 +105,7 @@ void Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	IBO.SysMemSlicePitch = 0;
 
 	hr = pD3D11Device->CreateBuffer(&IndexBufferDesc, &IBO, &m_pIndexBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	////////////////////////////////////////////////////////////////////////////////////////
 
@@ -114,8 +114,8 @@ void Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	unsigned int offset;
 	stride = sizeof(Vertex);
 	offset = 0;
-	pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
-	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	pD3D11DeviceContext->IASetVertexBuffers(0, 1, m_pVertexBuffer.GetAddressOf(), &stride, &offset);
+	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0); 
 	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	////////////////////////////////Const Buffer//////////////////////////////////////
@@ -128,7 +128,7 @@ void Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	mvpDesc.CPUAccessFlags = 0;
 	mvpDesc.MiscFlags      = 0;
 	hr = pD3D11Device->CreateBuffer(&mvpDesc, NULL, &m_pMVPBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 
 	/////////////////////////////////////////////////////////////////////////////////
@@ -141,12 +141,12 @@ void Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	lightBufferDesc.MiscFlags      = 0;
 
 	hr = pD3D11Device->CreateBuffer(&lightBufferDesc, NULL, &m_pLightBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	// Lock the light constant buffer so it can be written to.
 	hr = pD3D11DeviceContext->Map(m_pLightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	// Get a pointer to the data in the constant buffer.
 	LightBuffer *dataPtr2 = (LightBuffer*)mappedResource.pData;
@@ -176,11 +176,11 @@ void Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 
 	// Create the camera constant buffer pointer so we can access the vertex shader constant buffer from within this class.
 	hr = pD3D11Device->CreateBuffer(&ClipBufferDesc, NULL, &m_CameraBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	// Lock the camera constant buffer so it can be written to.
 	hr = pD3D11DeviceContext->Map(m_CameraBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	// Get a pointer to the data in the constant buffer.
 	XMFLOAT4 *dataPtr3 = (XMFLOAT4*)mappedResource.pData;
@@ -237,7 +237,7 @@ void Cube::init_texture(ID3D11Device *pD3D11Device)
 
 	HRESULT hr;
 	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/stone.dds", NULL, NULL, &m_pTexture, NULL);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	// Create a texture sampler state description.
 	D3D11_SAMPLER_DESC samplerDesc;
@@ -257,7 +257,7 @@ void Cube::init_texture(ID3D11Device *pD3D11Device)
 
 	// Create the texture sampler state.
 	hr = pD3D11Device->CreateSamplerState(&samplerDesc, &m_pTexSamplerState);
-	DebugHR(hr);
+	//DebugHR(hr);
 }
 
 void Cube::load_model(char *modelFile)

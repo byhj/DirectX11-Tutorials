@@ -131,8 +131,8 @@ namespace byhj
 		cbMatrix.lightView2 = LightView2;
 		cbMatrix.lightProj2 = LightProj2;
 
-		pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0);
-		pD3D11DeviceContext->VSSetConstantBuffers(0, 1, &m_pMVPBuffer);
+		pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer.Get(), 0, NULL, &cbMatrix, 0, 0);
+		pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.Get() );
 
 		lightPosBuffer.lightPos = XMFLOAT3(5.0f, 8.0f, -5.0f);
 		lightPosBuffer.lightPos2 = XMFLOAT3(-5.0f, 8.0f, -5.0f);

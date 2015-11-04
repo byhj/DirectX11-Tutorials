@@ -50,8 +50,8 @@ namespace byhj
 		verticalShader.use(pD3D11DeviceContext);
 
 		cbMatrix = matrix;
-		pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0);
-		pD3D11DeviceContext->VSSetConstantBuffers(0, 1, &m_pMVPBuffer);
+		pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer.Get(), 0, NULL, &cbMatrix, 0, 0);
+		pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.Get() );
 	}
 
 	void VerticalShader::Shutdown()

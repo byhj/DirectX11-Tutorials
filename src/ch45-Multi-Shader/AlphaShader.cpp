@@ -15,8 +15,8 @@ namespace byhj
 		cbMatrix.model = matrix.model;
 		cbMatrix.view  = matrix.view;
 		cbMatrix.proj  = matrix.proj;
-		pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0);
-		pD3D11DeviceContext->VSSetConstantBuffers(0, 1, &m_pMVPBuffer);
+		pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer.Get(), 0, NULL, &cbMatrix, 0, 0);
+		pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.Get() );
 		pD3D11DeviceContext->PSSetShaderResources(0, 3, m_pTextures);
 		pD3D11DeviceContext->PSSetSamplers(0, 1, &m_pTexSamplerState);
 
@@ -78,7 +78,7 @@ namespace byhj
 		mvpDesc.CPUAccessFlags = 0;
 		mvpDesc.MiscFlags      = 0;
 		hr = pD3D11Device->CreateBuffer(&mvpDesc, NULL, &m_pMVPBuffer);
-		DebugHR(hr);
+		//DebugHR(hr);
 
 
 		/////////////////////////////////////////////////////////////////////////////////
@@ -91,12 +91,12 @@ namespace byhj
 		lightBufferDesc.MiscFlags      = 0;
 
 		hr = pD3D11Device->CreateBuffer(&lightBufferDesc, NULL, &m_pLightBuffer);
-		DebugHR(hr);
+		//DebugHR(hr);
 
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 		// Lock the light constant buffer so it can be written to.
 		hr = pD3D11DeviceContext->Map(m_pLightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-		DebugHR(hr);
+		//DebugHR(hr);
 
 		// Get a pointer to the data in the constant buffer.
 		LightBuffer *dataPtr2 = ( LightBuffer* )mappedResource.pData;
@@ -117,11 +117,11 @@ namespace byhj
 
 		HRESULT hr;
 		hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/stone01.dds", NULL, NULL, &m_pTextures[0], NULL);
-		DebugHR(hr);
+		//DebugHR(hr);
 		hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/dirt01.dds", NULL, NULL, &m_pTextures[1], NULL);
-		DebugHR(hr);
+		//DebugHR(hr);
 		hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/alpha01.dds", NULL, NULL, &m_pTextures[2], NULL);
-		DebugHR(hr);
+		//DebugHR(hr);
 
 		// Create a texture sampler state description.
 		D3D11_SAMPLER_DESC samplerDesc;
@@ -141,7 +141,7 @@ namespace byhj
 
 		// Create the texture sampler state.
 		hr = pD3D11Device->CreateSamplerState(&samplerDesc, &m_pTexSamplerState);
-		DebugHR(hr);
+		//DebugHR(hr);
 	}
 }
 

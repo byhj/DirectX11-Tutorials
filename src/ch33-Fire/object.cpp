@@ -39,8 +39,8 @@ void Object::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &
 	stride = sizeof(Vertex); 
 	offset = 0;
 
-	pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
-	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	pD3D11DeviceContext->IASetVertexBuffers(0, 1, m_pVertexBuffer.GetAddressOf(), &stride, &offset);
+	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0); 
 	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	pD3D11DeviceContext->PSSetShaderResources(0, 3, m_pTextures);  
 	pD3D11DeviceContext->PSSetSamplers( 0, 1, &m_pTexSamplerState );
@@ -86,7 +86,7 @@ bool Object::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11
 
 	// Now create the vertex buffer.
 	hr = pD3D11Device->CreateBuffer(&VertexBufferDesc, &VBO, &m_pVertexBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	/////////////////////////////////Index Buffer ///////////////////////////////////////
 
@@ -106,7 +106,7 @@ bool Object::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11
 	IBO.SysMemSlicePitch = 0;
 
 	hr = pD3D11Device->CreateBuffer(&IndexBufferDesc, &IBO, &m_pIndexBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 
 	////////////////////////////////MVP Buffer//////////////////////////////////////
@@ -119,7 +119,7 @@ bool Object::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11
 	mvpBufferDesc.CPUAccessFlags = 0;
 	mvpBufferDesc.MiscFlags      = 0;
 	hr = pD3D11Device->CreateBuffer(&mvpBufferDesc, NULL, &m_pMVPBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	///////////////////////////////////////Light buffer////////////////////////////////////////
 
@@ -154,7 +154,7 @@ bool Object::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11
 	distortSub.SysMemPitch      = 0;
 	distortSub.SysMemSlicePitch = 0;
 	hr = pD3D11Device->CreateBuffer(&distortBufferDesc, &distortSub, &m_pDistortBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 
 	// Create a texture sampler state description.
@@ -175,7 +175,7 @@ bool Object::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11
 
 	// Create the texture sampler state.
 	hr = pD3D11Device->CreateSamplerState(&samplerDesc, &m_pTexSamplerState);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 
 	D3D11_SAMPLER_DESC samplerDesc2;
@@ -195,11 +195,11 @@ bool Object::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11
 	hr = pD3D11Device->CreateSamplerState(&samplerDesc2, &m_pTexSamplerState1);
 
 	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/fire01.dds", NULL,NULL, &m_pTextures[0], NULL);
-	DebugHR(hr);
+	//DebugHR(hr);
 	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/noise01.dds", NULL,NULL, &m_pTextures[1], NULL);
-	DebugHR(hr);
+	//DebugHR(hr);
 	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/alpha01.dds", NULL,NULL, &m_pTextures[2], NULL);
-	DebugHR(hr);
+	//DebugHR(hr);
 	return true;
 }
 

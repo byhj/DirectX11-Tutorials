@@ -10,16 +10,16 @@ void Square::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &
 	cbMatrix.model = Model;
 	cbMatrix.view = View;
 	cbMatrix.proj = Proj;
-	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0);
-	pD3D11DeviceContext->VSSetConstantBuffers(0, 1, &m_pMVPBuffer);
+	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer.Get(), 0, NULL, &cbMatrix, 0, 0);
+	pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.Get() );
 
 	unsigned int stride;
 	unsigned int offset;
 	stride = sizeof(Vertex);
 	offset = 0;
 
-	pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
-	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	pD3D11DeviceContext->IASetVertexBuffers(0, 1, m_pVertexBuffer.GetAddressOf(), &stride, &offset);
+	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0); 
 	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pTexture);
 	pD3D11DeviceContext->PSSetSamplers(0, 1, &m_pTexSamplerState);
@@ -65,7 +65,7 @@ bool Square::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11
 
 	// Now create the vertex buffer.
 	hr = pD3D11Device->CreateBuffer(&VertexBufferDesc, &VBO, &m_pVertexBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	/////////////////////////////////Index Buffer ///////////////////////////////////////
 
@@ -85,7 +85,7 @@ bool Square::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11
 	IBO.SysMemSlicePitch = 0;
 
 	hr = pD3D11Device->CreateBuffer(&IndexBufferDesc, &IBO, &m_pIndexBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 
 	////////////////////////////////MVP Buffer//////////////////////////////////////
@@ -98,7 +98,7 @@ bool Square::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11
 	mvpBufferDesc.CPUAccessFlags = 0;
 	mvpBufferDesc.MiscFlags = 0;
 	hr = pD3D11Device->CreateBuffer(&mvpBufferDesc, NULL, &m_pMVPBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	///////////////////////////////////////Light buffer////////////////////////////////////////
 	D3DPointLight pLight;
@@ -143,7 +143,7 @@ bool Square::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11
 	lightSub.SysMemPitch = 0;
 	lightSub.SysMemSlicePitch = 0;
 	hr = pD3D11Device->CreateBuffer(&lightBufferDesc, &lightSub, &m_pLightBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 	int lightSlot = 0;
 	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, &m_pLightBuffer);
 
@@ -158,12 +158,12 @@ bool Square::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11
 
 	// Create the camera constant buffer pointer so we can access the vertex shader constant buffer from within this class.
 	hr = pD3D11Device->CreateBuffer(&cameraBufferDesc, NULL, &m_CameraBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	// Lock the camera constant buffer so it can be written to.
 	hr = pD3D11DeviceContext->Map(m_CameraBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	// Get a pointer to the data in the constant buffer.
 	CameraBuffer *dataPtr3 = (CameraBuffer*)mappedResource.pData;
@@ -192,10 +192,10 @@ bool Square::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11
 
 	// Create the texture sampler state.
 	hr = pD3D11Device->CreateSamplerState(&samplerDesc, &m_pTexSamplerState);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/seafloor.dds", NULL, NULL, &m_pTexture, NULL);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	return true;
 }

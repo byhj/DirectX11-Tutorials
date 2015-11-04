@@ -128,8 +128,8 @@ namespace byhj
 		cbMatrix.lightView = LightView;
 		cbMatrix.lightPorj = LightProj;
 
-		pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0);
-		pD3D11DeviceContext->VSSetConstantBuffers(0, 1, &m_pMVPBuffer);
+		pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer.Get(), 0, NULL, &cbMatrix, 0, 0);
+		pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.Get() );
 
 		static float lightPositionX = -5.0f;
 		lightPositionX += 0.0005f;

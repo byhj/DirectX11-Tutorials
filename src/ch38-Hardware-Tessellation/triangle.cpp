@@ -27,7 +27,7 @@ void Triangle::Render(ID3D11DeviceContext *pD3D11DeviceContext, const d3d::Matri
 	cbMatrix.model = matrix.model;
 	cbMatrix.view  = matrix.view;
 	cbMatrix.proj  = matrix.proj;
-	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0);
+	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer.Get(), 0, NULL, &cbMatrix, 0, 0);
 	pD3D11DeviceContext->DSSetConstantBuffers(0, 1, &m_pMVPBuffer);
 
 	// Set vertex buffer stride and offset.=
@@ -35,8 +35,8 @@ void Triangle::Render(ID3D11DeviceContext *pD3D11DeviceContext, const d3d::Matri
 	unsigned int offset;
 	stride = sizeof(Vertex);
 	offset = 0;
-	pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
-	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	pD3D11DeviceContext->IASetVertexBuffers(0, 1, m_pVertexBuffer.GetAddressOf(), &stride, &offset);
+	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0); 
 	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
 
 	TriangleShader.use(pD3D11DeviceContext);
@@ -89,7 +89,7 @@ void Triangle::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D
 
 	// Now create the vertex buffer.
 	hr = pD3D11Device->CreateBuffer(&VertexBufferDesc, &VBO, &m_pVertexBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	/////////////////////////////////Index Buffer ///////////////////////////////////////
 	m_IndexCount = 3;
@@ -114,7 +114,7 @@ void Triangle::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D
 	IBO.SysMemSlicePitch = 0;
 
 	hr = pD3D11Device->CreateBuffer(&IndexBufferDesc, &IBO, &m_pIndexBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	////////////////////////////////////////////////////////////////////////////////////////
 	// Release the arrays now that the vertex and index buffers have been created and loaded.
@@ -134,7 +134,7 @@ void Triangle::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D
 	mvpDesc.CPUAccessFlags = 0;
 	mvpDesc.MiscFlags      = 0;
 	hr = pD3D11Device->CreateBuffer(&mvpDesc, NULL, &m_pMVPBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 }
 
@@ -175,7 +175,7 @@ void Triangle::init_texture(ID3D11Device *pD3D11Device)
 
 	HRESULT hr;
 	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/stone.dds", NULL, NULL, &m_pTexture, NULL);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	// Create a texture sampler state description.
 	D3D11_SAMPLER_DESC samplerDesc;
@@ -195,7 +195,7 @@ void Triangle::init_texture(ID3D11Device *pD3D11Device)
 
 	// Create the texture sampler state.
 	hr = pD3D11Device->CreateSamplerState(&samplerDesc, &m_pTexSamplerState);
-	DebugHR(hr);
+	//DebugHR(hr);
 }
 
 }

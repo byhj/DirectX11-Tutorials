@@ -29,8 +29,8 @@ void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const d3d::MatrixBuf
 	cbMatrix.model = matrix.model;
 	cbMatrix.view  = matrix.view;
 	cbMatrix.proj  = matrix.proj;
-	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0);
-	pD3D11DeviceContext->VSSetConstantBuffers(0, 1, &m_pMVPBuffer);
+	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer.Get(), 0, NULL, &cbMatrix, 0, 0);
+	pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.Get() );
 
 	unsigned int strides[2];
 	unsigned int offsets[2];
@@ -47,7 +47,7 @@ void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const d3d::MatrixBuf
 	// Set the vertex buffer to active in the input assembler so it can be rendered.
 	pD3D11DeviceContext->IASetVertexBuffers(0, 2, bufferPointers, strides, offsets);
 
-	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0); 
 	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pTexture);
 	pD3D11DeviceContext->PSSetSamplers(0, 1, &m_pTexSamplerState);
@@ -95,7 +95,7 @@ void Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 
 	// Now create the vertex buffer.
 	hr = pD3D11Device->CreateBuffer(&VertexBufferDesc, &VBO, &m_pVertexBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	/////////////////////////////////Index Buffer ///////////////////////////////////////
 
@@ -115,7 +115,7 @@ void Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	IBO.SysMemSlicePitch = 0;
 
 	hr = pD3D11Device->CreateBuffer(&IndexBufferDesc, &IBO, &m_pIndexBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 
 
@@ -129,7 +129,7 @@ void Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	mvpDesc.CPUAccessFlags = 0;
 	mvpDesc.MiscFlags      = 0;
 	hr = pD3D11Device->CreateBuffer(&mvpDesc, NULL, &m_pMVPBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 
 	/////////////////////////////////////////////////////////////////////////////////
@@ -159,7 +159,7 @@ void Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	IntData.SysMemSlicePitch = 0;
 	// Create the instance buffer.
 	hr = pD3D11Device->CreateBuffer(&instanceBufferDesc, &IntData, &m_pInstanceBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	// Release the instance array now that the instance buffer has been created and loaded.
 	delete[] InstanceData;
@@ -217,7 +217,7 @@ void Cube::init_texture(ID3D11Device *pD3D11Device)
 
 	HRESULT hr;
 	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/stone.dds", NULL, NULL, &m_pTexture, NULL);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	// Create a texture sampler state description.
 	D3D11_SAMPLER_DESC samplerDesc;
@@ -237,7 +237,7 @@ void Cube::init_texture(ID3D11Device *pD3D11Device)
 
 	// Create the texture sampler state.
 	hr = pD3D11Device->CreateSamplerState(&samplerDesc, &m_pTexSamplerState);
-	DebugHR(hr);
+	//DebugHR(hr);
 }
 
 void Cube::load_model(char *modelFile)

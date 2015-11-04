@@ -29,8 +29,8 @@ void Plane::Render(ID3D11DeviceContext *pD3D11DeviceContext, const d3d::MatrixBu
 	cbMatrix.model = matrix.model;
 	cbMatrix.view  = matrix.view;
 	cbMatrix.proj  = matrix.proj;
-	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0);
-	pD3D11DeviceContext->VSSetConstantBuffers(0, 1, &m_pMVPBuffer);
+	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer.Get(), 0, NULL, &cbMatrix, 0, 0);
+	pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.Get() );
 	pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pTexture);
 	pD3D11DeviceContext->PSSetSamplers(0, 1, &m_pTexSamplerState);
 
@@ -80,7 +80,7 @@ void Plane::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 
 	// Now create the vertex buffer.
 	hr = pD3D11Device->CreateBuffer(&VertexBufferDesc, &VBO, &m_pVertexBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	/////////////////////////////////Index Buffer ///////////////////////////////////////
 
@@ -100,7 +100,7 @@ void Plane::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 	IBO.SysMemSlicePitch = 0;
 
 	hr = pD3D11Device->CreateBuffer(&IndexBufferDesc, &IBO, &m_pIndexBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	////////////////////////////////////////////////////////////////////////////////////////
 
@@ -109,8 +109,8 @@ void Plane::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 	unsigned int offset;
 	stride = sizeof(Vertex);
 	offset = 0;
-	pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
-	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	pD3D11DeviceContext->IASetVertexBuffers(0, 1, m_pVertexBuffer.GetAddressOf(), &stride, &offset);
+	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0); 
 	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	////////////////////////////////Const Buffer//////////////////////////////////////
@@ -123,7 +123,7 @@ void Plane::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 	mvpDesc.CPUAccessFlags = 0;
 	mvpDesc.MiscFlags      = 0;
 	hr = pD3D11Device->CreateBuffer(&mvpDesc, NULL, &m_pMVPBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 
 	///////////////////////////////////////Light buffer////////////////////////////////////////
@@ -169,7 +169,7 @@ void Plane::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 	lightSub.SysMemPitch      = 0;
 	lightSub.SysMemSlicePitch = 0;
 	hr = pD3D11Device->CreateBuffer(&lightBufferDesc, &lightSub, &m_pLightBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 	int lightSlot = 0;
 	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, &m_pLightBuffer);
 
@@ -217,7 +217,7 @@ void Plane::init_texture(ID3D11Device *pD3D11Device)
 
 	HRESULT hr;
 	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/stone.dds", NULL, NULL, &m_pTexture, NULL);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	// Create a texture sampler state description.
 	D3D11_SAMPLER_DESC samplerDesc;
@@ -237,7 +237,7 @@ void Plane::init_texture(ID3D11Device *pD3D11Device)
 
 	// Create the texture sampler state.
 	hr = pD3D11Device->CreateSamplerState(&samplerDesc, &m_pTexSamplerState);
-	DebugHR(hr);
+	//DebugHR(hr);
 }
 
 void Plane::load_model(char *modelFile)

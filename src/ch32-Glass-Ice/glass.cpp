@@ -27,8 +27,8 @@ void Glass::Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourc
 	stride = sizeof(Vertex); 
 	offset = 0;
 
-	pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
-	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	pD3D11DeviceContext->IASetVertexBuffers(0, 1, m_pVertexBuffer.GetAddressOf(), &stride, &offset);
+	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0); 
 	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pColorSRV);  
 	pD3D11DeviceContext->PSSetShaderResources(1, 1, &m_pNormalSRV);  
@@ -108,7 +108,7 @@ bool Glass::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 
 	// Now create the vertex buffer.
 	hr = pD3D11Device->CreateBuffer(&VertexBufferDesc, &VBO, &m_pVertexBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	/////////////////////////////////Index Buffer ///////////////////////////////////////
 
@@ -128,7 +128,7 @@ bool Glass::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 	IBO.SysMemSlicePitch = 0;
 
 	hr = pD3D11Device->CreateBuffer(&IndexBufferDesc, &IBO, &m_pIndexBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	////////////////////////////////MVP Buffer//////////////////////////////////////
 
@@ -140,13 +140,13 @@ bool Glass::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 	mvpBufferDesc.CPUAccessFlags = 0;
 	mvpBufferDesc.MiscFlags      = 0;
 	hr = pD3D11Device->CreateBuffer(&mvpBufferDesc, NULL, &m_pMVPBuffer);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	/////////////////////////////////Texture/////////////////////////////////
 	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/glass01.dds", NULL,NULL, &m_pColorSRV, NULL);
-	DebugHR(hr);
+	//DebugHR(hr);
 	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/bump03.dds", NULL,NULL, &m_pNormalSRV, NULL);
-	DebugHR(hr);
+	//DebugHR(hr);
 	// Create a texture sampler state description.
 	D3D11_SAMPLER_DESC samplerDesc;
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -165,7 +165,7 @@ bool Glass::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 
 	// Create the texture sampler state.
 	hr = pD3D11Device->CreateSamplerState(&samplerDesc, &m_pTexSamplerState);
-	DebugHR(hr);
+	//DebugHR(hr);
 
 	return true;
 }
