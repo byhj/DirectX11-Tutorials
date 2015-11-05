@@ -44,8 +44,8 @@ private:
 	};
 	ModelVertex  *m_pModelVertex;
 
-	ID3D11Buffer             *m_pVertexBuffer;
-	ID3D11Buffer             *m_pIndexBuffer;
+	ComPtr<ID3D11Buffer> m_pVertexBuffer;
+	ComPtr<ID3D11Buffer> m_pIndexBuffer;
 
 	int m_VertexCount;
 	int m_IndexCount;

@@ -35,7 +35,7 @@ void RenderSystem::v_Render()
 
 	float bgColor[4] = { 0.2f, 0.3f, 0.4f, 1.0f };
 
-	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRttRenderTargetView, m_pDepthStencilView);
+	m_pD3D11DeviceContext->OMSetRenderTargets(1, m_pRttRenderTargetView.GetAddressOf(), m_pDepthStencilView.Get());
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRttRenderTargetView, bgColor);
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
@@ -339,7 +339,7 @@ void RenderSystem::BeginScene()
 	//Render 
 	float bgColor[4] ={ 0.0f, 0.0f, 0.0f, 1.0f };
 
-	m_pD3D11DeviceContext->RSSetState(m_pRasterState);
+	m_pD3D11DeviceContext->RSSetState(m_pRasterState.Get());
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, m_pRenderTargetView.GetAddressOf(), m_pDepthStencilView.Get());
 	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView.Get(), bgColor);
@@ -382,7 +382,7 @@ void RenderSystem::init_object()
 {
 
 	m_Timer.Reset();
-	m_Font.init(m_pD3D11Device);
+	m_Font.init(m_pD3D11Device.Get());
 	m_Camera.SetRadius(7.0f);
 
 	depthShader.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd());
@@ -397,9 +397,9 @@ void RenderSystem::init_object()
 	m_PlaneModel.load_model("../../media/objects/plane01.txt");
 	m_PlaneModel.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
 
-	D3DX11CreateShaderResourceViewFromFile(m_pD3D11Device, L"../../media/textures/wall01.dds",   NULL, NULL, &m_pWallTex, NULL);
-	D3DX11CreateShaderResourceViewFromFile(m_pD3D11Device, L"../../media/textures/ice.dds",      NULL, NULL, &m_pIceTex,  NULL);
-	D3DX11CreateShaderResourceViewFromFile(m_pD3D11Device, L"../../media/textures/metal001.dds", NULL, NULL, &m_pMetalTex, NULL);
+	CreateDDSTextureFromFile(m_pD3D11Device, L"../../media/textures/wall01.dds",   NULL, NULL, &m_pWallTex, NULL);
+	CreateDDSTextureFromFile(m_pD3D11Device, L"../../media/textures/ice.dds",      NULL, NULL, &m_pIceTex,  NULL);
+	CreateDDSTextureFromFile(m_pD3D11Device, L"../../media/textures/metal001.dds", NULL, NULL, &m_pMetalTex, NULL);
 }
 
 void RenderSystem::init_fbo()
@@ -476,7 +476,7 @@ void RenderSystem::DrawFps()
 		timeElapsed += 1.0f;
 	}
 
-	m_Font.drawFps(m_pD3D11DeviceContext, (UINT)fps);
+	m_Font.drawFps(m_pD3D11DeviceContext.Get(), (UINT)fps);
 }
 
 void RenderSystem::DrawInfo()
@@ -484,8 +484,8 @@ void RenderSystem::DrawInfo()
 	WCHAR WinInfo[255];
 	swprintf(WinInfo, L"Window Size: %d x %d", m_ScreenWidth, m_ScreenHeight);
 	DrawFps();
-	m_Font.drawText(m_pD3D11DeviceContext, WinInfo, 22.0f, 10.0f, 40.0f);
-	m_Font.drawText(m_pD3D11DeviceContext, m_videoCardInfo.c_str(), 22.0f, 10.0f, 70.0f);
+	m_Font.drawText(m_pD3D11DeviceContext.Get(), WinInfo, 22.0f, 10.0f, 40.0f);
+	m_Font.drawText(m_pD3D11DeviceContext.Get(), m_videoCardInfo.c_str(), 22.0f, 10.0f, 70.0f);
 }
 
 }

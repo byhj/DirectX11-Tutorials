@@ -37,7 +37,7 @@ void RenderSystem::v_Render()
 	m_Matrix.view = m_Camera.GetViewMatrix();
 
 	float bgColor[4] ={ 0.5f, 0.5f, 0.5f, 1.0f };
-	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRttRenderTargetView, m_pDepthStencilView);
+	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRttRenderTargetView, m_pDepthStencilView.Get());
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRttRenderTargetView, bgColor);
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
@@ -56,7 +56,7 @@ void RenderSystem::v_Render()
 	XMFLOAT4X4 orth;
 	XMStoreFloat4x4(&orth, XMMatrixTranspose(orthProj));
 
-	m_Rtt.Render(m_pD3D11DeviceContext, m_pRttShaderResourceView, m_Matrix.model, m_Matrix.view, orth);
+	m_Rtt.Render(m_pD3D11DeviceContext.Get(), m_pRttShaderResourceView, m_Matrix.model, m_Matrix.view, orth);
 
 	TurnZBufferOn();
 
@@ -70,11 +70,6 @@ void RenderSystem::v_Shutdown()
 {
 
 	m_Cube.Shutdown();
-
-	ReleaseCOM(m_pSwapChain);
-	ReleaseCOM(m_pD3D11Device);
-	ReleaseCOM(m_pD3D11DeviceContext);
-	ReleaseCOM(m_pRenderTargetView);
 }
 
 
@@ -268,7 +263,7 @@ void RenderSystem::BeginScene()
 	//Render 
 	float bgColor[4] ={ 0.2f, 0.3f, 0.4f, 1.0f };
 
-	m_pD3D11DeviceContext->RSSetState(m_pRasterState);
+	m_pD3D11DeviceContext->RSSetState(m_pRasterState.Get());
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, m_pRenderTargetView.GetAddressOf(), m_pDepthStencilView.Get());
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView.Get(), bgColor);
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
@@ -310,13 +305,13 @@ void RenderSystem::init_object()
 {
 
 	m_Timer.Reset();
-	m_Cube.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd());
-	m_Font.init(m_pD3D11Device);
+	m_Cube.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd());
+	m_Font.init(m_pD3D11Device.Get());
 
 	m_Rtt.init_window(500.0f / m_ScreenWidth, 500.0f / m_ScreenHeight,
 		              400.0f / m_ScreenWidth, 400.0f / m_ScreenHeight, GetAspect());
-	m_Rtt.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-	m_Rtt.init_shader(m_pD3D11Device, GetHwnd());
+	m_Rtt.init_buffer(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get());
+	m_Rtt.init_shader(m_pD3D11Device.Get(), GetHwnd());
 
 	m_Camera.SetRadius(5.0f);
 }
@@ -392,7 +387,7 @@ void RenderSystem::DrawFps()
 		timeElapsed += 1.0f;
 	}
 
-	m_Font.drawFps(m_pD3D11DeviceContext, (UINT)fps);
+	m_Font.drawFps(m_pD3D11DeviceContext.Get(), (UINT)fps);
 }
 
 void RenderSystem::DrawInfo()
@@ -400,8 +395,8 @@ void RenderSystem::DrawInfo()
 	WCHAR WinInfo[255];
 	swprintf(WinInfo, L"Window Size: %d x %d", m_ScreenWidth, m_ScreenHeight);
 	DrawFps();
-	m_Font.drawText(m_pD3D11DeviceContext, WinInfo, 22.0f, 10.0f, 40.0f);
-	m_Font.drawText(m_pD3D11DeviceContext, m_videoCardInfo.c_str(), 22.0f, 10.0f, 70.0f);
+	m_Font.drawText(m_pD3D11DeviceContext.Get(), WinInfo, 22.0f, 10.0f, 40.0f);
+	m_Font.drawText(m_pD3D11DeviceContext.Get(), m_videoCardInfo.c_str(), 22.0f, 10.0f, 70.0f);
 }
 
 }

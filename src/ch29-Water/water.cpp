@@ -164,7 +164,7 @@ bool Water::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 	hr = pD3D11Device->CreateSamplerState(&samplerDesc, &m_pTexSamplerState);
 	//DebugHR(hr);
 
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/water01.dds", NULL, NULL, &m_pTexture, NULL);
+	hr = CreateDDSTextureFromFile(pD3D11Device, L"../../media/textures/water01.dds", NULL, &m_pTexture);
 	//DebugHR(hr);
 
 
@@ -202,10 +202,10 @@ bool Water::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 	pInputLayoutDesc[2].InstanceDataStepRate = 0;
 
 
-	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
+	
 
-	WaterShader.init(pD3D11Device, hWnd);
-	WaterShader.attachVS(L"Water.vsh", pInputLayoutDesc, numElements);
+	WaterShader.init(pD3D11Device, vInputLayoutDesc);
+	WaterShader.attachVS(L"Water.vsh", "VS", "vs_5_0");
 	WaterShader.attachPS(L"Water.psh");
 	WaterShader.end();
 

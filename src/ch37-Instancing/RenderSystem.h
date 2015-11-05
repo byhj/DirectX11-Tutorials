@@ -59,7 +59,7 @@ private:
 	ComPtr<ID3D11Texture2D> m_pDepthStencilBuffer;
 	ID3D11DepthStencilState  *m_pDepthStencilState;
 	ID3D11DepthStencilState  *m_pDepthDisabledStencilState;
-	ID3D11RasterizerState   *m_pRasterState        = nullptr;
+	ComPtr<ID3D11RasterizerState> m_pRasterState;
 
 	d3d::MatrixBuffer m_Matrix;
 };

@@ -21,7 +21,7 @@ void RenderSystem::v_Init()
 	m_Camera.InitDirectInput(GetHwnd(), GetAppInst());
 	m_Timer.Reset();
 	m_Cube.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd() );
-	m_Font.init(m_pD3D11Device);
+	m_Font.init(m_pD3D11Device.Get());
 }
 
 void RenderSystem::v_Update()
@@ -59,10 +59,6 @@ void RenderSystem::v_Shutdown()
 
 	m_Cube.Shutdown();
 
-	ReleaseCOM(m_pSwapChain);
-	ReleaseCOM(m_pD3D11Device);
-	ReleaseCOM(m_pD3D11DeviceContext);
-	ReleaseCOM(m_pRenderTargetView);
 }
 
 void RenderSystem::init_device()
@@ -145,7 +141,7 @@ void RenderSystem::init_device()
 	hr = m_pD3D11Device->CreateRasterizerState(&rasterDesc, &m_pRasterState);
 	//DebugHR(hr);
 
-	m_pD3D11DeviceContext->RSSetState(m_pRasterState);
+	m_pD3D11DeviceContext->RSSetState(m_pRasterState.Get());
 }
 
 void RenderSystem::BeginScene()
@@ -212,7 +208,7 @@ void RenderSystem::DrawFps()
 		timeElapsed += 1.0f;
 	}
 
-	m_Font.drawFps(m_pD3D11DeviceContext, (UINT)fps);
+	m_Font.drawFps(m_pD3D11DeviceContext.Get(), (UINT)fps);
 }
 
 

@@ -179,7 +179,7 @@ void RenderSystem::init_device()
 	hr = m_pD3D11Device->CreateRasterizerState(&rasterDesc, &m_pRasterState);
 	//DebugHR(hr);
 
-	m_pD3D11DeviceContext->RSSetState(m_pRasterState);
+	m_pD3D11DeviceContext->RSSetState(m_pRasterState.Get());
 }
 
 void RenderSystem::BeginScene()
@@ -228,7 +228,7 @@ void RenderSystem::init_camera()
 
 void RenderSystem::init_object()
 {
-	m_Cube.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd());
+	m_Cube.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd());
 	m_Bitmap.init_window(m_ScreenWidth, m_ScreenHeight);
 	m_Bitmap.Init(m_pD3D11Device, GetHwnd()  );
 }

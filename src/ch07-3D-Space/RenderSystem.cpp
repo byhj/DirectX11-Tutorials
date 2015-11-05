@@ -120,7 +120,7 @@ void RenderSystem::init_device()
 	hr = m_pD3D11Device->CreateRasterizerState(&rasterDesc, &m_pRasterState);
 	//DebugHR(hr);
 
-	m_pD3D11DeviceContext->RSSetState(m_pRasterState);
+	m_pD3D11DeviceContext->RSSetState(m_pRasterState.Get());
 }
 
 void RenderSystem::BeginScene()

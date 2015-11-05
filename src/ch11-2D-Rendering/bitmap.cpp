@@ -226,10 +226,10 @@ bool Bitmap::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 	pInputLayoutDesc[1].AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
 	pInputLayoutDesc[1].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
 	pInputLayoutDesc[1].InstanceDataStepRate = 0;
-	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
+	
 
-	BitmapShader.init(pD3D11Device, hWnd);
-	BitmapShader.attachVS(L"bitmap.vsh", pInputLayoutDesc, numElements);
+	BitmapShader.init(pD3D11Device, vInputLayoutDesc);
+	BitmapShader.attachVS(L"bitmap.vsh", "VS", "vs_5_0");
 	BitmapShader.attachPS(L"bitmap.psh");
 	BitmapShader.end();
 
@@ -240,7 +240,7 @@ void Bitmap::init_texture(ID3D11Device *pD3D11Device)
 {
 
 	HRESULT hr;
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/stone02.dds", NULL, NULL, &m_pTexture, NULL);
+	hr = CreateDDSTextureFromFile(pD3D11Device, L"../../media/textures/stone02.dds", NULL, &m_pTexture);
 	//DebugHR(hr);
 
 	// Create a texture sampler state description.

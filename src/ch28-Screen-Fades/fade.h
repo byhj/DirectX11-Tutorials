@@ -46,11 +46,11 @@ private:
 	};
 	FadeBuffer cbFade;
 
-	ID3D11Buffer             *m_pMVPBuffer;
-	ID3D11Buffer             *m_pVertexBuffer;
-	ID3D11Buffer             *m_pIndexBuffer;
-	ID3D11SamplerState       *m_pTexSamplerState;
-	ID3D11InputLayout        *m_pInputLayout;
+	ComPtr<ID3D11Buffer> m_pMVPBuffer;
+	ComPtr<ID3D11Buffer> m_pVertexBuffer;
+	ComPtr<ID3D11Buffer> m_pIndexBuffer;
+	ComPtr<ID3D11SamplerState> m_pTexSamplerState;
+	ComPtr<ID3D11InputLayout> m_pInputLayout;
 	ID3D11Buffer             *m_pFadeBuffer;
 
 	int m_VertexCount;

@@ -1,5 +1,5 @@
 #include "LightShader.h"
-#include "d3d/d3dDebug.h"
+#include "DirectXTK/DDSTextureLoader.h"
 
 namespace byhj
 {
@@ -56,10 +56,10 @@ namespace byhj
 		pInputLayoutDesc[2].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
 		pInputLayoutDesc[2].InstanceDataStepRate = 0;
 
-		unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
+		
 
-		CubeShader.init(pD3D11Device, hWnd);
-		CubeShader.attachVS(L"light.vsh", pInputLayoutDesc, numElements);
+		CubeShader.init(pD3D11Device, vInputLayoutDesc);
+		CubeShader.attachVS(L"light.vsh", "VS", "vs_5_0");
 		CubeShader.attachPS(L"light.psh");
 		CubeShader.end();
 	}
@@ -90,12 +90,12 @@ namespace byhj
 		lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		lightBufferDesc.MiscFlags      = 0;
 
-		hr = pD3D11Device->CreateBuffer(&lightBufferDesc, NULL, GetAddressOf());
+		hr = pD3D11Device->CreateBuffer(&lightBufferDesc, NULL, &m_pLightBuffer);
 		//DebugHR(hr);
 
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 		// Lock the light constant buffer so it can be written to.
-		hr = pD3D11DeviceContext->Map(m_pLightBuffer.GetAddress(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		hr = pD3D11DeviceContext->Map(m_pLightBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		//DebugHR(hr);
 
 		// Get a pointer to the data in the constant buffer.
@@ -105,10 +105,10 @@ namespace byhj
 		dataPtr2->diffuseColor   = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 		dataPtr2->lightDirection = XMFLOAT3(0.0f, 2.0f, 1.0f);
 
-		pD3D11DeviceContext->Unmap(m_pLightBuffer.GetAddress(), 0);
+		pD3D11DeviceContext->Unmap(m_pLightBuffer.Get(), 0);
 
 		int lightSlot = 0;
-		pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, GetAddressOf());
+		pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());
 
 
 		D3D11_BUFFER_DESC cameraBufferDesc;
@@ -124,14 +124,14 @@ namespace byhj
 		//DebugHR(hr);
 
 		// Lock the camera constant buffer so it can be written to.
-		hr = pD3D11DeviceContext->Map(m_CameraBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		hr = pD3D11DeviceContext->Map(m_CameraBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		//DebugHR(hr);
 
 		// Get a pointer to the data in the constant buffer.
 		CameraBuffer *dataPtr3 = ( CameraBuffer* )mappedResource.pData;
 		dataPtr3->camPos = XMFLOAT3(0.0f, 2.0f, -3.0f);
 		dataPtr3->padding = 0.0f;
-		pD3D11DeviceContext->Unmap(m_CameraBuffer, 0);
+		pD3D11DeviceContext->Unmap(m_CameraBuffer.Get(), 0);
 
 		int bufferSlot = 1;
 		pD3D11DeviceContext->VSSetConstantBuffers(bufferSlot, 1, &m_CameraBuffer);
@@ -142,7 +142,7 @@ namespace byhj
 	{
 
 		HRESULT hr;
-		hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/stone.dds", NULL, NULL, &m_pTexture, NULL);
+		hr = CreateDDSTextureFromFile(pD3D11Device, L"../../media/textures/stone.dds", NULL, &m_pTexture);
 		//DebugHR(hr);
 
 		// Create a texture sampler state description.

@@ -3,7 +3,7 @@
 #endif 
 
 #include "d3d/Shader.h"
-#include "d3d/d3dDebug.h"
+#include "DirectXTK/DDSTextureLoader.h"
 #include "d3d/Utility.h"
 
 
@@ -39,15 +39,15 @@ private:
 		XMFLOAT2 Tex;
 	};
 
-	ID3D11InputLayout        *m_pInputLayout;
+	ComPtr<ID3D11InputLayout> m_pInputLayout;
 	ID3D11VertexShader       *m_pVS;
 	ID3D11PixelShader        *m_pPS;
-	ID3D11RenderTargetView   *m_pRenderTargetView;
-	ID3D11Buffer             *m_pMVPBuffer;
-	ID3D11Buffer             *m_pVertexBuffer;
-	ID3D11Buffer             *m_pIndexBuffer;
-	ID3D11ShaderResourceView *m_pTexture;
-	ID3D11SamplerState       *m_pTexSamplerState;
+	ComPtr<ID3D11RenderTargetView> m_pRenderTargetView;
+	ComPtr<ID3D11Buffer> m_pMVPBuffer;
+	ComPtr<ID3D11Buffer> m_pVertexBuffer;
+	ComPtr<ID3D11Buffer> m_pIndexBuffer;
+	ComPtr<ID3D11ShaderResourceView> m_pTexture;
+	ComPtr<ID3D11SamplerState> m_pTexSamplerState;
 
 	int VertexCount;
 	int IndexCount;

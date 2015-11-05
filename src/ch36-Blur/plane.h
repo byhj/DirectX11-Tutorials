@@ -2,7 +2,7 @@
 #define PLANE_H
 
 #include "d3d/Shader.h"
-#include "d3d/d3dDebug.h"
+#include "DirectXTK/DDSTextureLoader.h"
 #include <d3d11.h>
 
 

@@ -25,10 +25,10 @@ namespace byhj
 		pInputLayoutDesc[1].InstanceDataStepRate = 0;
 
 
-		unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
+		
 
-		horizontalShader.init(pD3D11Device, hWnd);
-		horizontalShader.attachVS(L"horizontalblur.vsh", pInputLayoutDesc, numElements);
+		horizontalShader.init(pD3D11Device, vInputLayoutDesc);
+		horizontalShader.attachVS(L"horizontalblur.vsh", "VS", "vs_5_0");
 		horizontalShader.attachPS(L"horizontalblur.psh");
 		horizontalShader.end();
 

@@ -19,7 +19,7 @@ void RenderSystem::v_Init()
 	init_camera();
 
 	m_Cube.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd() );
-	m_Font.init(m_pD3D11Device);
+	m_Font.init(m_pD3D11Device.Get());
 }
 
 void RenderSystem::v_Update()
@@ -44,7 +44,7 @@ void RenderSystem::v_Render()
 
 	m_Cube.Render(m_pD3D11DeviceContext.Get(), m_Matrix);
 
-	m_Font.drawText(m_pD3D11DeviceContext, L"Hello", 30.0f, 20.0f, 20.0f);
+	m_Font.drawText(m_pD3D11DeviceContext.Get(), L"Hello", 30.0f, 20.0f, 20.0f);
 	EndScene();
 }
 
@@ -52,11 +52,6 @@ void RenderSystem::v_Shutdown()
 {
 
 	m_Cube.Shutdown();
-
-	ReleaseCOM(m_pSwapChain);
-	ReleaseCOM(m_pD3D11Device);
-	ReleaseCOM(m_pD3D11DeviceContext);
-	ReleaseCOM(m_pRenderTargetView);
 }
 
 void RenderSystem::init_device()
@@ -139,7 +134,7 @@ void RenderSystem::init_device()
 	hr = m_pD3D11Device->CreateRasterizerState(&rasterDesc, &m_pRasterState);
 	//DebugHR(hr);
 
-	m_pD3D11DeviceContext->RSSetState(m_pRasterState);
+	m_pD3D11DeviceContext->RSSetState(m_pRasterState.Get());
 }
 
 void RenderSystem::BeginScene()

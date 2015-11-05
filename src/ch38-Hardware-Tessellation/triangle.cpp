@@ -1,5 +1,5 @@
 #include "Triangle.h"
-#include "d3d/d3dDebug.h"
+#include "DirectXTK/DDSTextureLoader.h"
 
 namespace byhj
 {
@@ -157,10 +157,10 @@ void Triangle::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 	pInputLayoutDesc[1].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
 	pInputLayoutDesc[1].InstanceDataStepRate = 0;
 
-	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
+	
 
 	TriangleShader.init(pD3D11Device, vInputLayoutDesc);
-	TriangleShader.attachVS(L"light.vsh", pInputLayoutDesc, numElements);
+	TriangleShader.attachVS(L"light.vsh", "VS", "vs_5_0");
 	TriangleShader.attachHS(L"light.hsh");
 	TriangleShader.attachDS(L"light.dsh");
 	TriangleShader.attachPS(L"light.psh");
@@ -174,7 +174,7 @@ void Triangle::init_texture(ID3D11Device *pD3D11Device)
 {
 
 	HRESULT hr;
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/stone.dds", NULL, NULL, &m_pTexture, NULL);
+	hr = CreateDDSTextureFromFile(pD3D11Device, L"../../media/textures/stone.dds", NULL, &m_pTexture);
 	//DebugHR(hr);
 
 	// Create a texture sampler state description.

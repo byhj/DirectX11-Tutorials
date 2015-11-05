@@ -131,9 +131,9 @@ bool Plane::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 	//DebugHR(hr);
 
 
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/metal001.dds", NULL, NULL, &m_pTextures[0], NULL);
+	hr = CreateDDSTextureFromFile(pD3D11Device, L"../../media/textures/metal001.dds", NULL, NULL, &m_pTextures[0], NULL);
 	//DebugHR(hr);
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/grate.dds", NULL, NULL, &m_pTextures[1], NULL);
+	hr = CreateDDSTextureFromFile(pD3D11Device, L"../../media/textures/grate.dds", NULL, NULL, &m_pTextures[1], NULL);
 	//DebugHR(hr);
 	return true;
 }
@@ -168,10 +168,10 @@ bool Plane::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 	pInputLayoutDesc[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	pInputLayoutDesc[2].InstanceDataStepRate = 0;
 
-	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
+	
 
-	PlaneShader.init(pD3D11Device, hWnd);
-	PlaneShader.attachVS(L"light.vsh", pInputLayoutDesc, numElements);
+	PlaneShader.init(pD3D11Device, vInputLayoutDesc);
+	PlaneShader.attachVS(L"light.vsh", "VS", "vs_5_0");
 	PlaneShader.attachPS(L"light.psh");
 	PlaneShader.end();
 

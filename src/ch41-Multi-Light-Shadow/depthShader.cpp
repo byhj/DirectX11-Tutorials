@@ -31,10 +31,10 @@ namespace byhj
 	pInputLayoutDesc[2].AlignedByteOffset = 0;
 	pInputLayoutDesc[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	pInputLayoutDesc[2].InstanceDataStepRate = 0;
-	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
+	
 
-	depthShader.init(pD3D11Device, hWnd);
-	depthShader.attachVS(L"depth.vsh", pInputLayoutDesc, numElements);
+	depthShader.init(pD3D11Device, vInputLayoutDesc);
+	depthShader.attachVS(L"depth.vsh", "VS", "vs_5_0");
 	depthShader.attachPS(L"depth.psh");
 	depthShader.end();
 

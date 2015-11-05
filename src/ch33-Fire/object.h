@@ -73,16 +73,16 @@ private:
 	};
 	ModelVertex  *m_pModelVertex;
 
-	ID3D11RenderTargetView   *m_pRenderTargetView;
-	ID3D11Buffer             *m_pMVPBuffer;
+	ComPtr<ID3D11RenderTargetView> m_pRenderTargetView;
+	ComPtr<ID3D11Buffer> m_pMVPBuffer;
 	ID3D11Buffer             *m_pNoiseBuffer;
 	ID3D11Buffer             *m_pDistortBuffer;
-	ID3D11Buffer             *m_pVertexBuffer;
-	ID3D11Buffer             *m_pIndexBuffer;
+	ComPtr<ID3D11Buffer> m_pVertexBuffer;
+	ComPtr<ID3D11Buffer> m_pIndexBuffer;
 	ID3D11ShaderResourceView *m_pTextures[3];
-	ID3D11SamplerState       *m_pTexSamplerState;
+	ComPtr<ID3D11SamplerState> m_pTexSamplerState;
 	ID3D11SamplerState       *m_pTexSamplerState1;
-	ID3D11InputLayout        *m_pInputLayout;
+	ComPtr<ID3D11InputLayout> m_pInputLayout;
 
 	int m_VertexCount;
 	int m_IndexCount;

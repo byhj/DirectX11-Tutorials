@@ -26,7 +26,6 @@
     <ClCompile Include="..\..\include\d3d\App.cpp" />
     <ClCompile Include="..\..\include\d3d\Camera.cpp" />
     <ClCompile Include="..\..\include\d3d\Font.cpp" />
-    <ClCompile Include="..\..\include\d3d\RTT.cpp" />
     <ClCompile Include="..\..\include\d3d\Shader.cpp" />
     <ClCompile Include="..\..\include\d3d\Timer.cpp" />
     <ClCompile Include="..\..\include\d3d\Utility.cpp" />
@@ -38,7 +37,6 @@
     <ClInclude Include="..\..\include\d3d\App.h" />
     <ClInclude Include="..\..\include\d3d\Camera.h" />
     <ClInclude Include="..\..\include\d3d\Font.h" />
-    <ClInclude Include="..\..\include\d3d\RTT.h" />
     <ClInclude Include="..\..\include\d3d\Shader.h" />
     <ClInclude Include="..\..\include\d3d\Timer.h" />
     <ClInclude Include="..\..\include\d3d\Utility.h" />

@@ -1,5 +1,5 @@
 #include "Plane.h"
-#include "d3d/d3dDebug.h"
+#include "DirectXTK/DDSTextureLoader.h"
 
 namespace byhj
 {
@@ -171,7 +171,7 @@ void Plane::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 	hr = pD3D11Device->CreateBuffer(&lightBufferDesc, &lightSub, GetAddressOf());
 	//DebugHR(hr);
 	int lightSlot = 0;
-	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, GetAddressOf());
+	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());
 
 }
 
@@ -202,10 +202,10 @@ void Plane::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 	pInputLayoutDesc[2].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
 	pInputLayoutDesc[2].InstanceDataStepRate = 0;
 
-	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
+	
 
-	PlaneShader.init(pD3D11Device, hWnd);
-	PlaneShader.attachVS(L"Plane.vsh", pInputLayoutDesc, numElements);
+	PlaneShader.init(pD3D11Device, vInputLayoutDesc);
+	PlaneShader.attachVS(L"Plane.vsh", "VS", "vs_5_0");
 	PlaneShader.attachPS(L"Plane.psh");
 	PlaneShader.end();
 }
@@ -216,7 +216,7 @@ void Plane::init_texture(ID3D11Device *pD3D11Device)
 {
 
 	HRESULT hr;
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/stone.dds", NULL, NULL, &m_pTexture, NULL);
+	hr = CreateDDSTextureFromFile(pD3D11Device, L"../../media/textures/stone.dds", NULL, &m_pTexture);
 	//DebugHR(hr);
 
 	// Create a texture sampler state description.

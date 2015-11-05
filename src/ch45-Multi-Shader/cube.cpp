@@ -1,5 +1,5 @@
 #include "Cube.h"
-#include "d3d/d3dDebug.h"
+#include "DirectXTK/DDSTextureLoader.h"
 
 namespace byhj
 {

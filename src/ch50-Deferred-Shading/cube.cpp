@@ -1,5 +1,5 @@
 #include "Cube.h"
-#include "d3d/d3dDebug.h"
+#include "DirectXTK/DDSTextureLoader.h"
 
 namespace byhj
 {
@@ -146,11 +146,11 @@ void Cube::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 	pInputLayoutDesc[2].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
 	pInputLayoutDesc[2].InstanceDataStepRate = 0;
 
-	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
+	
 
-	CubeShader.init(pD3D11Device, hWnd);
-	CubeShader.attachVS(L"Cube.vsh", pInputLayoutDesc, numElements);
-	CubeShader.attachPS(L"Cube.psh");
+	CubeShader.init(pD3D11Device, vInputLayoutDesc);
+	CubeShader.attachVS(L"Cube.vsh", "VS", "vs_5_0");
+	CubeShader.attachPS(L"Cube.psh", "PS", "ps_5_0");
 	CubeShader.end();
 }
 
@@ -160,7 +160,7 @@ void Cube::init_texture(ID3D11Device *pD3D11Device)
 {
 
 	HRESULT hr;
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/stone.dds", NULL, NULL, &m_pTexture, NULL);
+	hr = CreateDDSTextureFromFile(pD3D11Device, L"../../media/textures/stone.dds", NULL, &m_pTexture);
 	//DebugHR(hr);
 
 	// Create a texture sampler state description.

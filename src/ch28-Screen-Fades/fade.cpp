@@ -212,10 +212,10 @@ namespace byhj
 		pInputLayoutDesc[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 		pInputLayoutDesc[1].InstanceDataStepRate = 0;
 
-		unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
+		
 
-		FadeShader.init(pD3D11Device, hWnd);
-		FadeShader.attachVS(L"fade.vsh", pInputLayoutDesc, numElements);
+		FadeShader.init(pD3D11Device, vInputLayoutDesc);
+		FadeShader.attachVS(L"fade.vsh", "VS", "vs_5_0");
 		FadeShader.attachPS(L"fade.psh");
 		FadeShader.end();
 

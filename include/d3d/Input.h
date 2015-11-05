@@ -1,15 +1,13 @@
 #ifndef D3DINPUT_H
 #define D3DINPUT_H
 
-#ifdef _WIN32
-#define _XM_NO_INTRINSICS_
-#endif 
 
 #include <d3d11.h>
-#include <D3DX11.h>
-
 #include <dinput.h>
 #include <iostream>
+#include <DirectXMath.h>
+
+using namespace DirectX;
 
 namespace byhj
 {

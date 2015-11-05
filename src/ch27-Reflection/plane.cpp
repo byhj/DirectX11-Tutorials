@@ -1,11 +1,8 @@
 
-#ifdef _WIN32
-#define _XM_NO_INTRINSICS_
-#endif 
-
 #include "d3d/App.h"
 #include "d3d/Shader.h"
 #include "plane.h"
+#include "DirectXTK/DDSTextureLoader.h"
 
 namespace byhj
 {
@@ -13,11 +10,7 @@ namespace byhj
 
 	Plane::Plane()
 	{
-		m_pInputLayout        = NULL;
-		m_pMVPBuffer          = NULL;
-		pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());        = NULL;
-		m_pVertexBuffer       = NULL;
-		m_pIndexBuffer        = NULL;
+
 	}
 	Plane::~Plane()
 	{
@@ -53,11 +46,7 @@ namespace byhj
 
 void Plane::Shutdown()
 {
-	ReleaseCOM(m_pRenderTargetView)
-	ReleaseCOM(m_pMVPBuffer)
-	ReleaseCOM(pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());)
-	ReleaseCOM(m_pVertexBuffer)
-	ReleaseCOM(m_pIndexBuffer)
+
 }
 
 
@@ -153,12 +142,12 @@ bool Plane::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 	lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	lightBufferDesc.MiscFlags      = 0;
 
-	hr = pD3D11Device->CreateBuffer(&lightBufferDesc, NULL, GetAddressOf());
+	hr = pD3D11Device->CreateBuffer(&lightBufferDesc, NULL, &m_pLightBuffer);
 	//DebugHR(hr);
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	// Lock the light constant buffer so it can be written to.
-	hr = pD3D11DeviceContext->Map(m_pLightBuffer.GetAddress(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	hr = pD3D11DeviceContext->Map(m_pLightBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	//DebugHR(hr);
 
 	// Get a pointer to the data in the constant buffer.
@@ -170,10 +159,10 @@ bool Plane::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 	dataPtr2->specularPower  = 32.0f;
 	dataPtr2->specularColor  = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
 
-	pD3D11DeviceContext->Unmap(m_pLightBuffer.GetAddress(), 0);
+	pD3D11DeviceContext->Unmap(m_pLightBuffer.Get(), 0);
 
 	int lightSlot = 0;
-	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, GetAddressOf());
+	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());
 
 
 	D3D11_BUFFER_DESC cameraBufferDesc;
@@ -189,14 +178,14 @@ bool Plane::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 	//DebugHR(hr);
 
 	// Lock the camera constant buffer so it can be written to.
-	hr = pD3D11DeviceContext->Map(m_CameraBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	hr = pD3D11DeviceContext->Map(m_CameraBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	//DebugHR(hr);
 
 	// Get a pointer to the data in the constant buffer.
 	CameraBuffer *dataPtr3 = (CameraBuffer*)mappedResource.pData;
 	dataPtr3->camPos = XMFLOAT3(0.0f, 0.0f, -3.0f);
 	dataPtr3->padding = 0.0f;
-	pD3D11DeviceContext->Unmap(m_CameraBuffer, 0);
+	pD3D11DeviceContext->Unmap(m_CameraBuffer.Get(), 0);
 
 	int bufferSlot = 1;
 	pD3D11DeviceContext->VSSetConstantBuffers(bufferSlot, 1, &m_CameraBuffer);
@@ -221,7 +210,7 @@ bool Plane::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 	hr = pD3D11Device->CreateSamplerState(&samplerDesc, &m_pTexSamplerState);
 	//DebugHR(hr);
 
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/blue01.dds", NULL, NULL, &m_pTexture, NULL);
+	hr = CreateDDSTextureFromFile(pD3D11Device, L"../../media/textures/blue01.dds", NULL, &m_pTexture);
 	//DebugHR(hr);
 
 
@@ -233,37 +222,40 @@ bool Plane::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 {
 	HRESULT result;
 
-	D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc[3];
-	pInputLayoutDesc[0].SemanticName = "POSITION";
-	pInputLayoutDesc[0].SemanticIndex = 0;
-	pInputLayoutDesc[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	pInputLayoutDesc[0].InputSlot = 0;
-	pInputLayoutDesc[0].AlignedByteOffset = 0;
-	pInputLayoutDesc[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[0].InstanceDataStepRate = 0;
+	D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc;
+	std::vector<D3D11_INPUT_ELEMENT_DESC>  vInputLayoutDesc;
 
-	pInputLayoutDesc[1].SemanticName = "TEXCOORD";
-	pInputLayoutDesc[1].SemanticIndex = 0;
-	pInputLayoutDesc[1].Format = DXGI_FORMAT_R32G32_FLOAT;
-	pInputLayoutDesc[1].InputSlot = 0;
-	pInputLayoutDesc[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	pInputLayoutDesc[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[1].InstanceDataStepRate = 0;
+	pInputLayoutDesc.SemanticName = "POSITION";
+	pInputLayoutDesc.SemanticIndex = 0;
+	pInputLayoutDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	pInputLayoutDesc.InputSlot = 0;
+	pInputLayoutDesc.AlignedByteOffset = 0;
+	pInputLayoutDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc.InstanceDataStepRate = 0;
+	vInputLayoutDesc.push_back(pInputLayoutDesc);
 
-	pInputLayoutDesc[2].SemanticName = "NORMAL";
-	pInputLayoutDesc[2].SemanticIndex = 0;
-	pInputLayoutDesc[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	pInputLayoutDesc[2].InputSlot = 0;
-	pInputLayoutDesc[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	pInputLayoutDesc[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[2].InstanceDataStepRate = 0;
+	pInputLayoutDesc.SemanticName = "TEXCOORD";
+	pInputLayoutDesc.SemanticIndex = 0;
+	pInputLayoutDesc.Format = DXGI_FORMAT_R32G32_FLOAT;
+	pInputLayoutDesc.InputSlot = 0;
+	pInputLayoutDesc.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	pInputLayoutDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc.InstanceDataStepRate = 0;
+	vInputLayoutDesc.push_back(pInputLayoutDesc);
 
+	pInputLayoutDesc.SemanticName = "NORMAL";
+	pInputLayoutDesc.SemanticIndex = 0;
+	pInputLayoutDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	pInputLayoutDesc.InputSlot = 0;
+	pInputLayoutDesc.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	pInputLayoutDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc.InstanceDataStepRate = 0;
+	vInputLayoutDesc.push_back(pInputLayoutDesc);
 
-	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
-
-	PlaneShader.init(pD3D11Device, hWnd);
-	PlaneShader.attachVS(L"Plane.vsh", pInputLayoutDesc, numElements);
-	PlaneShader.attachPS(L"Plane.psh");
+	
+	PlaneShader.init(pD3D11Device, vInputLayoutDesc);
+	PlaneShader.attachVS(L"Plane.vsh", "VS", "vs_5_0");
+	PlaneShader.attachPS(L"Plane.psh", "PS", "ps_5_0");
 	PlaneShader.end();
 
 	return true;

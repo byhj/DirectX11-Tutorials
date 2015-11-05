@@ -224,10 +224,10 @@ bool Particle::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 	pInputLayoutDesc[2].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
 	pInputLayoutDesc[2].InstanceDataStepRate = 0;
 
-	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
+	
 
-	ParticleShader.init(pD3D11Device, hWnd);
-	ParticleShader.attachVS(L"Particle.vsh", pInputLayoutDesc, numElements);
+	ParticleShader.init(pD3D11Device, vInputLayoutDesc);
+	ParticleShader.attachVS(L"Particle.vsh", "VS", "vs_5_0");
 	ParticleShader.attachPS(L"Particle.psh");
 	ParticleShader.end();
 
@@ -237,7 +237,7 @@ bool Particle::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 void Particle::init_texture(ID3D11Device *pD3D11Device, LPCWSTR texFile)
 {
 	HRESULT hr;
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, texFile, NULL,NULL, &m_pTexture, NULL);
+	hr = CreateDDSTextureFromFile(pD3D11Device, texFile, NULL,NULL, &m_pTexture, NULL);
 	//DebugHR(hr);
 
 	// Create a texture sampler state description.

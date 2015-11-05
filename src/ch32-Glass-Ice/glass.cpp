@@ -143,9 +143,9 @@ bool Glass::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 	//DebugHR(hr);
 
 	/////////////////////////////////Texture/////////////////////////////////
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/glass01.dds", NULL,NULL, &m_pColorSRV, NULL);
+	hr = CreateDDSTextureFromFile(pD3D11Device, L"../../media/textures/glass01.dds", NULL,NULL, &m_pColorSRV, NULL);
 	//DebugHR(hr);
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/bump03.dds", NULL,NULL, &m_pNormalSRV, NULL);
+	hr = CreateDDSTextureFromFile(pD3D11Device, L"../../media/textures/bump03.dds", NULL,NULL, &m_pNormalSRV, NULL);
 	//DebugHR(hr);
 	// Create a texture sampler state description.
 	D3D11_SAMPLER_DESC samplerDesc;
@@ -192,10 +192,10 @@ bool Glass::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 	pInputLayoutDesc[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	pInputLayoutDesc[1].InstanceDataStepRate = 0;
 
-	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
+	
 
-	GlassShader.init(pD3D11Device, hWnd);
-	GlassShader.attachVS(L"glass.vsh", pInputLayoutDesc, numElements);
+	GlassShader.init(pD3D11Device, vInputLayoutDesc);
+	GlassShader.attachVS(L"glass.vsh", "VS", "vs_5_0");
 	GlassShader.attachPS(L"glass.psh");
 	GlassShader.end();
 

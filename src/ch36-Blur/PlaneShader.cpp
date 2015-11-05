@@ -25,10 +25,10 @@ namespace byhj
 		pInputLayoutDesc[1].InstanceDataStepRate = 0;
 
 	
-		unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
+		
 
-		planeShader.init(pD3D11Device, hWnd);
-		planeShader.attachVS(L"plane.vsh", pInputLayoutDesc, numElements);
+		planeShader.init(pD3D11Device, vInputLayoutDesc);
+		planeShader.attachVS(L"plane.vsh", "VS", "vs_5_0");
 		planeShader.attachPS(L"plane.psh");
 		planeShader.end();
 

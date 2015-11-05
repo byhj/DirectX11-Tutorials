@@ -23,8 +23,8 @@ void RTT::Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceV
 	cbMatrix.model  = Model;
 	cbMatrix.view   = View;
 	cbMatrix.proj   = Proj;
-	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
-	pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
+	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer.Get(), 0, NULL, &cbMatrix, 0, 0 );
+	pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, m_pMVPBuffer.GetAddressOf());
 
 	unsigned int stride;
 	unsigned int offset;
@@ -35,7 +35,7 @@ void RTT::Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceV
 	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0); 
 	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	pD3D11DeviceContext->PSSetShaderResources(0, 1, &pTexture);  
-	pD3D11DeviceContext->PSSetSamplers( 0, 1, &m_pTexSamplerState );
+	pD3D11DeviceContext->PSSetSamplers( 0, 1, m_pTexSamplerState.GetAddressOf());
 
 	RTTShader.use(pD3D11DeviceContext);
 	pD3D11DeviceContext->DrawIndexed(m_IndexCount, 0, 0);
@@ -172,28 +172,31 @@ bool RTT::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 {
 	HRESULT result;
 
-	D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc[2];
-	pInputLayoutDesc[0].SemanticName = "POSITION";
-	pInputLayoutDesc[0].SemanticIndex = 0;
-	pInputLayoutDesc[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	pInputLayoutDesc[0].InputSlot = 0;
-	pInputLayoutDesc[0].AlignedByteOffset = 0;
-	pInputLayoutDesc[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[0].InstanceDataStepRate = 0;
+	D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc;
+	std::vector<D3D11_INPUT_ELEMENT_DESC> vInputLayoutDesc;
 
-	pInputLayoutDesc[1].SemanticName = "TEXCOORD";
-	pInputLayoutDesc[1].SemanticIndex = 0;
-	pInputLayoutDesc[1].Format = DXGI_FORMAT_R32G32_FLOAT;
-	pInputLayoutDesc[1].InputSlot = 0;
-	pInputLayoutDesc[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	pInputLayoutDesc[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[1].InstanceDataStepRate = 0;
+	pInputLayoutDesc.SemanticName = "POSITION";
+	pInputLayoutDesc.SemanticIndex = 0;
+	pInputLayoutDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	pInputLayoutDesc.InputSlot = 0;
+	pInputLayoutDesc.AlignedByteOffset = 0;
+	pInputLayoutDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc.InstanceDataStepRate = 0;
+	vInputLayoutDesc.push_back(pInputLayoutDesc);
 
-	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
+	pInputLayoutDesc.SemanticName = "TEXCOORD";
+	pInputLayoutDesc.SemanticIndex = 0;
+	pInputLayoutDesc.Format = DXGI_FORMAT_R32G32_FLOAT;
+	pInputLayoutDesc.InputSlot = 0;
+	pInputLayoutDesc.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	pInputLayoutDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc.InstanceDataStepRate = 0;
+	vInputLayoutDesc.push_back(pInputLayoutDesc);
+	
 
-	RTTShader.init(pD3D11Device, hWnd);
-	RTTShader.attachVS(L"rtt.vsh", pInputLayoutDesc, numElements);
-	RTTShader.attachPS(L"rtt.psh");
+	RTTShader.init(pD3D11Device, vInputLayoutDesc);
+	RTTShader.attachVS(L"rtt.vsh", "VS", "vs_5_0");
+	RTTShader.attachPS(L"rtt.psh", "PS", "ps_5_0");
 	RTTShader.end();
 
 	return true;

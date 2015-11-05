@@ -32,10 +32,10 @@ namespace byhj
 		pInputLayoutDesc[2].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
 		pInputLayoutDesc[2].InstanceDataStepRate = 0;
 
-		unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
+		
 
-		sceneShader.init(pD3D11Device, hWnd);
-		sceneShader.attachVS(L"scene.vsh", pInputLayoutDesc, numElements);
+		sceneShader.init(pD3D11Device, vInputLayoutDesc);
+		sceneShader.attachVS(L"scene.vsh", "VS", "vs_5_0");
 		sceneShader.attachPS(L"scene.psh");
 		sceneShader.end();
 
@@ -88,20 +88,20 @@ namespace byhj
 		 lightBufferDesc.StructureByteStride = 0;
 
 		 // Create the constant buffer pointer so we can access the pixel shader constant buffer from within this class.
-		 pD3D11Device->CreateBuffer(&lightBufferDesc, NULL, GetAddressOf());
+		 pD3D11Device->CreateBuffer(&lightBufferDesc, NULL, &m_pLightBuffer);
 		
 		 D3D11_MAPPED_SUBRESOURCE mappedResource;
 
-		 hr = pD3D11DeviceContext->Map(m_pLightBuffer.GetAddress(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		 hr = pD3D11DeviceContext->Map(m_pLightBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		 
 		 LightBufferType *dataPtr1 = (LightBufferType*)mappedResource.pData;
 		 dataPtr1->ambientColor = XMFLOAT4(0.15f, 0.15f, 0.15f, 0.15f);
 		 dataPtr1->diffuseColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 		 dataPtr1->diffuseColor2 = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-		 pD3D11DeviceContext->Unmap(m_pLightBuffer.GetAddress(), 0);
+		 pD3D11DeviceContext->Unmap(m_pLightBuffer.Get(), 0);
 
 		 int lightSlot = 0;
-		 pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, GetAddressOf());
+		 pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());
 
 
 		 D3D11_BUFFER_DESC lightBufferDesc2;

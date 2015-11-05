@@ -251,7 +251,7 @@ void RenderSystem::BeginScene()
 	//Render 
 	float bgColor[4] ={ 0.2f, 0.3f, 0.4f, 1.0f };
 
-	m_pD3D11DeviceContext->RSSetState(m_pRasterState);
+	m_pD3D11DeviceContext->RSSetState(m_pRasterState.Get());
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, m_pRenderTargetView.GetAddressOf(), m_pDepthStencilView.Get());
 	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView.Get(), bgColor);
@@ -294,7 +294,7 @@ void RenderSystem::init_object()
 {
 
 	m_Timer.Reset();
-	m_Font.init(m_pD3D11Device);
+	m_Font.init(m_pD3D11Device.Get());
 	m_Camera.SetRadius(8.0f);
 
 	m_Cube.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
@@ -340,7 +340,7 @@ void RenderSystem::DrawFps()
 		timeElapsed += 1.0f;
 	}
 
-	m_Font.drawFps(m_pD3D11DeviceContext, (UINT)fps);
+	m_Font.drawFps(m_pD3D11DeviceContext.Get(), (UINT)fps);
 }
 
 void RenderSystem::DrawInfo()
@@ -348,8 +348,8 @@ void RenderSystem::DrawInfo()
 	WCHAR WinInfo[255];
 	swprintf(WinInfo, L"Window Size: %d x %d", m_ScreenWidth, m_ScreenHeight);
 	DrawFps();
-	m_Font.drawText(m_pD3D11DeviceContext, WinInfo, 22.0f, 10.0f, 40.0f);
-	m_Font.drawText(m_pD3D11DeviceContext, m_videoCardInfo.c_str(), 22.0f, 10.0f, 70.0f);
+	m_Font.drawText(m_pD3D11DeviceContext.Get(), WinInfo, 22.0f, 10.0f, 40.0f);
+	m_Font.drawText(m_pD3D11DeviceContext.Get(), m_videoCardInfo.c_str(), 22.0f, 10.0f, 70.0f);
 }
 
 }

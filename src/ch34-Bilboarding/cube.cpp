@@ -146,7 +146,7 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	hr = pD3D11Device->CreateBuffer(&lightBufferDesc, &lightSub, GetAddressOf());
 	//DebugHR(hr);
 	int lightSlot = 0;
-	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, GetAddressOf());
+	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());
 
 
 	D3D11_BUFFER_DESC cameraBufferDesc;
@@ -163,14 +163,14 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	// Lock the camera constant buffer so it can be written to.
-	hr = pD3D11DeviceContext->Map(m_CameraBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	hr = pD3D11DeviceContext->Map(m_CameraBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	//DebugHR(hr);
 
 	// Get a pointer to the data in the constant buffer.
 	CameraBuffer *dataPtr3 = (CameraBuffer*)mappedResource.pData;
 	dataPtr3->camPos = XMFLOAT3(0.0f, 0.0f, -3.0f);
 	dataPtr3->padding = 0.0f;
-	pD3D11DeviceContext->Unmap(m_CameraBuffer, 0);
+	pD3D11DeviceContext->Unmap(m_CameraBuffer.Get(), 0);
 
 	int bufferSlot = 1;
 	pD3D11DeviceContext->VSSetConstantBuffers(bufferSlot, 1, &m_CameraBuffer);
@@ -195,7 +195,7 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	hr = pD3D11Device->CreateSamplerState(&samplerDesc, &m_pTexSamplerState);
 	//DebugHR(hr);
 
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/grid01.dds", NULL, NULL, &m_pTexture, NULL);
+	hr = CreateDDSTextureFromFile(pD3D11Device, L"../../media/textures/grid01.dds", NULL, &m_pTexture);
 	//DebugHR(hr);
 
 	return true;
@@ -231,10 +231,10 @@ bool Cube::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 	pInputLayoutDesc[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	pInputLayoutDesc[2].InstanceDataStepRate = 0;
 
-	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
+	
 
-	CubeShader.init(pD3D11Device, hWnd);
-	CubeShader.attachVS(L"light.vsh", pInputLayoutDesc, numElements);
+	CubeShader.init(pD3D11Device, vInputLayoutDesc);
+	CubeShader.attachVS(L"light.vsh", "VS", "vs_5_0");
 	CubeShader.attachPS(L"light.psh");
 	CubeShader.end();
 

@@ -194,11 +194,11 @@ bool Object::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11
 	samplerDesc2.MaxLOD = D3D11_FLOAT32_MAX;
 	hr = pD3D11Device->CreateSamplerState(&samplerDesc2, &m_pTexSamplerState1);
 
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/fire01.dds", NULL,NULL, &m_pTextures[0], NULL);
+	hr = CreateDDSTextureFromFile(pD3D11Device, L"../../media/textures/fire01.dds", NULL,NULL, &m_pTextures[0], NULL);
 	//DebugHR(hr);
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/noise01.dds", NULL,NULL, &m_pTextures[1], NULL);
+	hr = CreateDDSTextureFromFile(pD3D11Device, L"../../media/textures/noise01.dds", NULL,NULL, &m_pTextures[1], NULL);
 	//DebugHR(hr);
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/alpha01.dds", NULL,NULL, &m_pTextures[2], NULL);
+	hr = CreateDDSTextureFromFile(pD3D11Device, L"../../media/textures/alpha01.dds", NULL,NULL, &m_pTextures[2], NULL);
 	//DebugHR(hr);
 	return true;
 }
@@ -233,10 +233,10 @@ bool Object::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 	pInputLayoutDesc[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	pInputLayoutDesc[2].InstanceDataStepRate = 0;
 
-	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
+	
 
-	ObjectShader.init(pD3D11Device, hWnd);
-	ObjectShader.attachVS(L"light.vsh", pInputLayoutDesc, numElements);
+	ObjectShader.init(pD3D11Device, vInputLayoutDesc);
+	ObjectShader.attachVS(L"light.vsh", "VS", "vs_5_0");
 	ObjectShader.attachPS(L"light.psh");
 	ObjectShader.end();
 

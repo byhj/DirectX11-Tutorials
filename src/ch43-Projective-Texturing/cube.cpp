@@ -131,10 +131,10 @@ bool Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	hr = pD3D11Device->CreateSamplerState(&samplerDesc, &m_pTexSamplerState);
 	//DebugHR(hr);
 
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/ice.dds", NULL, NULL, &m_pTextures[0], NULL);
+	hr = CreateDDSTextureFromFile(pD3D11Device, L"../../media/textures/ice.dds", NULL, NULL, &m_pTextures[0], NULL);
 	//DebugHR(hr);
 
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3D11Device, L"../../media/textures/dx11.dds", NULL, NULL, &m_pTextures[1], NULL);
+	hr = CreateDDSTextureFromFile(pD3D11Device, L"../../media/textures/dx11.dds", NULL, NULL, &m_pTextures[1], NULL);
 	//DebugHR(hr);
 	return true;
 }
@@ -169,10 +169,10 @@ bool Cube::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 	pInputLayoutDesc[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	pInputLayoutDesc[2].InstanceDataStepRate = 0;
 
-	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
+	
 
-	CubeShader.init(pD3D11Device, hWnd);
-	CubeShader.attachVS(L"light.vsh", pInputLayoutDesc, numElements);
+	CubeShader.init(pD3D11Device, vInputLayoutDesc);
+	CubeShader.attachVS(L"light.vsh", "VS", "vs_5_0");
 	CubeShader.attachPS(L"light.psh");
 	CubeShader.end();
 

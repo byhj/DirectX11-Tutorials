@@ -95,7 +95,7 @@ private:
 	ComPtr<ID3D11Buffer> m_pVertexBuffer;
 	ComPtr<ID3D11Buffer> m_pVertexBuffer;
 	ComPtr<ID3D11Buffer> m_pLightBuffer
-	ID3D11Buffer             *m_CameraBuffer      = nullptr;
+	ComPtr<ID3D11Buffer> m_CameraBuffer;
 	ID3D11ShaderResourceView *m_pTextures[2];
 	ComPtr<ID3D11SamplerState> m_pTexSamplerState;
 	d3d::Shader CubeShader;

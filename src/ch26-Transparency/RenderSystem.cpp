@@ -54,10 +54,6 @@ void RenderSystem::v_Shutdown()
 
 	m_Cube.Shutdown();
 
-	ReleaseCOM(m_pSwapChain);
-	ReleaseCOM(m_pD3D11Device);
-	ReleaseCOM(m_pD3D11DeviceContext);
-	ReleaseCOM(m_pRenderTargetView);
 }
 
 void RenderSystem::init_device()
@@ -140,7 +136,7 @@ void RenderSystem::init_device()
 	hr = m_pD3D11Device->CreateRasterizerState(&rasterDesc, &m_pRasterState);
 	//DebugHR(hr);
 
-	m_pD3D11DeviceContext->RSSetState(m_pRasterState);
+	m_pD3D11DeviceContext->RSSetState(m_pRasterState.Get());
 
 	///////////////////////////////////////////////////////////////////
 	D3D11_BLEND_DESC blendStateDesc;

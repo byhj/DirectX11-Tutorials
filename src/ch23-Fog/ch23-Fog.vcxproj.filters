@@ -47,9 +47,6 @@
     <ClInclude Include="..\..\include\d3d\Utility.h">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\d3d\RTT.h">
-      <Filter>Framework</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\d3d\Camera.h">
       <Filter>Framework</Filter>
     </ClInclude>
@@ -77,9 +74,6 @@
       <Filter>Framework</Filter>
     </ClCompile>
     <ClCompile Include="..\..\include\d3d\Utility.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\include\d3d\RTT.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
     <ClCompile Include="..\..\include\d3d\Camera.cpp">

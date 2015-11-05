@@ -34,7 +34,7 @@ namespace byhj
 		ComPtr<ID3D11InputLayout> m_pInputLayout;
 		ComPtr<ID3D11Buffer> m_pMVPBuffer;
 		ComPtr<ID3D11Buffer> m_pLightBuffer
-		ID3D11Buffer             *m_CameraBuffer      = nullptr;
+		ComPtr<ID3D11Buffer> m_CameraBuffer;
 		ID3D11ShaderResourceView *m_pTextures[3];
 		ComPtr<ID3D11SamplerState> m_pTexSamplerState;
 
