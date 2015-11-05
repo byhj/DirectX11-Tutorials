@@ -17,7 +17,7 @@ void RenderSystem::v_Init()
 {
 	init_device();
 	init_camera();
-	m_Cube.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd() );
+	m_Cube.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd() );
 
 }
 
@@ -29,7 +29,7 @@ void RenderSystem::v_Render()
 {
 	BeginScene();
 
-	m_Cube.Render(m_pD3D11DeviceContext, m_Matrix);
+	m_Cube.Render(m_pD3D11DeviceContext.Get(), m_Matrix);
 
 	EndScene();
 }
@@ -38,14 +38,6 @@ void RenderSystem::v_Shutdown()
 {
 
 	m_Cube.Shutdown();
-
-	ReleaseCOM(m_pSwapChain)
-	ReleaseCOM(m_pD3D11Device)
-	ReleaseCOM(m_pD3D11DeviceContext)
-	ReleaseCOM(m_pRenderTargetView)
-	ReleaseCOM(m_pDepthStencilView)
-	ReleaseCOM(m_pDepthStencilBuffer)
-	ReleaseCOM(m_pRasterState)
 }
 
 void RenderSystem::init_device()

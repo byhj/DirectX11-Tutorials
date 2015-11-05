@@ -11,7 +11,7 @@ void Water::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &M
 		cbMatrix.proj   = Proj;
 		cbMatrix.reflectMat = relfectMat;
 		pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer.Get(), 0, NULL, &cbMatrix, 0, 0);
-		pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.Get() );
+		pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.GetAddressOf() );
 
 
 		// Update the position of the water to simulate motion.

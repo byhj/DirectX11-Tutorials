@@ -31,7 +31,7 @@ namespace byhj
 		cbMatrix.view   = View;
 		cbMatrix.proj   = Proj;
 		pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer.Get(), 0, NULL, &cbMatrix, 0, 0);
-		pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.Get() );
+		pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.GetAddressOf() );
 
 		cbFade.fadeAmount = fadeAmount;
 		cbFade.padding[0] = 0.0f;

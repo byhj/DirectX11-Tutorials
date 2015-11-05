@@ -49,12 +49,12 @@ void RenderSystem::v_Render()
 	XMStoreFloat4x4(&Reflect, XMMatrixTranspose(reflectMat));
 
 	m_Matrix.view = Reflect;
-	m_Cube.Render(m_pD3D11DeviceContext, m_Matrix);
+	m_Cube.Render(m_pD3D11DeviceContext.Get(), m_Matrix);
 
 	BeginScene();
 
 	m_Matrix.view = View;
-	m_Cube.Render(m_pD3D11DeviceContext, m_Matrix);
+	m_Cube.Render(m_pD3D11DeviceContext.Get(), m_Matrix);
 	m_Plane.Render(m_pD3D11DeviceContext, m_pRttShaderResourceView, 
 		           m_Matrix.model, m_Matrix.view, m_Matrix.proj, Reflect);
 

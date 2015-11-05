@@ -21,7 +21,7 @@ void RenderSystem::v_Init()
 	m_Timer.Reset();
 	m_Camera.SetRadius(5.0f);
 
-	m_Cube.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd() );
+	m_Cube.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd() );
 	m_LightShader.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd());
 	m_AlphaShader.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd());
 }

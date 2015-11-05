@@ -34,7 +34,7 @@ void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const d3d::MatrixBuf
 	cbMatrix.view  = matrix.view;
 	cbMatrix.proj  = matrix.proj;
 	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer.Get(), 0, NULL, &cbMatrix, 0, 0);
-	pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.Get() );
+	pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.GetAddressOf() );
 
 	// Set vertex buffer stride and offset
 	unsigned int stride;
@@ -62,7 +62,7 @@ void Cube::Shutdown()
 	ReleaseCOM(m_pMVPBuffer)
 	ReleaseCOM(m_pVertexBuffer)
 	ReleaseCOM(m_pIndexBuffer)
-	ReleaseCOM(m_pLightBuffer)
+	ReleaseCOM(pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());)
 	ReleaseCOM(m_CameraBuffer)
 	ReleaseCOM(m_pTexSamplerState)
 	ReleaseCOM(m_pTexture)
@@ -139,12 +139,12 @@ void Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	lightBufferDesc.MiscFlags      = 0;
 
-	hr = pD3D11Device->CreateBuffer(&lightBufferDesc, NULL, &m_pLightBuffer);
+	hr = pD3D11Device->CreateBuffer(&lightBufferDesc, NULL, GetAddressOf());
 	//DebugHR(hr);
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	// Lock the light constant buffer so it can be written to.
-	hr = pD3D11DeviceContext->Map(m_pLightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	hr = pD3D11DeviceContext->Map(m_pLightBuffer.GetAddress(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	//DebugHR(hr);
 
 	// Get a pointer to the data in the constant buffer.
@@ -157,10 +157,10 @@ void Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	dataPtr2->specularPower  = 32.0f;
 	dataPtr2->specularColor  = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
 
-	pD3D11DeviceContext->Unmap(m_pLightBuffer, 0);
+	pD3D11DeviceContext->Unmap(m_pLightBuffer.GetAddress(), 0);
 
 	int lightSlot = 0;
-	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, &m_pLightBuffer);
+	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, GetAddressOf());
 
 
 	D3D11_BUFFER_DESC cameraBufferDesc;

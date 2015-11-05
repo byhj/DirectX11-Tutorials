@@ -5,7 +5,7 @@
 #include "d3d/d3dDebug.h"
 #include "d3d/Utility.h"
 #include <d3d11.h>
-#include <xnamath.h>
+
 
 namespace byhj
 {

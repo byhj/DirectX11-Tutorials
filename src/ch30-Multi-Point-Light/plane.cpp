@@ -30,7 +30,7 @@ void Plane::Render(ID3D11DeviceContext *pD3D11DeviceContext, const d3d::MatrixBu
 	cbMatrix.view  = matrix.view;
 	cbMatrix.proj  = matrix.proj;
 	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer.Get(), 0, NULL, &cbMatrix, 0, 0);
-	pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.Get() );
+	pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.GetAddressOf() );
 	pD3D11DeviceContext->PSSetShaderResources(0, 1, m_pTexture.GetAddressOf());
 	pD3D11DeviceContext->PSSetSamplers(0, 1, m_pTexSamplerState.GetAddressOf());
 
@@ -50,7 +50,7 @@ void Plane::Shutdown()
 	ReleaseCOM(m_pMVPBuffer)
 	ReleaseCOM(m_pVertexBuffer)
 	ReleaseCOM(m_pIndexBuffer)
-	ReleaseCOM(m_pLightBuffer)
+	ReleaseCOM(pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());)
 	ReleaseCOM(m_pTexSamplerState)
 	ReleaseCOM(m_pTexture)
 
@@ -168,10 +168,10 @@ void Plane::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 	lightSub.pSysMem          = &pointLights[0];
 	lightSub.SysMemPitch      = 0;
 	lightSub.SysMemSlicePitch = 0;
-	hr = pD3D11Device->CreateBuffer(&lightBufferDesc, &lightSub, &m_pLightBuffer);
+	hr = pD3D11Device->CreateBuffer(&lightBufferDesc, &lightSub, GetAddressOf());
 	//DebugHR(hr);
 	int lightSlot = 0;
-	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, &m_pLightBuffer);
+	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, GetAddressOf());
 
 }
 

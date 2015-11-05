@@ -15,7 +15,7 @@ namespace byhj
 	{
 		m_pInputLayout        = NULL;
 		m_pMVPBuffer          = NULL;
-		m_pLightBuffer        = NULL;
+		pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());        = NULL;
 		m_pVertexBuffer       = NULL;
 		m_pIndexBuffer        = NULL;
 	}
@@ -33,7 +33,7 @@ namespace byhj
 		cbMatrix.PlaneMat = PlaneMat;
 
 		pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer.Get(), 0, NULL, &cbMatrix, 0, 0);
-		pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.Get() );
+		pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.GetAddressOf() );
 
 		unsigned int stride;
 		unsigned int offset;
@@ -55,7 +55,7 @@ void Plane::Shutdown()
 {
 	ReleaseCOM(m_pRenderTargetView)
 	ReleaseCOM(m_pMVPBuffer)
-	ReleaseCOM(m_pLightBuffer)
+	ReleaseCOM(pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());)
 	ReleaseCOM(m_pVertexBuffer)
 	ReleaseCOM(m_pIndexBuffer)
 }
@@ -153,12 +153,12 @@ bool Plane::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 	lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	lightBufferDesc.MiscFlags      = 0;
 
-	hr = pD3D11Device->CreateBuffer(&lightBufferDesc, NULL, &m_pLightBuffer);
+	hr = pD3D11Device->CreateBuffer(&lightBufferDesc, NULL, GetAddressOf());
 	//DebugHR(hr);
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	// Lock the light constant buffer so it can be written to.
-	hr = pD3D11DeviceContext->Map(m_pLightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	hr = pD3D11DeviceContext->Map(m_pLightBuffer.GetAddress(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	//DebugHR(hr);
 
 	// Get a pointer to the data in the constant buffer.
@@ -170,10 +170,10 @@ bool Plane::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 	dataPtr2->specularPower  = 32.0f;
 	dataPtr2->specularColor  = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
 
-	pD3D11DeviceContext->Unmap(m_pLightBuffer, 0);
+	pD3D11DeviceContext->Unmap(m_pLightBuffer.GetAddress(), 0);
 
 	int lightSlot = 0;
-	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, &m_pLightBuffer);
+	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, GetAddressOf());
 
 
 	D3D11_BUFFER_DESC cameraBufferDesc;

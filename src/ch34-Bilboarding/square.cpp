@@ -11,7 +11,7 @@ void Square::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &
 	cbMatrix.view = View;
 	cbMatrix.proj = Proj;
 	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer.Get(), 0, NULL, &cbMatrix, 0, 0);
-	pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.Get() );
+	pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.GetAddressOf() );
 
 	unsigned int stride;
 	unsigned int offset;
@@ -142,10 +142,10 @@ bool Square::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11
 	lightSub.pSysMem = &pointLights[0];
 	lightSub.SysMemPitch = 0;
 	lightSub.SysMemSlicePitch = 0;
-	hr = pD3D11Device->CreateBuffer(&lightBufferDesc, &lightSub, &m_pLightBuffer);
+	hr = pD3D11Device->CreateBuffer(&lightBufferDesc, &lightSub, GetAddressOf());
 	//DebugHR(hr);
 	int lightSlot = 0;
-	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, &m_pLightBuffer);
+	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, GetAddressOf());
 
 
 	D3D11_BUFFER_DESC cameraBufferDesc;

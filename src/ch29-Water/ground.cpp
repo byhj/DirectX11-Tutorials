@@ -11,10 +11,10 @@ void Ground::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &
 	cbMatrix.view   = View;
 	cbMatrix.proj   = Proj;
 	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer.Get(), 0, NULL, &cbMatrix, 0, 0);
-	pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.Get() );
+	pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.GetAddressOf() );
 
 	int lightSlot = 0;
-	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, &m_pLightBuffer);
+	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, GetAddressOf());
 
 	unsigned int stride;
 	unsigned int offset;
@@ -111,12 +111,12 @@ bool Ground::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11
 	lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	lightBufferDesc.MiscFlags      = 0;
 
-	hr = pD3D11Device->CreateBuffer(&lightBufferDesc, NULL, &m_pLightBuffer);
+	hr = pD3D11Device->CreateBuffer(&lightBufferDesc, NULL, GetAddressOf());
 	//DebugHR(hr);
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	// Lock the light constant buffer so it can be written to.
-	hr = pD3D11DeviceContext->Map(m_pLightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	hr = pD3D11DeviceContext->Map(m_pLightBuffer.GetAddress(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	//DebugHR(hr);
 
 	// Get a pointer to the data in the constant buffer.
@@ -127,7 +127,7 @@ bool Ground::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11
 	dataPtr2->lightDirection = XMFLOAT3(0.0f, -1.0f, 0.5f);
 
 
-	pD3D11DeviceContext->Unmap(m_pLightBuffer, 0);
+	pD3D11DeviceContext->Unmap(m_pLightBuffer.GetAddress(), 0);
 
 
 

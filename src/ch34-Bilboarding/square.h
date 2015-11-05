@@ -14,7 +14,7 @@ public:
 	{
 		m_pInputLayout        = NULL;
 		m_pMVPBuffer          = NULL;
-		m_pLightBuffer        = NULL;
+		pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());        = NULL;
 		m_pVertexBuffer       = NULL;
 		m_pIndexBuffer        = NULL;
 	}
@@ -26,7 +26,7 @@ public:
 	{
 			ReleaseCOM(m_pRenderTargetView  )
 			ReleaseCOM(m_pMVPBuffer         )
-			ReleaseCOM(m_pLightBuffer       )
+			ReleaseCOM(pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());       )
 			ReleaseCOM(m_pVertexBuffer      )
 			ReleaseCOM(m_pIndexBuffer       )
 	}
@@ -71,7 +71,7 @@ private:
 
 	ID3D11RenderTargetView   *m_pRenderTargetView;
 	ID3D11Buffer             *m_pMVPBuffer;
-	ID3D11Buffer             *m_pLightBuffer;
+	ID3D11Buffer             *pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());;
 	ID3D11Buffer             *m_CameraBuffer;
 	ID3D11Buffer             *m_pVertexBuffer;
 	ID3D11Buffer             *m_pIndexBuffer;

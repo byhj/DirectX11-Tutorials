@@ -159,7 +159,7 @@ void Triangle::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 
 	unsigned numElements = ARRAYSIZE(pInputLayoutDesc);
 
-	TriangleShader.init(pD3D11Device, hWnd);
+	TriangleShader.init(pD3D11Device, vInputLayoutDesc);
 	TriangleShader.attachVS(L"light.vsh", pInputLayoutDesc, numElements);
 	TriangleShader.attachHS(L"light.hsh");
 	TriangleShader.attachDS(L"light.dsh");

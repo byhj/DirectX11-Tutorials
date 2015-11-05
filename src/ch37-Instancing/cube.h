@@ -2,7 +2,7 @@
 #define Cube_H
 
 #include <windows.h>
-#include <xnamath.h>
+
 #include <vector>
 
 #include "d3d/Shader.h"

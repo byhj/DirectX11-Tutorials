@@ -1,6 +1,6 @@
 #include "d3d/Shader.h"
 #include "d3d/Utility.h"
-#include <xnamath.h>
+
 
 namespace byhj
 {
@@ -46,8 +46,8 @@ namespace byhj
 		ID3D11Buffer *m_pMVPBuffer;
 		ID3D11SamplerState* m_sampleStateWrap;
 		ID3D11SamplerState* m_sampleStateClamp;
-		ID3D11Buffer* m_pLightBuffer;
-		ID3D11Buffer* m_pLightBuffer2;
+		ID3D11Buffer* pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());;
+		ID3D11Buffer* pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());2;
 
 
 		d3d::Shader sceneShader;

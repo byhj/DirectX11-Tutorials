@@ -2,7 +2,7 @@
 #define Triangle_H
 
 #include <windows.h>
-#include <xnamath.h>
+
 #include "d3d/Shader.h"
 #include "d3d/Utility.h"
 

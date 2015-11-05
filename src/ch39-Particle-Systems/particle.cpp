@@ -65,7 +65,7 @@ void Particle::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4
 		cbMatrix.view = View;
 		cbMatrix.proj = Proj;
 		pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer.Get(), 0, NULL, &cbMatrix, 0, 0);
-		pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.Get() );
+		pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.GetAddressOf() );
 
 		unsigned int stride;
 		unsigned int offset;

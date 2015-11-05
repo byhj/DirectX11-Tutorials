@@ -6,7 +6,7 @@
 #endif 
 
 #include <d3d11.h>
-#include <xnamath.h>
+
 #include <D3DX10math.h>
 #include <vector>
 

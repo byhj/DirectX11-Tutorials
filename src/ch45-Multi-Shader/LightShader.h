@@ -2,7 +2,7 @@
 #define LIGHTSHADER
 
 #include <d3d11.h>
-#include <xnamath.h>
+
 #include "d3d/Shader.h"
 #include "d3d/Utility.h"
 
@@ -39,7 +39,7 @@ struct CameraBuffer
      d3d::MatrixBuffer cbMatrix;
      ComPtr<ID3D11InputLayout> m_pInputLayout;
      ComPtr<ID3D11Buffer> m_pMVPBuffer;
-     ID3D11Buffer             *m_pLightBuffer      = nullptr;
+     ComPtr<ID3D11Buffer> m_pLightBuffer
      ID3D11Buffer             *m_CameraBuffer      = nullptr;
      ComPtr<ID3D11ShaderResourceView> m_pTexture;
      ComPtr<ID3D11SamplerState> m_pTexSamplerState;

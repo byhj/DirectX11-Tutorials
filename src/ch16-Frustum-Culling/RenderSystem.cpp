@@ -20,7 +20,7 @@ void RenderSystem::v_Init()
 
 	m_Timer.Reset();
 	m_Camera.SetRadius(10.0f);
-	m_Cube.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd() );
+	m_Cube.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd() );
 	m_Font.init(m_pD3D11Device);
 }
 
@@ -62,7 +62,7 @@ void RenderSystem::v_Render()
 
 		if (visable)
 		{
-			m_Cube.Render(m_pD3D11DeviceContext, m_Matrix);
+			m_Cube.Render(m_pD3D11DeviceContext.Get(), m_Matrix);
 			++cnt;
 		}
 	}

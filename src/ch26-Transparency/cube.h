@@ -2,7 +2,7 @@
 #define Cube_H
 
 #include <windows.h>
-#include <xnamath.h>
+
 #include <vector>
 
 #include "d3d/Shader.h"
@@ -60,7 +60,7 @@ private:
 	ComPtr<ID3D11Buffer> m_pMVPBuffer;
 	ComPtr<ID3D11Buffer> m_pVertexBuffer;
 	ComPtr<ID3D11Buffer> m_pVertexBuffer;
-	ID3D11Buffer             *m_pLightBuffer      = nullptr;
+	ComPtr<ID3D11Buffer> m_pLightBuffer
 	ComPtr<ID3D11ShaderResourceView> m_pTexture;
 	ComPtr<ID3D11SamplerState> m_pTexSamplerState;
 	d3d::Shader CubeShader;

@@ -20,7 +20,7 @@ void RenderSystem::v_Init()
 
 	m_Camera.InitDirectInput(GetHwnd(), GetAppInst());
 	m_Timer.Reset();
-	m_Cube.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd() );
+	m_Cube.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd() );
 	m_Font.init(m_pD3D11Device);
 }
 
@@ -50,7 +50,7 @@ void RenderSystem::v_Render()
 	XMMATRIX Model     = XMMatrixRotationY(t);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
 
-	m_Cube.Render(m_pD3D11DeviceContext, m_Matrix);
+	m_Cube.Render(m_pD3D11DeviceContext.Get(), m_Matrix);
 
 	EndScene();
 }

@@ -88,20 +88,20 @@ namespace byhj
 		 lightBufferDesc.StructureByteStride = 0;
 
 		 // Create the constant buffer pointer so we can access the pixel shader constant buffer from within this class.
-		 pD3D11Device->CreateBuffer(&lightBufferDesc, NULL, &m_pLightBuffer);
+		 pD3D11Device->CreateBuffer(&lightBufferDesc, NULL, GetAddressOf());
 		
 		 D3D11_MAPPED_SUBRESOURCE mappedResource;
 
-		 hr = pD3D11DeviceContext->Map(m_pLightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		 hr = pD3D11DeviceContext->Map(m_pLightBuffer.GetAddress(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		 
 		 LightBufferType *dataPtr1 = (LightBufferType*)mappedResource.pData;
 		 dataPtr1->ambientColor = XMFLOAT4(0.15f, 0.15f, 0.15f, 0.15f);
 		 dataPtr1->diffuseColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 
-		 pD3D11DeviceContext->Unmap(m_pLightBuffer, 0);
+		 pD3D11DeviceContext->Unmap(m_pLightBuffer.GetAddress(), 0);
 
 		 int lightSlot = 0;
-		 pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, &m_pLightBuffer);
+		 pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, GetAddressOf());
 
 
 		 D3D11_BUFFER_DESC lightBufferDesc2;
@@ -114,7 +114,7 @@ namespace byhj
 		 lightBufferDesc2.StructureByteStride = 0;
 
 		 // Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-		 pD3D11Device->CreateBuffer(&lightBufferDesc2, NULL, &m_pLightBuffer2);
+		 pD3D11Device->CreateBuffer(&lightBufferDesc2, NULL, &pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());2);
 
 	}
 
@@ -129,7 +129,7 @@ namespace byhj
 		cbMatrix.lightPorj = LightProj;
 
 		pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer.Get(), 0, NULL, &cbMatrix, 0, 0);
-		pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.Get() );
+		pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.GetAddressOf() );
 
 		static float lightPositionX = -5.0f;
 		lightPositionX += 0.0005f;
@@ -138,8 +138,8 @@ namespace byhj
 			lightPositionX = -5.0f;
 		}
 		XMFLOAT3 lightPos = XMFLOAT3(lightPositionX, 8.0f, -5.0f);
-		pD3D11DeviceContext->UpdateSubresource(m_pLightBuffer2, 0, NULL, &lightPos, 0, 0);
-		pD3D11DeviceContext->VSSetConstantBuffers(1, 1, &m_pLightBuffer2);
+		pD3D11DeviceContext->UpdateSubresource(pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());2, 0, NULL, &lightPos, 0, 0);
+		pD3D11DeviceContext->VSSetConstantBuffers(1, 1, &pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());2);
 
 		pD3D11DeviceContext->PSSetSamplers(0, 1, &m_sampleStateClamp);
 		pD3D11DeviceContext->PSSetSamplers(1, 1, &m_sampleStateWrap);

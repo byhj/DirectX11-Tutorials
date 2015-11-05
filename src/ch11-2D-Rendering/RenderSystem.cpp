@@ -42,7 +42,7 @@ void RenderSystem::v_Render()
 	XMMATRIX Proj      = XMMatrixPerspectiveFovLH(0.4f*3.14f, GetAspect(), 1.0f, 1000.0f);
 	XMStoreFloat4x4(&m_Matrix.proj, XMMatrixTranspose(Proj));
 
-	m_Cube.Render(m_pD3D11DeviceContext, m_Matrix);
+	m_Cube.Render(m_pD3D11DeviceContext.Get(), m_Matrix);
 
 	///////////////////////Render Bitmap////////////////////////////////////
 

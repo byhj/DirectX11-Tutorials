@@ -28,12 +28,12 @@ private:
 
 	byhj::Triangle m_Triangle;
 
-	ComPtr<IDXGISwapChain> m_pSwapChain ;    
-	ComPtr<ID3D11Device>   m_pD3D11Device;
-	ComPtr<ID3D11DeviceContext> m_pD3D11DeviceContext;
+	ComPtr<IDXGISwapChain>         m_pSwapChain;
+	ComPtr<ID3D11Device>           m_pD3D11Device;
+	ComPtr<ID3D11DeviceContext>    m_pD3D11DeviceContext;
 	ComPtr<ID3D11RenderTargetView> m_pRenderTargetView;
 	ComPtr<ID3D11DepthStencilView> m_pDepthStencilView;
-	ComPtr<ID3D11Texture2D> m_pDepthStencilBuffer;
+	ComPtr<ID3D11Texture2D>        m_pDepthStencilBuffer;
 	d3d::MatrixBuffer m_Matrix;
 };
 }

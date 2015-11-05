@@ -43,7 +43,7 @@ void RenderSystem::v_Render()
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 
-	m_Cube.Render(m_pD3D11DeviceContext, m_Matrix);
+	m_Cube.Render(m_pD3D11DeviceContext.Get(), m_Matrix);
 
 	static float fadeInTime = 3.0f;
 	static float accumulatedTime = 0.0f;
@@ -54,7 +54,7 @@ void RenderSystem::v_Render()
 
 	if (fadeDone)
 	{
-		m_Cube.Render(m_pD3D11DeviceContext, m_Matrix);
+		m_Cube.Render(m_pD3D11DeviceContext.Get(), m_Matrix);
 	}
 	else
 	{

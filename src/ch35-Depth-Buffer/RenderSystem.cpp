@@ -39,7 +39,7 @@ void RenderSystem::v_Render()
 	//XMMATRIX Model = XMMatrixTranslation(0.0f, 0.0f, -0.5f);
    // XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
 
-	m_Cube.Render(m_pD3D11DeviceContext, m_Matrix);
+	m_Cube.Render(m_pD3D11DeviceContext.Get(), m_Matrix);
 
 	DrawInfo();
 
