@@ -34,7 +34,7 @@ float4 PS(VS_OUTPUT ps_in) : SV_TARGET
   // Expand the range of the normal value from (0, +1) to (-1, +1).
   bumpMap = (bumpMap * 2.0f) - 1.0f;
 
-  // Calculate the normal from the data in the bump map.
+  // Calculate the normal from the data in the bump map., change normal map to the tangent space 
   float3 bumpNormal = (bumpMap.x * ps_in.tangent) 
                     + (bumpMap.y * ps_in.binormal) 
                     + (bumpMap.z * ps_in.Normal);

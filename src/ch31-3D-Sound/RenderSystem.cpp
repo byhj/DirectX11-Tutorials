@@ -54,10 +54,6 @@ void RenderSystem::v_Shutdown()
 
 	m_Cube.Shutdown();
 
-	ReleaseCOM(m_pSwapChain);
-	ReleaseCOM(m_pD3D11Device);
-	ReleaseCOM(m_pD3D11DeviceContext);
-	ReleaseCOM(m_pRenderTargetView);
 }
 
 void RenderSystem::init_device()

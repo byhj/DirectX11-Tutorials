@@ -18,7 +18,7 @@ void RenderSystem::v_Init()
 	init_device();
 	init_camera();
 
-	m_Triangle.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd());
+	m_Triangle.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd());
 }
 
 void RenderSystem::v_Update()
@@ -39,11 +39,6 @@ void RenderSystem::v_Shutdown()
 {
 
 	m_Triangle.Shutdown();
-
-	ReleaseCOM(m_pSwapChain);
-	ReleaseCOM(m_pD3D11Device);
-	ReleaseCOM(m_pD3D11DeviceContext);
-	ReleaseCOM(m_pRenderTargetView);
 }
 
 void RenderSystem::init_device()

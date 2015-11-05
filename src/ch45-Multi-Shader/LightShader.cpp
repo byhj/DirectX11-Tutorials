@@ -134,7 +134,7 @@ namespace byhj
 		pD3D11DeviceContext->Unmap(m_CameraBuffer.Get(), 0);
 
 		int bufferSlot = 1;
-		pD3D11DeviceContext->VSSetConstantBuffers(bufferSlot, 1, &m_CameraBuffer);
+		pD3D11DeviceContext->VSSetConstantBuffers(bufferSlot, 1, m_CameraBuffer.GetAddressOf());
 
 
 	}

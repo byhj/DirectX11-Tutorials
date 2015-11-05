@@ -57,16 +57,7 @@ void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const d3d::MatrixBuf
 
 void Cube::Shutdown()
 {
-	ReleaseCOM(m_pInputLayout)
-	ReleaseCOM(m_pVS)
-	ReleaseCOM(m_pPS)
-	ReleaseCOM(m_pMVPBuffer)
-	ReleaseCOM(m_pVertexBuffer)
-	ReleaseCOM(m_pIndexBuffer)
-	ReleaseCOM(pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());)
-	ReleaseCOM(m_CameraBuffer)
-	ReleaseCOM(m_pTexSamplerState)
-	ReleaseCOM(m_pTexture)
+
 
 }
 
@@ -187,39 +178,42 @@ void Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	pD3D11DeviceContext->Unmap(m_CameraBuffer.Get(), 0);
 
 	int bufferSlot = 1;
-	pD3D11DeviceContext->VSSetConstantBuffers(bufferSlot, 1, &m_CameraBuffer);
+	pD3D11DeviceContext->VSSetConstantBuffers(bufferSlot, 1, m_CameraBuffer.GetAddressOf());
 
 
 }
 
 void Cube::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 {
-	D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc[3];
-	pInputLayoutDesc[0].SemanticName         = "POSITION";
-	pInputLayoutDesc[0].SemanticIndex        = 0;
-	pInputLayoutDesc[0].Format               = DXGI_FORMAT_R32G32B32_FLOAT;
-	pInputLayoutDesc[0].InputSlot            = 0;
-	pInputLayoutDesc[0].AlignedByteOffset    = 0;
-	pInputLayoutDesc[0].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[0].InstanceDataStepRate = 0;
+	D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc;
+	std::vector<D3D11_INPUT_ELEMENT_DESC> vInputLayoutDesc;
 
-	pInputLayoutDesc[1].SemanticName         = "TEXCOORD";
-	pInputLayoutDesc[1].SemanticIndex        = 0;
-	pInputLayoutDesc[1].Format               = DXGI_FORMAT_R32G32_FLOAT;
-	pInputLayoutDesc[1].InputSlot            = 0;
-	pInputLayoutDesc[1].AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
-	pInputLayoutDesc[1].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[1].InstanceDataStepRate = 0;
+	pInputLayoutDesc.SemanticName         = "POSITION";
+	pInputLayoutDesc.SemanticIndex        = 0;
+	pInputLayoutDesc.Format               = DXGI_FORMAT_R32G32B32_FLOAT;
+	pInputLayoutDesc.InputSlot            = 0;
+	pInputLayoutDesc.AlignedByteOffset    = 0;
+	pInputLayoutDesc.InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc.InstanceDataStepRate = 0;
+	vInputLayoutDesc.push_back(pInputLayoutDesc);
 
-	pInputLayoutDesc[2].SemanticName         = "NORMAL";
-	pInputLayoutDesc[2].SemanticIndex        = 0;
-	pInputLayoutDesc[2].Format               = DXGI_FORMAT_R32G32B32_FLOAT;
-	pInputLayoutDesc[2].InputSlot            = 0;
-	pInputLayoutDesc[2].AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
-	pInputLayoutDesc[2].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[2].InstanceDataStepRate = 0;
+	pInputLayoutDesc.SemanticName         = "TEXCOORD";
+	pInputLayoutDesc.SemanticIndex        = 0;
+	pInputLayoutDesc.Format               = DXGI_FORMAT_R32G32_FLOAT;
+	pInputLayoutDesc.InputSlot            = 0;
+	pInputLayoutDesc.AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
+	pInputLayoutDesc.InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc.InstanceDataStepRate = 0;
+	vInputLayoutDesc.push_back(pInputLayoutDesc);
 
-	
+	pInputLayoutDesc.SemanticName         = "NORMAL";
+	pInputLayoutDesc.SemanticIndex        = 0;
+	pInputLayoutDesc.Format               = DXGI_FORMAT_R32G32B32_FLOAT;
+	pInputLayoutDesc.InputSlot            = 0;
+	pInputLayoutDesc.AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
+	pInputLayoutDesc.InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc.InstanceDataStepRate = 0;
+	vInputLayoutDesc.push_back(pInputLayoutDesc);
 
 	CubeShader.init(pD3D11Device, vInputLayoutDesc);
 	CubeShader.attachVS(L"Cube.vsh", "VS", "vs_5_0");

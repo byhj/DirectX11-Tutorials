@@ -188,7 +188,7 @@ bool Plane::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11D
 	pD3D11DeviceContext->Unmap(m_CameraBuffer.Get(), 0);
 
 	int bufferSlot = 1;
-	pD3D11DeviceContext->VSSetConstantBuffers(bufferSlot, 1, &m_CameraBuffer);
+	pD3D11DeviceContext->VSSetConstantBuffers(bufferSlot, 1, m_CameraBuffer.GetAddressOf());
 
 	// Create a texture sampler state description.
 	D3D11_SAMPLER_DESC samplerDesc;

@@ -48,12 +48,12 @@ void RenderSystem::v_Render()
 	
 		XMFLOAT4X4 pp;
 		XMStoreFloat4x4(&pp, XMMatrixTranspose(Proj) );
-		D3DXMATRIX pr = D3DXMATRIX(pp._11, pp._12, pp._13, pp._14,
+		XMFLOAT4X4 pr = XMFLOAT4X4(pp._11, pp._12, pp._13, pp._14,
 			pp._21, pp._22, pp._23, pp._24,
 			pp._31, pp._32, pp._33, pp._34,
 			pp._41, pp._42, pp._43, pp._44);
 		XMStoreFloat4x4(&pp, XMMatrixTranspose(View) );
-		D3DXMATRIX vi = D3DXMATRIX(pp._11, pp._12, pp._13, pp._14,
+		XMFLOAT4X4 vi = XMFLOAT4X4(pp._11, pp._12, pp._13, pp._14,
 			pp._21, pp._22, pp._23, pp._24,
 			pp._31, pp._32, pp._33, pp._34,
 			pp._41, pp._42, pp._43, pp._44);
@@ -69,7 +69,7 @@ void RenderSystem::v_Render()
 
 	WCHAR cntInfo[255];
 	swprintf(cntInfo, L"Count: %d", cnt);
-	m_Font.drawText(m_pD3D11DeviceContext, cntInfo, 22.0f, 10.0f, 10.0f);
+	m_Font.drawText(m_pD3D11DeviceContext.Get(), cntInfo, 22.0f, 10.0f, 10.0f);
 
 	EndScene();
 }

@@ -40,8 +40,6 @@ private:
 	};
 
 	ComPtr<ID3D11InputLayout> m_pInputLayout;
-	ID3D11VertexShader       *m_pVS;
-	ID3D11PixelShader        *m_pPS;
 	ComPtr<ID3D11RenderTargetView> m_pRenderTargetView;
 	ComPtr<ID3D11Buffer> m_pMVPBuffer;
 	ComPtr<ID3D11Buffer> m_pVertexBuffer;

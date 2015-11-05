@@ -2,8 +2,14 @@
 #define Frustum_H
 
 #include <d3d11.h>
-#include <D3DX10math.h>
 
+#ifdef WIN32
+#define _XM_NO_INTRINSICS_
+#endif
+
+#include <DirectXMath.h>
+
+using namespace DirectX;
 
 namespace byhj
 {
@@ -19,7 +25,7 @@ public:
 	Frustum(const Frustum &) {}
 	~Frustum() {}
 
-	void Construct(float screenDepth, D3DXMATRIX proj , D3DXMATRIX view);
+	void Construct(float screenDepth, XMFLOAT4X4 proj , XMFLOAT4X4 view);
 	
 	bool CheckPoint(float x, float y, float z);
 	bool CheckCube(float xCenter, float yCenter, float zCenter, float radius);
@@ -27,7 +33,7 @@ public:
 	bool CheckRectangle(float xCenter, float yCenter, float zCenter, float xSize, float ySize, float zSize);
 
 private:
-	D3DXPLANE m_Planes[6];
+	XMFLOAT4 m_Planes[6];
 };
 
 }

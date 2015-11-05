@@ -26,27 +26,34 @@ void Cube::Update()
 {
 
 }
+
 void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const d3d::MatrixBuffer &matrix)
 {
 
+	////////////////////////////////////////////////////////////////////////////////////////
+
+	// Set vertex buffer stride and offset.=
+	unsigned int stride;
+	unsigned int offset;
+	stride = sizeof(Vertex);
+	offset = 0;
+	pD3D11DeviceContext->IASetVertexBuffers(0, 1, m_pVertexBuffer.GetAddressOf(), &stride, &offset);
+	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	cbMatrix.model = matrix.model;
 	cbMatrix.view  = matrix.view;
 	cbMatrix.proj  = matrix.proj;
 	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer.Get(), 0, NULL, &cbMatrix, 0, 0);
 	pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.GetAddressOf() );
-
-	// Set vertex buffer stride and offset
-	unsigned int stride;
-	unsigned int offset;
-	stride = sizeof(Vertex);
-	offset = 0;
-	pD3D11DeviceContext->IASetVertexBuffers(0, 1, m_pVertexBuffer.GetAddressOf(), &stride, &offset);
-	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0); 
-	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
 	pD3D11DeviceContext->PSSetShaderResources(0, 1, m_pTexture.GetAddressOf());
 	pD3D11DeviceContext->PSSetSamplers(0, 1, m_pTexSamplerState.GetAddressOf());
+
+
+	int lightSlot = 0;
+	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());
+	int bufferSlot = 1;
+	pD3D11DeviceContext->VSSetConstantBuffers(bufferSlot, 1, m_CameraBuffer.GetAddressOf());
 
 	CubeShader.use(pD3D11DeviceContext);
 	pD3D11DeviceContext->DrawIndexed(m_VertexData.size(), 0, 0);
@@ -56,14 +63,7 @@ void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const d3d::MatrixBuf
 
 void Cube::Shutdown()
 {
-	ReleaseCOM(m_pInputLayout)
-	ReleaseCOM(m_pMVPBuffer)
-	ReleaseCOM(m_pVertexBuffer)
-	ReleaseCOM(m_pIndexBuffer)
-	ReleaseCOM(pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());)
-	ReleaseCOM(m_CameraBuffer)
-	ReleaseCOM(m_pTexSamplerState)
-	ReleaseCOM(m_pTexture)
+
 
 }
 
@@ -113,8 +113,6 @@ void Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	hr = pD3D11Device->CreateBuffer(&IndexBufferDesc, &IBO, &m_pIndexBuffer);
 	//DebugHR(hr);
 
-
-
 	////////////////////////////////Const Buffer//////////////////////////////////////
 
 	D3D11_BUFFER_DESC mvpDesc;
@@ -137,7 +135,7 @@ void Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	lightBufferDesc.MiscFlags      = 0;
 
-	hr = pD3D11Device->CreateBuffer(&lightBufferDesc, NULL, &m_pLightBuffer);
+	hr = pD3D11Device->CreateBuffer(&lightBufferDesc, NULL, m_pLightBuffer.GetAddressOf());
 	//DebugHR(hr);
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -151,14 +149,13 @@ void Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 
 	dataPtr2->ambientColor   = XMFLOAT4(0.15f, 0.15f, 0.15f, 0.15f);
 	dataPtr2->diffuseColor   = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	dataPtr2->lightDirection = XMFLOAT3(0.0f, 0.0f, 1.0f);
+	dataPtr2->lightDirection = XMFLOAT3(0.0f, 2.0f, -3.0f);
 	dataPtr2->specularPower  = 32.0f;
 	dataPtr2->specularColor  = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
 
 	pD3D11DeviceContext->Unmap(m_pLightBuffer.Get(), 0);
 
-	int lightSlot = 0;
-	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());
+
 
 
 	D3D11_BUFFER_DESC cameraBufferDesc;
@@ -183,40 +180,42 @@ void Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	dataPtr3->padding = 0.0f;
 	pD3D11DeviceContext->Unmap(m_CameraBuffer.Get(), 0);
 
-	int bufferSlot = 1;
-	pD3D11DeviceContext->VSSetConstantBuffers(bufferSlot, 1, &m_CameraBuffer);
 
 
 }
 
 void Cube::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 {
-	D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc[3];
-	pInputLayoutDesc[0].SemanticName         = "POSITION";
-	pInputLayoutDesc[0].SemanticIndex        = 0;
-	pInputLayoutDesc[0].Format               = DXGI_FORMAT_R32G32B32_FLOAT;
-	pInputLayoutDesc[0].InputSlot            = 0;
-	pInputLayoutDesc[0].AlignedByteOffset    = 0;
-	pInputLayoutDesc[0].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[0].InstanceDataStepRate = 0;
+	D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc;
+	std::vector<D3D11_INPUT_ELEMENT_DESC> vInputLayoutDesc;
 
-	pInputLayoutDesc[1].SemanticName         = "TEXCOORD";
-	pInputLayoutDesc[1].SemanticIndex        = 0;
-	pInputLayoutDesc[1].Format               = DXGI_FORMAT_R32G32_FLOAT;
-	pInputLayoutDesc[1].InputSlot            = 0;
-	pInputLayoutDesc[1].AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
-	pInputLayoutDesc[1].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[1].InstanceDataStepRate = 0;
+	pInputLayoutDesc.SemanticName         = "POSITION";
+	pInputLayoutDesc.SemanticIndex        = 0;
+	pInputLayoutDesc.Format               = DXGI_FORMAT_R32G32B32_FLOAT;
+	pInputLayoutDesc.InputSlot            = 0;
+	pInputLayoutDesc.AlignedByteOffset    = 0;
+	pInputLayoutDesc.InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc.InstanceDataStepRate = 0;
+	vInputLayoutDesc.push_back(pInputLayoutDesc);
 
-	pInputLayoutDesc[2].SemanticName         = "NORMAL";
-	pInputLayoutDesc[2].SemanticIndex        = 0;
-	pInputLayoutDesc[2].Format               = DXGI_FORMAT_R32G32B32_FLOAT;
-	pInputLayoutDesc[2].InputSlot            = 0;
-	pInputLayoutDesc[2].AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
-	pInputLayoutDesc[2].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[2].InstanceDataStepRate = 0;
+	pInputLayoutDesc.SemanticName         = "TEXCOORD";
+	pInputLayoutDesc.SemanticIndex        = 0;
+	pInputLayoutDesc.Format               = DXGI_FORMAT_R32G32_FLOAT;
+	pInputLayoutDesc.InputSlot            = 0;
+	pInputLayoutDesc.AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
+	pInputLayoutDesc.InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc.InstanceDataStepRate = 0;
+	vInputLayoutDesc.push_back(pInputLayoutDesc);
 
-	
+	pInputLayoutDesc.SemanticName         = "NORMAL";
+	pInputLayoutDesc.SemanticIndex        = 0;
+	pInputLayoutDesc.Format               = DXGI_FORMAT_R32G32B32_FLOAT;
+	pInputLayoutDesc.InputSlot            = 0;
+	pInputLayoutDesc.AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
+	pInputLayoutDesc.InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc.InstanceDataStepRate = 0;
+	vInputLayoutDesc.push_back(pInputLayoutDesc);
+
 
 	CubeShader.init(pD3D11Device, vInputLayoutDesc);
 	CubeShader.attachVS(L"Cube.vsh", "VS", "vs_5_0");

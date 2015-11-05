@@ -46,15 +46,15 @@ void RenderSystem::v_Render()
 
 	///////////////////////Render Bitmap////////////////////////////////////
 
-	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthDisabledStencilState, 1);
+	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthDisabledStencilState.Get(), 1);
 
 	Model     = XMMatrixIdentity();
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
 	XMMATRIX orthMat =  XMMatrixOrthographicLH(1.0f, 1.0f, 0.1f, 1000.0f);
 	XMStoreFloat4x4(&m_Matrix.proj, XMMatrixTranspose(orthMat));
-	m_Bitmap.Render(m_pD3D11DeviceContext, m_Matrix);
+	m_Bitmap.Render(m_pD3D11DeviceContext.Get(), m_Matrix);
 
-	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
+	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState.Get(), 1);
 
 	EndScene();
 }
@@ -63,11 +63,6 @@ void RenderSystem::v_Shutdown()
 {
 
 	m_Cube.Shutdown();
-
-	ReleaseCOM(m_pSwapChain);
-	ReleaseCOM(m_pD3D11Device);
-	ReleaseCOM(m_pD3D11DeviceContext);
-	ReleaseCOM(m_pRenderTargetView);
 }
 
 void RenderSystem::init_device()
@@ -115,7 +110,6 @@ void RenderSystem::init_device()
 
 
 	D3D11_TEXTURE2D_DESC depthBufferDesc;
-	ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
 	depthBufferDesc.Width              = m_ScreenWidth;
 	depthBufferDesc.Height             = m_ScreenHeight;
 	depthBufferDesc.MipLevels          = 1;
@@ -127,8 +121,10 @@ void RenderSystem::init_device()
 	depthBufferDesc.BindFlags          = D3D11_BIND_DEPTH_STENCIL;
 	depthBufferDesc.CPUAccessFlags     = 0;
 	depthBufferDesc.MiscFlags          = 0;
-	// Create the texture for the depth buffer using the filled out description.
-	hr = m_pD3D11Device->CreateTexture2D(&depthBufferDesc, NULL, &m_pDepthStencilBuffer);
+
+	m_pD3D11Device->CreateTexture2D(&depthBufferDesc, NULL, &m_pDepthStencilBuffer);
+	m_pD3D11Device->CreateDepthStencilView(m_pDepthStencilBuffer.Get(), NULL, &m_pDepthStencilView);
+	m_pD3D11DeviceContext->OMSetRenderTargets(1, m_pRenderTargetView.GetAddressOf(), m_pDepthStencilView.Get());
 
 
 	//////////////////////////// Initialize the description of the stencil state.///////////////////////////////////////////////
@@ -175,6 +171,7 @@ void RenderSystem::init_device()
 	rasterDesc.MultisampleEnable     = false;
 	rasterDesc.ScissorEnable         = false;
 	rasterDesc.SlopeScaledDepthBias  = 0.0f;
+
 	// Create the rasterizer state from the description we just filled out.
 	hr = m_pD3D11Device->CreateRasterizerState(&rasterDesc, &m_pRasterState);
 	//DebugHR(hr);
@@ -186,7 +183,7 @@ void RenderSystem::BeginScene()
 {
 	//Render 
 	float bgColor[4] ={ 0.2f, 0.3f, 0.4f, 1.0f };
-	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
+	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState.Get(), 1);
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, m_pRenderTargetView.GetAddressOf(), m_pDepthStencilView.Get());
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView.Get(), bgColor);
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
@@ -230,7 +227,7 @@ void RenderSystem::init_object()
 {
 	m_Cube.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd());
 	m_Bitmap.init_window(m_ScreenWidth, m_ScreenHeight);
-	m_Bitmap.Init(m_pD3D11Device, GetHwnd()  );
+	m_Bitmap.Init(m_pD3D11Device.Get(), GetHwnd()  );
 }
 
 

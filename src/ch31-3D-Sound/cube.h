@@ -30,7 +30,6 @@ private:
 	void init_texture(ID3D11Device *pD3D11Device);
 	void load_model(char *modelFile);
 
-
 	struct LightBuffer
 	{
 		XMFLOAT4 ambientColor;
@@ -56,17 +55,13 @@ private:
    
 	d3d::MatrixBuffer cbMatrix;
 	ComPtr<ID3D11InputLayout> m_pInputLayout;
-	ID3D11VertexShader       *m_pVS               = nullptr;
-	ID3D11PixelShader        *m_pPS               = nullptr;
 	ComPtr<ID3D11Buffer> m_pMVPBuffer;
+	ComPtr<ID3D11Buffer> m_pIndexBuffer;
 	ComPtr<ID3D11Buffer> m_pVertexBuffer;
-	ComPtr<ID3D11Buffer> m_pVertexBuffer;
-	ComPtr<ID3D11Buffer> m_pLightBuffer
-	ComPtr<ID3D11Buffer> m_CameraBuffer;
+	ComPtr<ID3D11Buffer> m_pLightBuffer;
 	ComPtr<ID3D11ShaderResourceView> m_pTexture;
 	ComPtr<ID3D11SamplerState> m_pTexSamplerState;
 	d3d::Shader CubeShader;
-
 
 	std::vector<Vertex> m_VertexData;
 	std::vector<DWORD> m_IndexData;

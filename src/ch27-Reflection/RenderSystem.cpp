@@ -55,7 +55,7 @@ void RenderSystem::v_Render()
 
 	m_Matrix.view = View;
 	m_Cube.Render(m_pD3D11DeviceContext.Get(), m_Matrix);
-	m_Plane.Render(m_pD3D11DeviceContext, m_pRttShaderResourceView, 
+	m_Plane.Render(m_pD3D11DeviceContext.Get(), m_pRttShaderResourceView, 
 		           m_Matrix.model, m_Matrix.view, m_Matrix.proj, Reflect);
 
 	DrawInfo();
@@ -68,11 +68,6 @@ void RenderSystem::v_Shutdown()
 {
 
 	m_Cube.Shutdown();
-
-	ReleaseCOM(m_pSwapChain);
-	ReleaseCOM(m_pD3D11Device);
-	ReleaseCOM(m_pD3D11DeviceContext);
-	ReleaseCOM(m_pRenderTargetView);
 }
 
 
@@ -311,8 +306,8 @@ void RenderSystem::init_object()
 	m_Cube.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd());
 	m_Font.init(m_pD3D11Device.Get());
 
-	m_Plane.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-	m_Plane.init_shader(m_pD3D11Device, GetHwnd());
+	m_Plane.init_buffer(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get());
+	m_Plane.init_shader(m_pD3D11Device.Get(), GetHwnd());
 
 
 	m_Camera.SetRadius(5.0f);

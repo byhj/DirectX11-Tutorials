@@ -5,14 +5,7 @@ namespace byhj
 
 Bitmap::Bitmap()
 {
-	m_pInputLayout        = NULL;
-	m_pVS                 = NULL;
-	m_pPS                 = NULL;
-	m_pRenderTargetView   = NULL;
-	m_pMVPBuffer          = NULL;
-	m_pVertexBuffer       = NULL;
-	m_pIndexBuffer        = NULL;
-	m_pTexture            = NULL;
+
 }
 
 Bitmap::~Bitmap()
@@ -36,8 +29,8 @@ void Bitmap::Render(ID3D11DeviceContext *pD3D11DeviceContext, const d3d::MatrixB
 	cbMatrix.view  = matrix.view;
 	cbMatrix.proj  = matrix.proj;
 
-	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer, 0, NULL, &cbMatrix, 0, 0 );
-	pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
+	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer.Get(), 0, NULL, &cbMatrix, 0, 0 );
+	pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, m_pMVPBuffer.GetAddressOf());
 
 	unsigned int stride;
 	unsigned int offset;
@@ -49,8 +42,8 @@ void Bitmap::Render(ID3D11DeviceContext *pD3D11DeviceContext, const d3d::MatrixB
 
 	BitmapShader.use(pD3D11DeviceContext);
 
-	pD3D11DeviceContext->PSSetShaderResources( 0, 1, &m_pTexture );
-	pD3D11DeviceContext->PSSetSamplers( 0, 1, &m_pTexSamplerState );
+	pD3D11DeviceContext->PSSetShaderResources( 0, 1, m_pTexture.GetAddressOf() );
+	pD3D11DeviceContext->PSSetSamplers( 0, 1, m_pTexSamplerState.GetAddressOf());
 	pD3D11DeviceContext->DrawIndexed(IndexCount, 0, 0);
 
 }
@@ -58,14 +51,7 @@ void Bitmap::Render(ID3D11DeviceContext *pD3D11DeviceContext, const d3d::MatrixB
 
 void Bitmap::Shutdown()
 {
-	ReleaseCOM(m_pInputLayout)
-	ReleaseCOM(m_pVS)
-	ReleaseCOM(m_pPS)
-	ReleaseCOM(m_pMVPBuffer)
-	ReleaseCOM(m_pRenderTargetView)
-	ReleaseCOM(m_pVertexBuffer)
-	ReleaseCOM(m_pIndexBuffer)
-	ReleaseCOM(m_pTexture)
+
 }
 
 bool Bitmap::init_window(int sw, int sh)
@@ -210,27 +196,30 @@ bool Bitmap::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 {
 	HRESULT result;
 
-	D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc[2];
-	pInputLayoutDesc[0].SemanticName         = "POSITION";
-	pInputLayoutDesc[0].SemanticIndex        = 0;
-	pInputLayoutDesc[0].Format               = DXGI_FORMAT_R32G32B32_FLOAT;
-	pInputLayoutDesc[0].InputSlot            = 0;
-	pInputLayoutDesc[0].AlignedByteOffset    = 0;
-	pInputLayoutDesc[0].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[0].InstanceDataStepRate = 0;
+	D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc;
+	std::vector<D3D11_INPUT_ELEMENT_DESC> vInputLayoutDesc;
 
-	pInputLayoutDesc[1].SemanticName         = "TEXCOORD";
-	pInputLayoutDesc[1].SemanticIndex        = 0;
-	pInputLayoutDesc[1].Format               = DXGI_FORMAT_R32G32_FLOAT;
-	pInputLayoutDesc[1].InputSlot            = 0;
-	pInputLayoutDesc[1].AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
-	pInputLayoutDesc[1].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[1].InstanceDataStepRate = 0;
-	
+	pInputLayoutDesc.SemanticName         = "POSITION";
+	pInputLayoutDesc.SemanticIndex        = 0;
+	pInputLayoutDesc.Format               = DXGI_FORMAT_R32G32B32_FLOAT;
+	pInputLayoutDesc.InputSlot            = 0;
+	pInputLayoutDesc.AlignedByteOffset    = 0;
+	pInputLayoutDesc.InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc.InstanceDataStepRate = 0;
+	vInputLayoutDesc.push_back(pInputLayoutDesc);
+
+	pInputLayoutDesc.SemanticName         = "TEXCOORD";
+	pInputLayoutDesc.SemanticIndex        = 0;
+	pInputLayoutDesc.Format               = DXGI_FORMAT_R32G32_FLOAT;
+	pInputLayoutDesc.InputSlot            = 0;
+	pInputLayoutDesc.AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
+	pInputLayoutDesc.InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc.InstanceDataStepRate = 0;
+	vInputLayoutDesc.push_back(pInputLayoutDesc);
 
 	BitmapShader.init(pD3D11Device, vInputLayoutDesc);
 	BitmapShader.attachVS(L"bitmap.vsh", "VS", "vs_5_0");
-	BitmapShader.attachPS(L"bitmap.psh");
+	BitmapShader.attachPS(L"bitmap.psh", "PS", "ps_5_0");
 	BitmapShader.end();
 
 	return true;
