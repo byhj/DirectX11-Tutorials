@@ -57,7 +57,7 @@ private:
 	ComPtr<ID3D11RenderTargetView> m_pRenderTargetView;
 	ComPtr<ID3D11DepthStencilView> m_pDepthStencilView;
 	ComPtr<ID3D11Texture2D> m_pDepthStencilBuffer;
-	ID3D11DepthStencilState  *m_pDepthStencilState;
+	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState.Get(), 1);
 	ID3D11DepthStencilState  *m_pDepthDisabledStencilState;
 	ComPtr<ID3D11RasterizerState> m_pRasterState;
 

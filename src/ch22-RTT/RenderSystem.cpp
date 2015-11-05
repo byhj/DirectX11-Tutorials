@@ -38,7 +38,7 @@ void RenderSystem::v_Render()
 
 	float bgColor[4] ={ 0.5f, 0.5f, 0.5f, 1.0f };
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRttRenderTargetView, m_pDepthStencilView.Get());
-	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRttRenderTargetView, bgColor);
+	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRttRenderTargetView.Get(), bgColor);
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 	m_Cube.Render(m_pD3D11DeviceContext.Get(), m_Matrix);
@@ -56,7 +56,7 @@ void RenderSystem::v_Render()
 	XMFLOAT4X4 orth;
 	XMStoreFloat4x4(&orth, XMMatrixTranspose(orthProj));
 
-	m_Rtt.Render(m_pD3D11DeviceContext.Get(), m_pRttShaderResourceView, m_Matrix.model, m_Matrix.view, orth);
+	m_Rtt.Render(m_pD3D11DeviceContext.Get(), m_pRttShaderResourceView.Get(), m_Matrix.model, m_Matrix.view, orth);
 
 	TurnZBufferOn();
 
@@ -345,26 +345,26 @@ void RenderSystem::init_fbo()
 	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 	renderTargetViewDesc.Texture2D.MipSlice = 0;
 
-	result = m_pD3D11Device->CreateRenderTargetView(m_pRttRenderTargetTexture, &renderTargetViewDesc, &m_pRttRenderTargetView);
+	result = m_pD3D11Device->CreateRenderTargetView(m_pRttRenderTargetTexture.Get(), &renderTargetViewDesc, m_pRttRenderTargetView.GetAddressOf() );
 
 	shaderResourceViewDesc.Format = textureDesc.Format;
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
-	result = m_pD3D11Device->CreateShaderResourceView(m_pRttRenderTargetTexture, &shaderResourceViewDesc, &m_pRttShaderResourceView);
+	result = m_pD3D11Device->CreateShaderResourceView(m_pRttRenderTargetTexture.Get(), &shaderResourceViewDesc, m_pRttShaderResourceView.GetAddressOf() );
 
 }
 
 void RenderSystem::TurnZBufferOn()
 {
-	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
+	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState.Get(), 1);
 	return;
 }
 
 
 void RenderSystem::TurnZBufferOff()
 {
-	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthDisabledStencilState, 1);
+	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthDisabledStencilState.Get(), 1);
 	return;
 }
 void RenderSystem::DrawFps()

@@ -271,7 +271,7 @@ void RenderSystem::BeginScene()
 	float bgColor[4] ={ 0.2f, 0.3f, 0.4f, 1.0f };
 
 	m_pD3D11DeviceContext->RSSetState(m_pRasterState.Get());
-	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
+	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState.Get(), 1);
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, m_pRenderTargetView.GetAddressOf(), m_pDepthStencilView.Get());
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView.Get(), bgColor);
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
@@ -376,14 +376,14 @@ void RenderSystem::init_fbo()
 
 void RenderSystem::TurnZBufferOn()
 {
-	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
+	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState.Get(), 1);
 	return;
 }
 
 
 void RenderSystem::TurnZBufferOff()
 {
-	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthDisabledStencilState, 1);
+	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthDisabledStencilState.Get(), 1);
 	return;
 }
 void RenderSystem::DrawFps()

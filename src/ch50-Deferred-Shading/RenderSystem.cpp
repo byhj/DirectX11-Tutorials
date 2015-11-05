@@ -367,14 +367,14 @@ void RenderSystem::init_fbo()
 
 void RenderSystem::TurnZBufferOn()
 {
-	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
+	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState.Get(), 1);
 	return;
 }
 
 
 void RenderSystem::TurnZBufferOff()
 {
-	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthDisabledStencilState, 1);
+	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthDisabledStencilState.Get(), 1);
 	return;
 }
 void RenderSystem::DrawFps()

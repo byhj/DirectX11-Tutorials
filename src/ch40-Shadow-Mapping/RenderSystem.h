@@ -64,13 +64,13 @@ private:
 	ID3D11RenderTargetView   *m_pRenderTargetView   = nullptr;
 	ID3D11DepthStencilView   *m_pDepthStencilView   = nullptr;
 	ID3D11Texture2D          *m_pDepthStencilBuffer = nullptr;
-	ID3D11DepthStencilState  *m_pDepthStencilState;
+	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState.Get(), 1);
 	ID3D11DepthStencilState  *m_pDepthDisabledStencilState;
 	ID3D11RasterizerState    *m_pRasterState        = nullptr;
 
-	ID3D11Texture2D          *m_pRttRenderTargetTexture;
-	ID3D11RenderTargetView   *m_pRttRenderTargetView;
-	ID3D11ShaderResourceView *m_pRttShaderResourceView;
+	ComPtr<ID3D11Texture2D> m_pRttRenderTargetTexture;
+	ComPtr<ID3D11RenderTargetView> m_pRttRenderTargetView;
+	ComPtr<ID3D11ShaderResourceView> m_pRttShaderResourceView;
 
 	ID3D11ShaderResourceView *m_pWallTex;
 	ID3D11ShaderResourceView *m_pIceTex;
