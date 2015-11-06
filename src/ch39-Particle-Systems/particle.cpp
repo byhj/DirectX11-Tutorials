@@ -1,4 +1,5 @@
 #include "particle.h"
+#include "DirectXTK/DDSTextureLoader.h"
 
 namespace byhj
 {
@@ -53,12 +54,12 @@ void Particle::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4
 		}
 
 		// Lock the vertex buffer.
-		result = pD3D11DeviceContext->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		result = pD3D11DeviceContext->Map(m_pVertexBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 
 		Vertex *vertexPtr = (Vertex*)mappedResource.pData;
 		memcpy(vertexPtr, m_vertices, m_VertexCount);
 
-		pD3D11DeviceContext->Unmap(m_pVertexBuffer, 0);
+		pD3D11DeviceContext->Unmap(m_pVertexBuffer.Get(), 0);
 
 		////////////////////////////////////////////////////////////////////////////////
 		cbMatrix.model = Model;
@@ -199,36 +200,40 @@ bool Particle::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 {
 	HRESULT result;
 
-	D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc[3];
-	pInputLayoutDesc[0].SemanticName         = "POSITION";
-	pInputLayoutDesc[0].SemanticIndex        = 0;
-	pInputLayoutDesc[0].Format               = DXGI_FORMAT_R32G32B32_FLOAT;
-	pInputLayoutDesc[0].InputSlot            = 0;
-	pInputLayoutDesc[0].AlignedByteOffset    = 0;
-	pInputLayoutDesc[0].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[0].InstanceDataStepRate = 0;
+	D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc;
+	std::vector<D3D11_INPUT_ELEMENT_DESC> vInputLayoutDesc;
 
-	pInputLayoutDesc[1].SemanticName         = "TEXCOORD";
-	pInputLayoutDesc[1].SemanticIndex        = 0;
-	pInputLayoutDesc[1].Format               = DXGI_FORMAT_R32G32_FLOAT;
-	pInputLayoutDesc[1].InputSlot            = 0;
-	pInputLayoutDesc[1].AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
-	pInputLayoutDesc[1].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[1].InstanceDataStepRate = 0;
+	pInputLayoutDesc.SemanticName         = "POSITION";
+	pInputLayoutDesc.SemanticIndex        = 0;
+	pInputLayoutDesc.Format               = DXGI_FORMAT_R32G32B32_FLOAT;
+	pInputLayoutDesc.InputSlot            = 0;
+	pInputLayoutDesc.AlignedByteOffset    = 0;
+	pInputLayoutDesc.InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc.InstanceDataStepRate = 0;
+	vInputLayoutDesc.push_back(pInputLayoutDesc);
 
-	pInputLayoutDesc[2].SemanticName         = "TEXCOORD";
-	pInputLayoutDesc[2].SemanticIndex        = 1;
-	pInputLayoutDesc[2].Format               = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	pInputLayoutDesc[2].InputSlot            = 0;
-	pInputLayoutDesc[2].AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
-	pInputLayoutDesc[2].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[2].InstanceDataStepRate = 0;
+	pInputLayoutDesc.SemanticName         = "TEXCOORD";
+	pInputLayoutDesc.SemanticIndex        = 0;
+	pInputLayoutDesc.Format               = DXGI_FORMAT_R32G32_FLOAT;
+	pInputLayoutDesc.InputSlot            = 0;
+	pInputLayoutDesc.AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
+	pInputLayoutDesc.InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc.InstanceDataStepRate = 0;
+	vInputLayoutDesc.push_back(pInputLayoutDesc);
 
+	pInputLayoutDesc.SemanticName         = "TEXCOORD";
+	pInputLayoutDesc.SemanticIndex        = 1;
+	pInputLayoutDesc.Format               = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	pInputLayoutDesc.InputSlot            = 0;
+	pInputLayoutDesc.AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
+	pInputLayoutDesc.InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc.InstanceDataStepRate = 0;
+	vInputLayoutDesc.push_back(pInputLayoutDesc);
 	
 
 	ParticleShader.init(pD3D11Device, vInputLayoutDesc);
 	ParticleShader.attachVS(L"Particle.vsh", "VS", "vs_5_0");
-	ParticleShader.attachPS(L"Particle.psh");
+	ParticleShader.attachPS(L"Particle.psh", "PS", "ps_5_0");
 	ParticleShader.end();
 
 	return true;
@@ -237,7 +242,7 @@ bool Particle::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 void Particle::init_texture(ID3D11Device *pD3D11Device, LPCWSTR texFile)
 {
 	HRESULT hr;
-	hr = CreateDDSTextureFromFile(pD3D11Device, texFile, NULL,NULL, &m_pTexture, NULL);
+	hr = CreateDDSTextureFromFile(pD3D11Device, texFile, NULL, &m_pTexture);
 	//DebugHR(hr);
 
 	// Create a texture sampler state description.

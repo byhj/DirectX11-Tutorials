@@ -81,6 +81,7 @@ void Shader::attachHS(WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderMod
 	ID3DBlob* errorMessage = 0;
 	ID3DBlob* HullShaderBuffer = 0;
 
+	CompileShaderFromFile(szFileName, szEntryPoint, szShaderModel, &HullShaderBuffer);
 
 	// Create the vertex shader from the buffer.
 	result = pD3D11Device->CreateHullShader(HullShaderBuffer->GetBufferPointer(), HullShaderBuffer->GetBufferSize(), NULL, &pHS_Shader);

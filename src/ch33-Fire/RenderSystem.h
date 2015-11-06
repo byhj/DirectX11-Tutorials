@@ -54,20 +54,19 @@ private:
 	int m_videoCardMemory;
 	std::wstring m_videoCardInfo;
 
-	ComPtr<IDXGISwapChain> m_pSwapChain ;    
-	ComPtr<ID3D11Device>   m_pD3D11Device;
-	ComPtr<ID3D11DeviceContext> m_pD3D11DeviceContext;
-	ComPtr<ID3D11RenderTargetView> m_pRenderTargetView;
-	ComPtr<ID3D11DepthStencilView> m_pDepthStencilView;
-	ComPtr<ID3D11Texture2D> m_pDepthStencilBuffer;
-	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState.Get(), 1);
-	ID3D11DepthStencilState  *m_pDepthDisabledStencilState;
-	ID3D11RasterizerState    *m_pRasterState        = nullptr;
-	ID3D11BlendState         *m_pAlphaEnableState;
-	ID3D11BlendState         *m_pAlphaDisableState;
-
-	ComPtr<ID3D11Texture2D> m_pRttRenderTargetTexture;
-	ComPtr<ID3D11RenderTargetView> m_pRttRenderTargetView;
+	ComPtr<IDXGISwapChain>           m_pSwapChain ;    
+	ComPtr<ID3D11Device>             m_pD3D11Device;
+	ComPtr<ID3D11DeviceContext>      m_pD3D11DeviceContext;
+	ComPtr<ID3D11RenderTargetView>   m_pRenderTargetView;
+	ComPtr<ID3D11DepthStencilView>   m_pDepthStencilView;
+	ComPtr<ID3D11Texture2D>          m_pDepthStencilBuffer;
+	ComPtr<ID3D11DepthStencilState>  m_pDepthStencilState;
+	ComPtr<ID3D11DepthStencilState>  m_pDepthDisabledStencilState;
+	ComPtr<ID3D11RasterizerState>    m_pRasterState;
+	ComPtr<ID3D11BlendState     >    m_pAlphaEnableState;
+	ComPtr<ID3D11BlendState     >    m_pAlphaDisableState;
+	ComPtr<ID3D11Texture2D>          m_pRttRenderTargetTexture;
+	ComPtr<ID3D11RenderTargetView>   m_pRttRenderTargetView;
 	ComPtr<ID3D11ShaderResourceView> m_pRttShaderResourceView;
 
 	d3d::MatrixBuffer m_Matrix;

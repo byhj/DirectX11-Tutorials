@@ -1,4 +1,5 @@
 #include "RenderSystem.h"
+#include "DirectXTK/DDSTextureLoader.h"
 
 namespace byhj
 {
@@ -60,20 +61,20 @@ void RenderSystem::v_Render()
 	Model = XMMatrixTranslation(-2.0f, 2.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
 
-	depthShader.Use(m_pD3D11DeviceContext, m_Matrix);
-	m_CubeModel.Render(m_pD3D11DeviceContext);
+	depthShader.Use(m_pD3D11DeviceContext.Get(), m_Matrix);
+	m_CubeModel.Render(m_pD3D11DeviceContext.Get());
 
 	Model = XMMatrixTranslation(2.0f, 2.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
 
-	depthShader.Use(m_pD3D11DeviceContext, m_Matrix);
-	m_SphereModel.Render(m_pD3D11DeviceContext);
+	depthShader.Use(m_pD3D11DeviceContext.Get(), m_Matrix);
+	m_SphereModel.Render(m_pD3D11DeviceContext.Get());
 
 	Model = XMMatrixTranslation(0.0f, 1.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
 
-	depthShader.Use(m_pD3D11DeviceContext, m_Matrix);
-	m_PlaneModel.Render(m_pD3D11DeviceContext);
+	depthShader.Use(m_pD3D11DeviceContext.Get(), m_Matrix);
+	m_PlaneModel.Render(m_pD3D11DeviceContext.Get());
 
 	////////////////////////////////////////////////////////////////////////////////
 	BeginScene();
@@ -88,20 +89,20 @@ void RenderSystem::v_Render()
 	m_pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pWallTex);
 	Model = XMMatrixTranslation(-2.0f, 2.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	sceneShader.Use(m_pD3D11DeviceContext, m_Matrix, lightView, lightProj);
-	m_CubeModel.Render(m_pD3D11DeviceContext);
+	sceneShader.Use(m_pD3D11DeviceContext.Get(), m_Matrix, lightView, lightProj);
+	m_CubeModel.Render(m_pD3D11DeviceContext.Get());
 
 	m_pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pIceTex);
 	Model = XMMatrixTranslation(2.0f, 2.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	sceneShader.Use(m_pD3D11DeviceContext, m_Matrix, lightView, lightProj);
-	m_SphereModel.Render(m_pD3D11DeviceContext);
+	sceneShader.Use(m_pD3D11DeviceContext.Get(), m_Matrix, lightView, lightProj);
+	m_SphereModel.Render(m_pD3D11DeviceContext.Get());
 
 	m_pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pMetalTex);
 	Model = XMMatrixTranslation(0.0f, 1.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	sceneShader.Use(m_pD3D11DeviceContext, m_Matrix, lightView, lightProj);
-	m_PlaneModel.Render(m_pD3D11DeviceContext);
+	sceneShader.Use(m_pD3D11DeviceContext.Get(), m_Matrix, lightView, lightProj);
+	m_PlaneModel.Render(m_pD3D11DeviceContext.Get());
 
 	DrawInfo();
 	EndScene();
@@ -110,10 +111,6 @@ void RenderSystem::v_Render()
 void RenderSystem::v_Shutdown()
 {
 
-	ReleaseCOM(m_pSwapChain);
-	ReleaseCOM(m_pD3D11Device);
-	ReleaseCOM(m_pD3D11DeviceContext);
-	ReleaseCOM(m_pRenderTargetView);
 }
 
 
@@ -353,21 +350,21 @@ void RenderSystem::init_object()
 	m_Font.init(m_pD3D11Device.Get());
 	m_Camera.SetRadius(7.0f);
 
-	depthShader.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd());
-	sceneShader.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd());
+	depthShader.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd());
+	sceneShader.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd());
 
 	m_CubeModel.load_model("../../media/objects/cube.txt");
-	m_CubeModel.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
+	m_CubeModel.init_buffer(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get());
 
 	m_SphereModel.load_model("../../media/objects/sphere.txt");
-	m_SphereModel.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
+	m_SphereModel.init_buffer(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get());
 
 	m_PlaneModel.load_model("../../media/objects/plane01.txt");
-	m_PlaneModel.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
+	m_PlaneModel.init_buffer(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get());
 
-	CreateDDSTextureFromFile(m_pD3D11Device, L"../../media/textures/wall01.dds",   NULL, NULL, &m_pWallTex, NULL);
-	CreateDDSTextureFromFile(m_pD3D11Device, L"../../media/textures/ice.dds",      NULL, NULL, &m_pIceTex,  NULL);
-	CreateDDSTextureFromFile(m_pD3D11Device, L"../../media/textures/metal001.dds", NULL, NULL, &m_pMetalTex, NULL);
+	CreateDDSTextureFromFile(m_pD3D11Device.Get(), L"../../media/textures/wall01.dds",   NULL,  &m_pWallTex);
+	CreateDDSTextureFromFile(m_pD3D11Device.Get(), L"../../media/textures/ice.dds",      NULL,  &m_pIceTex);
+	CreateDDSTextureFromFile(m_pD3D11Device.Get(), L"../../media/textures/metal001.dds", NULL,  &m_pMetalTex);
 }
 
 void RenderSystem::init_fbo()
@@ -399,7 +396,7 @@ void RenderSystem::init_fbo()
 	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 	renderTargetViewDesc.Texture2D.MipSlice = 0;
 
-	result = m_pD3D11Device->CreateRenderTargetView(m_pRttRenderTargetTexture.Get(), renderTargetViewDesc, m_pRttRenderTargetView.GetAddressOf() );
+	result = m_pD3D11Device->CreateRenderTargetView(m_pRttRenderTargetTexture.Get(), &renderTargetViewDesc, m_pRttRenderTargetView.GetAddressOf() );
 
 	shaderResourceViewDesc.Format = textureDesc.Format;
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;

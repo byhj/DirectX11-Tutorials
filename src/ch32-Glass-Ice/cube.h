@@ -1,63 +1,33 @@
-#ifndef CUBE_H
-#define CUBE_H
+#ifndef Cube_H
+#define Cube_H
+
+#include <windows.h>
+
+#include <vector>
 
 #include "d3d/Shader.h"
 #include "d3d/Utility.h"
-#include "DirectXTK/DDSTextureLoader.h"
 
 
 namespace byhj
 {
 
+
 class Cube
 {
 public:
-	Cube()
-	{
-		m_pInputLayout        = NULL;
-		m_pMVPBuffer          = NULL;
-		pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());        = NULL;
-		m_pVertexBuffer       = NULL;
-		m_pIndexBuffer        = NULL;
-		m_pTextures[0]        = NULL;
-		m_pTextures[1]        = NULL;
-	}
+	Cube();
+	~Cube();
 
-	void Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &Model,  
-		                             const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj);
+	void Init(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext, HWND hWnd);
+	void Update();
+	void Render(ID3D11DeviceContext *pD3D11DeviceContext, const d3d::MatrixBuffer &matrix);
+	void Shutdown();
 
-	void shutdown()
-	{
-			ReleaseCOM(m_pRenderTargetView  )
-			ReleaseCOM(m_pMVPBuffer         )
-			ReleaseCOM(pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());       )
-			ReleaseCOM(m_pVertexBuffer      )
-			ReleaseCOM(m_pIndexBuffer       )
-	}
-
-	bool LoadModel(char *modelFile);
-	bool init_buffer (ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext);
-	bool init_shader (ID3D11Device *pD3D11Device, HWND hWnd);
-	void init_texture(ID3D11Device *pD3D11Device, LPCWSTR texFile, ID3D11ShaderResourceView *m_pTexture);
 private:
-
-	struct CameraBuffer
-	{
-		XMFLOAT3 camPos;
-		float padding;
-	};
-
-	d3d::MatrixBuffer cbMatrix;
-
-	struct LightBuffer
-	{
-		XMFLOAT4 ambientColor;
-		XMFLOAT4 diffuseColor;
-		XMFLOAT3 lightDirection;
-		float specularPower;
-		XMFLOAT4 specularColor;
-	};
-	LightBuffer cbLight;
+	void init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext);
+	void init_shader(ID3D11Device *pD3D11Device, HWND hWnd);
+	void init_texture(ID3D11Device *pD3D11Device);
 
 	struct VertexType
 	{
@@ -90,32 +60,50 @@ private:
 	};
 	struct ModelVertex
 	{
-		float x, y , z;
+		float x, y, z;
 		float u, v;
 		float nx, ny, nz;
 	};
 	ModelVertex  *m_pModelVertex;
-
-	ComPtr<ID3D11RenderTargetView> m_pRenderTargetView;
-	ComPtr<ID3D11Buffer> m_pMVPBuffer;
-	ID3D11Buffer             *pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());;
-	ComPtr<ID3D11Buffer> m_CameraBuffer;
-	ComPtr<ID3D11Buffer> m_pVertexBuffer;
-	ComPtr<ID3D11Buffer> m_pIndexBuffer;
-	ID3D11ShaderResourceView *m_pTextures[2];
-	ComPtr<ID3D11SamplerState> m_pTexSamplerState;
-	ComPtr<ID3D11InputLayout> m_pInputLayout;
-
 	int m_VertexCount;
 	int m_IndexCount;
 	ModelType  *pModelVertex;
-	d3d::Shader CubeShader;
 
+	bool LoadModel(char *modelFile);
 	void CalculateModelVectors();
 	void CalculateTangentBinormal(TempVertexType, TempVertexType, TempVertexType, VectorType&, VectorType&);
 	void CalculateNormal(VectorType, VectorType, VectorType&);
 
+	struct LightBuffer
+	{
+		XMFLOAT4 ambientColor;
+		XMFLOAT4 diffuseColor;
+		XMFLOAT3 lightDirection;
+		float specularPower;
+		XMFLOAT4 specularColor;
+	};
+	LightBuffer cbLight;
+
+	struct CameraBuffer
+	{
+		XMFLOAT3 camPos;
+		float padding;
+	};
+
+	d3d::MatrixBuffer cbMatrix;
+	ComPtr<ID3D11InputLayout> m_pInputLayout;
+	ComPtr<ID3D11Buffer> m_pMVPBuffer;
+	ComPtr<ID3D11Buffer> m_pIndexBuffer;
+	ComPtr<ID3D11Buffer> m_pVertexBuffer;
+	ComPtr<ID3D11Buffer> m_pLightBuffer;
+	ComPtr<ID3D11Buffer> m_CameraBuffer;
+	ID3D11ShaderResourceView *m_pTextures[2];
+	ComPtr<ID3D11SamplerState> m_pTexSamplerState;
+	d3d::Shader CubeShader;
 };
 
+
 }
-#endif
+
+
+#endif 

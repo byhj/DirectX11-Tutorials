@@ -15,21 +15,14 @@ class Object
 public:
 	Object()
 	{
-		m_pInputLayout        = NULL;
-		m_pMVPBuffer          = NULL;
-		m_pVertexBuffer       = NULL;
-		m_pIndexBuffer        = NULL;
 	}
 
 	void Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &Model,  
 		                             const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj);
 
-	void shutdown()
+	void Shutdown()
 	{
-			ReleaseCOM(m_pRenderTargetView  )
-			ReleaseCOM(m_pMVPBuffer         )
-			ReleaseCOM(m_pVertexBuffer      )
-			ReleaseCOM(m_pIndexBuffer       )
+
 	}
 
 	bool LoadModel(char *modelFile);
@@ -75,14 +68,14 @@ private:
 
 	ComPtr<ID3D11RenderTargetView> m_pRenderTargetView;
 	ComPtr<ID3D11Buffer> m_pMVPBuffer;
-	ID3D11Buffer             *m_pNoiseBuffer;
-	ID3D11Buffer             *m_pDistortBuffer;
+	ComPtr<ID3D11Buffer>  m_pNoiseBuffer;
+	ComPtr<ID3D11Buffer>  m_pDistortBuffer;
 	ComPtr<ID3D11Buffer> m_pVertexBuffer;
 	ComPtr<ID3D11Buffer> m_pIndexBuffer;
-	ID3D11ShaderResourceView *m_pTextures[3];
 	ComPtr<ID3D11SamplerState> m_pTexSamplerState;
-	ID3D11SamplerState       *m_pTexSamplerState1;
+	ComPtr<ID3D11SamplerState> m_pTexSamplerState1;
 	ComPtr<ID3D11InputLayout> m_pInputLayout;
+	ID3D11ShaderResourceView *m_pTextures[3];
 
 	int m_VertexCount;
 	int m_IndexCount;

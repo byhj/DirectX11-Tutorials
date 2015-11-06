@@ -35,7 +35,7 @@ void RenderSystem::v_Render()
 	//m_Matrix.view = m_Camera.GetViewMatrix();
 
 	m_Particle.Frame(m_Timer.GetDeltaTime());
-	m_Particle.Render(m_pD3D11DeviceContext, m_Matrix.model, m_Matrix.view, m_Matrix.proj);
+	m_Particle.Render(m_pD3D11DeviceContext.Get(), m_Matrix.model, m_Matrix.view, m_Matrix.proj);
 
 	DrawInfo();
 
@@ -45,10 +45,6 @@ void RenderSystem::v_Render()
 void RenderSystem::v_Shutdown()
 {
 
-	ReleaseCOM(m_pSwapChain);
-	ReleaseCOM(m_pD3D11Device);
-	ReleaseCOM(m_pD3D11DeviceContext);
-	ReleaseCOM(m_pRenderTargetView);
 }
 
 
@@ -231,7 +227,7 @@ void RenderSystem::BeginScene()
 	m_pD3D11DeviceContext->RSSetState(m_pRasterState.Get());
 
 	float blendFactor[4]={ 0.0f, 0.0f, 0.0f, 0.0f};
-	m_pD3D11DeviceContext->OMSetBlendState(m_pBlendEnable, blendFactor, 0xffffffff);
+	m_pD3D11DeviceContext->OMSetBlendState(m_pBlendEnable.Get(), blendFactor, 0xffffffff);
 
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, m_pRenderTargetView.GetAddressOf(), m_pDepthStencilView.Get());
 	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState.Get(), 1);
@@ -278,9 +274,9 @@ void RenderSystem::init_object()
 	m_Font.init(m_pD3D11Device.Get());
 	m_Camera.SetRadius(3.0f);
 
-	m_Particle.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-	m_Particle.init_shader(m_pD3D11Device, GetHwnd());
-	m_Particle.init_texture(m_pD3D11Device, L"../../media/textures/star.dds");
+	m_Particle.init_buffer( m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get());
+	m_Particle.init_shader( m_pD3D11Device.Get(), GetHwnd());
+	m_Particle.init_texture(m_pD3D11Device.Get(), L"../../media/textures/star.dds");
 }
 
 

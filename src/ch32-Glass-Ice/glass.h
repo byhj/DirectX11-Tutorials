@@ -16,10 +16,6 @@ class Glass
 public:
 	Glass()
 	{
-		m_pInputLayout        = NULL;
-		m_pMVPBuffer          = NULL;
-		m_pVertexBuffer       = NULL;
-		m_pIndexBuffer        = NULL;
 	}
 
 	void Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView *pTexture,const XMFLOAT4X4 &Model,  
@@ -27,10 +23,7 @@ public:
 
 	void shutdown()
 	{
-		ReleaseCOM(m_pRenderTargetView  )
-		ReleaseCOM(m_pMVPBuffer         )
-		ReleaseCOM(m_pVertexBuffer      )
-		ReleaseCOM(m_pIndexBuffer       )
+
 	}
 
 	void init_window(float posX, float posY, float width, float height, float aspect);
@@ -53,8 +46,8 @@ private:
 	ComPtr<ID3D11Buffer> m_pIndexBuffer;
 	ComPtr<ID3D11SamplerState> m_pTexSamplerState;
 	ComPtr<ID3D11InputLayout> m_pInputLayout;
-	ID3D11ShaderResourceView *m_pColorSRV;
-	ID3D11ShaderResourceView *m_pNormalSRV;
+	ComPtr<ID3D11ShaderResourceView> m_pColorSRV;
+	ComPtr<ID3D11ShaderResourceView> m_pNormalSRV;
 
 
 	int m_VertexCount;

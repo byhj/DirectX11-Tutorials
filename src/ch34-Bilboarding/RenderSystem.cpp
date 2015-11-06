@@ -35,7 +35,7 @@ void RenderSystem::v_Render()
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
 
     m_Matrix.view = m_Camera.GetViewMatrix();
-	m_Cube.Render(m_pD3D11DeviceContext, m_Matrix.model, m_Matrix.view, m_Matrix.proj);
+	m_Cube.Render(m_pD3D11DeviceContext.Get(), m_Matrix.model, m_Matrix.view, m_Matrix.proj);
 
 	XMFLOAT3 camPos = m_Camera.GetPos();
 	XMFLOAT3 modelPos;
@@ -43,7 +43,7 @@ void RenderSystem::v_Render()
 	modelPos.y = 1.5f;
 	modelPos.z = 0.0f;
 	// Calculate the rotation that needs to be applied to the billboard model to face the current camera position using the arc tangent function.
-	float angle = atan2(modelPos.x - camPos.x, modelPos.z - camPos.z) * (180.0 / D3DX_PI);
+	float angle = atan2(modelPos.x - camPos.x, modelPos.z - camPos.z) * (180.0 / XM_PI);
 	// Convert rotation into radians.
 	float rotation = (float)angle * 0.0174532925f;
 	// Setup the rotation the billboard at the origin using the world matrix.
@@ -53,7 +53,7 @@ void RenderSystem::v_Render()
 	world *= trans;
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(world));
 
-	m_Square.Render(m_pD3D11DeviceContext, m_Matrix.model, m_Matrix.view, m_Matrix.proj);
+	m_Square.Render(m_pD3D11DeviceContext.Get(), m_Matrix.model, m_Matrix.view, m_Matrix.proj);
 
 	DrawInfo();
 
@@ -63,10 +63,6 @@ void RenderSystem::v_Render()
 void RenderSystem::v_Shutdown()
 {
 
-	ReleaseCOM(m_pSwapChain);
-	ReleaseCOM(m_pD3D11Device);
-	ReleaseCOM(m_pD3D11DeviceContext);
-	ReleaseCOM(m_pRenderTargetView);
 }
 
 
@@ -304,11 +300,11 @@ void RenderSystem::init_object()
 	m_Font.init(m_pD3D11Device.Get());
 	m_Camera.SetRadius(5.0f);
 
-	m_Cube.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-	m_Cube.init_shader(m_pD3D11Device, GetHwnd());
+	m_Cube.init_buffer(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get());
+	m_Cube.init_shader(m_pD3D11Device.Get(), GetHwnd());
 
-	m_Square.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-	m_Square.init_shader(m_pD3D11Device, GetHwnd());
+	m_Square.init_buffer(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get());
+	m_Square.init_shader(m_pD3D11Device.Get(), GetHwnd());
 }
 
 void RenderSystem::init_fbo()
@@ -340,7 +336,7 @@ void RenderSystem::init_fbo()
 	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 	renderTargetViewDesc.Texture2D.MipSlice = 0;
 
-	result = m_pD3D11Device->CreateRenderTargetView(m_pRttRenderTargetTexture.Get(), renderTargetViewDesc, m_pRttRenderTargetView.GetAddressOf() );
+	result = m_pD3D11Device->CreateRenderTargetView(m_pRttRenderTargetTexture.Get(), &renderTargetViewDesc, m_pRttRenderTargetView.GetAddressOf() );
 
 	shaderResourceViewDesc.Format = textureDesc.Format;
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;

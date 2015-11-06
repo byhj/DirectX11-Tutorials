@@ -28,7 +28,7 @@ void Triangle::Render(ID3D11DeviceContext *pD3D11DeviceContext, const d3d::Matri
 	cbMatrix.view  = matrix.view;
 	cbMatrix.proj  = matrix.proj;
 	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer.Get(), 0, NULL, &cbMatrix, 0, 0);
-	pD3D11DeviceContext->DSSetConstantBuffers(0, 1, &m_pMVPBuffer);
+	pD3D11DeviceContext->DSSetConstantBuffers(0, 1, m_pMVPBuffer.GetAddressOf());
 
 	// Set vertex buffer stride and offset.=
 	unsigned int stride;
