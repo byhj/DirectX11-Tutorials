@@ -61,13 +61,13 @@ void RenderSystem::v_Render()
 		TurnZBufferOff();
 
 		// Create an orthographic projection matrix for 2D rendering. 
-		Model =XMMatrixIdentity();
+		Model = XMMatrixIdentity();
 		XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
 
 		XMMATRIX orthProj = XMMatrixOrthographicLH((float)m_ScreenWidth, (float)m_ScreenHeight, 0.1f, 1000.0f);
 		XMFLOAT4X4 orth;
 		XMStoreFloat4x4(&orth, XMMatrixTranspose(orthProj));
-		m_Fade.Render(m_pD3D11DeviceContext, m_pRttShaderResourceView, m_Matrix.model, m_Matrix.view, orth, fadePercentage);
+		m_Fade.Render(m_pD3D11DeviceContext.Get(), m_pRttShaderResourceView.Get(), m_Matrix.model, m_Matrix.view, orth, fadePercentage);
 
 		TurnZBufferOn();
 
@@ -93,10 +93,6 @@ void RenderSystem::v_Shutdown()
 
 	m_Cube.Shutdown();
 
-	ReleaseCOM(m_pSwapChain);
-	ReleaseCOM(m_pD3D11Device);
-	ReleaseCOM(m_pD3D11DeviceContext);
-	ReleaseCOM(m_pRenderTargetView);
 }
 
 
@@ -335,8 +331,8 @@ void RenderSystem::init_object()
 	m_Font.init(m_pD3D11Device.Get());
 
 	m_Fade.init_window(-1.0f, 1.0f, 2.0f, 2.0f);
-	m_Fade.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-	m_Fade.init_shader(m_pD3D11Device, GetHwnd());
+	m_Fade.init_buffer(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get());
+	m_Fade.init_shader(m_pD3D11Device.Get(), GetHwnd());
 
 	m_Camera.SetRadius(4.0f);
 }
@@ -370,7 +366,7 @@ void RenderSystem::init_fbo()
 	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 	renderTargetViewDesc.Texture2D.MipSlice = 0;
 
-	result = m_pD3D11Device->CreateRenderTargetView(m_pRttRenderTargetTexture.Get(), renderTargetViewDesc, m_pRttRenderTargetView.GetAddressOf() );
+	result = m_pD3D11Device->CreateRenderTargetView(m_pRttRenderTargetTexture.Get(), &renderTargetViewDesc, m_pRttRenderTargetView.GetAddressOf() );
 
 	shaderResourceViewDesc.Format = textureDesc.Format;
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;

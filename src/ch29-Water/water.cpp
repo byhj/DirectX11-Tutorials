@@ -1,4 +1,5 @@
 #include "water.h"
+#include "DirectXTK/DDSTextureLoader.h"
 
 namespace byhj
 {
@@ -24,8 +25,8 @@ void Water::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &M
 		}
 		water.reflectRefractScale = 0.01f;
 		water.waterTranslation = m_waterTranslation;
-		pD3D11DeviceContext->UpdateSubresource(m_pWaterBuffer, 0, NULL, &water, 0, 0);
-		pD3D11DeviceContext->PSSetConstantBuffers(0, 1, &m_pWaterBuffer);
+		pD3D11DeviceContext->UpdateSubresource(m_pWaterBuffer.Get(), 0, NULL, &water, 0, 0);
+		pD3D11DeviceContext->PSSetConstantBuffers(0, 1, m_pWaterBuffer.GetAddressOf());
 
 		unsigned int stride;
 		unsigned int offset;
@@ -43,12 +44,9 @@ void Water::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &M
 
 }
 
-void Water::shutdown()
+void Water::Shutdown()
 {
-	ReleaseCOM(m_pRenderTargetView)
-	ReleaseCOM(m_pMVPBuffer)
-	ReleaseCOM(m_pVertexBuffer)
-	ReleaseCOM(m_pIndexBuffer)
+
 }
 
 bool Water::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext)
@@ -176,37 +174,40 @@ bool Water::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 {
 	HRESULT result;
 
-	D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc[3];
-	pInputLayoutDesc[0].SemanticName = "POSITION";
-	pInputLayoutDesc[0].SemanticIndex = 0;
-	pInputLayoutDesc[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	pInputLayoutDesc[0].InputSlot = 0;
-	pInputLayoutDesc[0].AlignedByteOffset = 0;
-	pInputLayoutDesc[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[0].InstanceDataStepRate = 0;
+	D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc;
+	std::vector<D3D11_INPUT_ELEMENT_DESC> vInputLayoutDesc;
 
-	pInputLayoutDesc[1].SemanticName = "TEXCOORD";
-	pInputLayoutDesc[1].SemanticIndex = 0;
-	pInputLayoutDesc[1].Format = DXGI_FORMAT_R32G32_FLOAT;
-	pInputLayoutDesc[1].InputSlot = 0;
-	pInputLayoutDesc[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	pInputLayoutDesc[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[1].InstanceDataStepRate = 0;
+	pInputLayoutDesc.SemanticName = "POSITION";
+	pInputLayoutDesc.SemanticIndex = 0;
+	pInputLayoutDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	pInputLayoutDesc.InputSlot = 0;
+	pInputLayoutDesc.AlignedByteOffset = 0;
+	pInputLayoutDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc.InstanceDataStepRate = 0;
+	vInputLayoutDesc.push_back(pInputLayoutDesc);
 
-	pInputLayoutDesc[2].SemanticName = "NORMAL";
-	pInputLayoutDesc[2].SemanticIndex = 0;
-	pInputLayoutDesc[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	pInputLayoutDesc[2].InputSlot = 0;
-	pInputLayoutDesc[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	pInputLayoutDesc[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[2].InstanceDataStepRate = 0;
+	pInputLayoutDesc.SemanticName = "TEXCOORD";
+	pInputLayoutDesc.SemanticIndex = 0;
+	pInputLayoutDesc.Format = DXGI_FORMAT_R32G32_FLOAT;
+	pInputLayoutDesc.InputSlot = 0;
+	pInputLayoutDesc.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	pInputLayoutDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc.InstanceDataStepRate = 0;
+	vInputLayoutDesc.push_back(pInputLayoutDesc);
 
+	pInputLayoutDesc.SemanticName = "NORMAL";
+	pInputLayoutDesc.SemanticIndex = 0;
+	pInputLayoutDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	pInputLayoutDesc.InputSlot = 0;
+	pInputLayoutDesc.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	pInputLayoutDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc.InstanceDataStepRate = 0;
+	vInputLayoutDesc.push_back(pInputLayoutDesc);
 
 	
-
 	WaterShader.init(pD3D11Device, vInputLayoutDesc);
 	WaterShader.attachVS(L"Water.vsh", "VS", "vs_5_0");
-	WaterShader.attachPS(L"Water.psh");
+	WaterShader.attachPS(L"Water.psh", "PS", "ps_5_0");
 	WaterShader.end();
 
 	return true;

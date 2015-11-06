@@ -66,16 +66,16 @@ private:
 	ComPtr<ID3D11RenderTargetView> m_pRenderTargetView;
 	ComPtr<ID3D11DepthStencilView> m_pDepthStencilView;
 	ComPtr<ID3D11Texture2D> m_pDepthStencilBuffer;
-	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState.Get(), 1);
-	ID3D11DepthStencilState  *m_pDepthDisabledStencilState;
+	ComPtr<ID3D11DepthStencilState>  m_pDepthStencilState;
+	ComPtr<ID3D11DepthStencilState>  m_pDepthDisabledStencilState;
 	ComPtr<ID3D11RasterizerState> m_pRasterState;
 
-	ID3D11Texture2D          *m_pReflectRTT;
-	ID3D11Texture2D          *m_pRefractRTT;
-	ID3D11RenderTargetView   *m_pReflectRTV;
-	ID3D11RenderTargetView   *m_pRefractRTV;
-	ID3D11ShaderResourceView *m_pReflectSRV;
-	ID3D11ShaderResourceView *m_pRefractSRV;
+	ComPtr<ID3D11Texture2D         > m_pReflectRTT;
+	ComPtr<ID3D11Texture2D         > m_pRefractRTT;
+	ComPtr<ID3D11RenderTargetView  > m_pReflectRTV;
+	ComPtr<ID3D11RenderTargetView  > m_pRefractRTV;
+	ComPtr<ID3D11ShaderResourceView> m_pReflectSRV;
+	ComPtr<ID3D11ShaderResourceView> m_pRefractSRV;
 
 	d3d::MatrixBuffer m_Matrix;
 };

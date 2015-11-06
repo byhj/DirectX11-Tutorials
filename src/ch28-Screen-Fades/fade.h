@@ -14,10 +14,6 @@ class Fade
 public:
 	Fade()
 	{
-		m_pInputLayout        = NULL;
-		m_pMVPBuffer          = NULL;
-		m_pVertexBuffer       = NULL;
-		m_pIndexBuffer        = NULL;
 	}
 
 	void Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView *pTexture,const XMFLOAT4X4 &Model,  
@@ -50,8 +46,8 @@ private:
 	ComPtr<ID3D11Buffer> m_pVertexBuffer;
 	ComPtr<ID3D11Buffer> m_pIndexBuffer;
 	ComPtr<ID3D11SamplerState> m_pTexSamplerState;
-	ComPtr<ID3D11InputLayout> m_pInputLayout;
-	ID3D11Buffer             *m_pFadeBuffer;
+	ComPtr<ID3D11InputLayout>  m_pInputLayout;
+	ComPtr<ID3D11Buffer>       m_pFadeBuffer;
 
 	int m_VertexCount;
 	int m_IndexCount;

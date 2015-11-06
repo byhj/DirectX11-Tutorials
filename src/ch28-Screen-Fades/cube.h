@@ -2,7 +2,6 @@
 #define Cube_H
 
 #include <windows.h>
-
 #include <vector>
 
 #include "d3d/Shader.h"
@@ -92,9 +91,9 @@ private:
 	d3d::MatrixBuffer cbMatrix;
 	ComPtr<ID3D11InputLayout> m_pInputLayout;
 	ComPtr<ID3D11Buffer> m_pMVPBuffer;
+	ComPtr<ID3D11Buffer> m_pIndexBuffer;
 	ComPtr<ID3D11Buffer> m_pVertexBuffer;
-	ComPtr<ID3D11Buffer> m_pVertexBuffer;
-	ComPtr<ID3D11Buffer> m_pLightBuffer
+	ComPtr<ID3D11Buffer> m_pLightBuffer;
 	ComPtr<ID3D11Buffer> m_CameraBuffer;
 	ID3D11ShaderResourceView *m_pTextures[2];
 	ComPtr<ID3D11SamplerState> m_pTexSamplerState;

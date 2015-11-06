@@ -34,21 +34,24 @@ void RenderSystem::v_Render()
 	UpdateScene();
 
 	//////////////////////Render Refraction To Texture/////////////////////////////
-
+	float blackColor[] ={ 0.0f, 0.0f, 0.0f, 0.0f};
 	// Setup a clipping plane based on the height of the water to clip everything above it.
 	XMFLOAT4 clipPlane = XMFLOAT4(0.0f, -1.0f, 0.0f, 2.75f + 0.1f);
-	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRefractRTV, m_pDepthStencilView);
+	m_pD3D11DeviceContext->OMSetRenderTargets(1, m_pRefractRTV.GetAddressOf(), m_pDepthStencilView.Get());
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
-	
+	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView.Get(), blackColor);
+
 	XMMATRIX World = XMMatrixTranslation(0.0f, 2.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(World));
-	bathModel.Render(m_pD3D11DeviceContext, m_Matrix.model, m_Matrix.view, m_Matrix.proj);
+	bathModel.Render(m_pD3D11DeviceContext.Get(), m_Matrix.model, m_Matrix.view, m_Matrix.proj);
 
 
 	//////////////////////Render Reflection To Texture////////////////////////////////
 	
-	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pReflectRTV, m_pDepthStencilView);
+	m_pD3D11DeviceContext->OMSetRenderTargets(1, m_pReflectRTV.GetAddressOf(), m_pDepthStencilView.Get());
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
+	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView.Get(), blackColor);
+
 	// Translate to where the wall model will be rendered.
 	World = XMMatrixTranslation(0.0f, 6.0f, 8.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(World));
@@ -63,7 +66,7 @@ void RenderSystem::v_Render()
 	XMFLOAT4X4 Reflect;
 	XMStoreFloat4x4(&Reflect, XMMatrixTranspose(reflectMat));
 	m_Matrix.view = Reflect;
-	wallModel.Render(m_pD3D11DeviceContext, m_Matrix.model, m_Matrix.view, m_Matrix.proj);
+	wallModel.Render(m_pD3D11DeviceContext.Get(), m_Matrix.model, m_Matrix.view, m_Matrix.proj);
 
 	///////////////////////////////Render Scene///////////////////////////////////////
 
@@ -74,24 +77,24 @@ void RenderSystem::v_Render()
 	/////////////////////Render the scene Model//////////////////////////////
 	XMMATRIX Model = XMMatrixTranslation(0.0f, 1.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	groundModel.Render(m_pD3D11DeviceContext, m_Matrix.model, m_Matrix.view, m_Matrix.proj);
+	groundModel.Render(m_pD3D11DeviceContext.Get(), m_Matrix.model, m_Matrix.view, m_Matrix.proj);
 	
 	Model = XMMatrixTranslation(0.0f, 6.0f, 8.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	wallModel.Render(m_pD3D11DeviceContext, m_Matrix.model, m_Matrix.view, m_Matrix.proj);
+	wallModel.Render(m_pD3D11DeviceContext.Get(), m_Matrix.model, m_Matrix.view, m_Matrix.proj);
 
 	Model = XMMatrixTranslation(0.0f, 2.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	bathModel.Render(m_pD3D11DeviceContext, m_Matrix.model, m_Matrix.view, m_Matrix.proj);
+	bathModel.Render(m_pD3D11DeviceContext.Get(), m_Matrix.model, m_Matrix.view, m_Matrix.proj);
 
 	/////////////////////////////////////////////////////////////////////////////
 
 
 	Model = XMMatrixTranslation(0.0f, 2.75f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	m_pD3D11DeviceContext->PSSetShaderResources(1, 1, &m_pReflectSRV);
-	m_pD3D11DeviceContext->PSSetShaderResources(2, 1, &m_pRefractSRV);
-	waterModel.Render(m_pD3D11DeviceContext, m_Matrix.model, m_Matrix.view, m_Matrix.proj, Reflect);
+	m_pD3D11DeviceContext->PSSetShaderResources(1, 1, m_pReflectSRV.GetAddressOf());
+	m_pD3D11DeviceContext->PSSetShaderResources(2, 1, m_pRefractSRV.GetAddressOf());
+	waterModel.Render(m_pD3D11DeviceContext.Get(), m_Matrix.model, m_Matrix.view, m_Matrix.proj, Reflect);
 
 	DrawInfo();
 
@@ -102,11 +105,6 @@ void RenderSystem::v_Render()
 void RenderSystem::v_Shutdown()
 {
 
-
-	ReleaseCOM(m_pSwapChain);
-	ReleaseCOM(m_pD3D11Device);
-	ReleaseCOM(m_pD3D11DeviceContext);
-	ReleaseCOM(m_pRenderTargetView);
 }
 
 
@@ -294,7 +292,7 @@ void RenderSystem::init_camera()
 	vp.MaxDepth = 1.0f;
 	vp.Width    = static_cast<FLOAT>(m_ScreenWidth);
 	vp.Height   = static_cast<FLOAT>(m_ScreenHeight);
-	m_pD3D11DeviceContext->RSSetViewports(1, &vp);
+	m_pD3D11DeviceContext.Get()->RSSetViewports(1, &vp);
 
 	//MVP Matrix
 	XMVECTOR camPos    = XMVectorSet(0.0f, 0.0f, -5.0f, 0.0f);
@@ -314,20 +312,20 @@ void RenderSystem::init_camera()
 void RenderSystem::init_object()
 {
 
-	bathModel.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-	bathModel.init_shader(m_pD3D11Device, GetHwnd());
-	bathModel.init_texture(m_pD3D11Device, L"../../media/textures/marble01.dds");
+	bathModel.init_buffer(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get());
+	bathModel.init_shader(m_pD3D11Device.Get(), GetHwnd());
+	bathModel.init_texture(m_pD3D11Device.Get(), L"../../media/textures/marble01.dds");
 
-	groundModel.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-	groundModel.init_shader(m_pD3D11Device, GetHwnd());
-	groundModel.init_texture(m_pD3D11Device, L"../../media/textures/ground01.dds");
+	groundModel.init_buffer( m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get());
+	groundModel.init_shader( m_pD3D11Device.Get(), GetHwnd());
+	groundModel.init_texture(m_pD3D11Device.Get(), L"../../media/textures/ground01.dds");
 
-	wallModel.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-	wallModel.init_shader(m_pD3D11Device, GetHwnd());
-	wallModel.init_texture(m_pD3D11Device, L"../../media/textures/wall01.dds");
+	wallModel.init_buffer( m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get());
+	wallModel.init_shader( m_pD3D11Device.Get(), GetHwnd());
+	wallModel.init_texture(m_pD3D11Device.Get(), L"../../media/textures/wall01.dds");
 
-	waterModel.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-	waterModel.init_shader(m_pD3D11Device, GetHwnd());
+	waterModel.init_buffer(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get());
+	waterModel.init_shader(m_pD3D11Device.Get(), GetHwnd());
 
 	m_Timer.Reset();
 	m_Font.init(m_pD3D11Device.Get());
@@ -363,27 +361,27 @@ void RenderSystem::init_fbo()
 	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 	renderTargetViewDesc.Texture2D.MipSlice = 0;
 
-	result = m_pD3D11Device->CreateRenderTargetView(m_pReflectRTT, &renderTargetViewDesc, &m_pReflectRTV);
-	result = m_pD3D11Device->CreateRenderTargetView(m_pRefractRTT, &renderTargetViewDesc, &m_pRefractRTV);
+	result = m_pD3D11Device->CreateRenderTargetView(m_pReflectRTT.Get(), &renderTargetViewDesc, &m_pReflectRTV);
+	result = m_pD3D11Device->CreateRenderTargetView(m_pRefractRTT.Get(), &renderTargetViewDesc, &m_pRefractRTV);
 
 	shaderResourceViewDesc.Format = textureDesc.Format;
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
-	result = m_pD3D11Device->CreateShaderResourceView(m_pReflectRTT, &shaderResourceViewDesc, &m_pReflectSRV);
-	result = m_pD3D11Device->CreateShaderResourceView(m_pRefractRTT, &shaderResourceViewDesc, &m_pRefractSRV);
+	result = m_pD3D11Device->CreateShaderResourceView(m_pReflectRTT.Get(), &shaderResourceViewDesc, &m_pReflectSRV);
+	result = m_pD3D11Device->CreateShaderResourceView(m_pRefractRTT.Get(), &shaderResourceViewDesc, &m_pRefractSRV);
 }
 
 void RenderSystem::TurnZBufferOn()
 {
-	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState.Get(), 1);
+	m_pD3D11DeviceContext.Get()->OMSetDepthStencilState(m_pDepthStencilState.Get(), 1);
 	return;
 }
 
 
 void RenderSystem::TurnZBufferOff()
 {
-	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthDisabledStencilState.Get(), 1);
+	m_pD3D11DeviceContext.Get()->OMSetDepthStencilState(m_pDepthDisabledStencilState.Get(), 1);
 	return;
 }
 void RenderSystem::DrawFps()

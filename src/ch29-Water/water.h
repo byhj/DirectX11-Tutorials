@@ -14,16 +14,12 @@ class Water
 public:
 	Water()
 	{
-		m_pInputLayout        = NULL;
-		m_pMVPBuffer          = NULL;
-		m_pVertexBuffer       = NULL;
-		m_pIndexBuffer        = NULL;
 	}
 
 	void Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &Model,
 		const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj, const XMFLOAT4X4 &relfectMat);
 
-	void shutdown();
+	void Shutdown();
 
 	bool LoadModel(char *modelFile);
 	bool init_buffer (ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext);
@@ -67,7 +63,7 @@ private:
 
 	ComPtr<ID3D11RenderTargetView> m_pRenderTargetView;
 	ComPtr<ID3D11Buffer> m_pMVPBuffer;
-	ID3D11Buffer             *m_pWaterBuffer;
+	ComPtr<ID3D11Buffer> m_pWaterBuffer;
 	ComPtr<ID3D11Buffer> m_CameraBuffer;
 	ComPtr<ID3D11Buffer> m_pVertexBuffer;
 	ComPtr<ID3D11Buffer> m_pIndexBuffer;

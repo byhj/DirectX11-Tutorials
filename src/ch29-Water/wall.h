@@ -12,27 +12,12 @@ namespace byhj
 class Wall
 {
 public:
-	Wall()
-	{
-		m_pInputLayout        = NULL;
-		m_pMVPBuffer          = NULL;
-		pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());        = NULL;
-		m_pVertexBuffer       = NULL;
-		m_pIndexBuffer        = NULL;
-		m_pTexture            = NULL;
-	}
+	Wall() = default;
 
 	void Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &Model,  
 		const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj);
 
-	void shutdown()
-	{
-		ReleaseCOM(m_pRenderTargetView  )
-			ReleaseCOM(m_pMVPBuffer         )
-			ReleaseCOM(pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());       )
-			ReleaseCOM(m_pVertexBuffer      )
-			ReleaseCOM(m_pIndexBuffer       )
-	}
+	void Shutdown(){}
 
 	bool load_model(char *modelFile);
 	bool init_buffer (ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext);
@@ -74,7 +59,7 @@ private:
 
 	ComPtr<ID3D11RenderTargetView> m_pRenderTargetView;
 	ComPtr<ID3D11Buffer> m_pMVPBuffer;
-	ID3D11Buffer             *pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());;
+	ComPtr<ID3D11Buffer> m_pLightBuffer;
 	ComPtr<ID3D11Buffer> m_CameraBuffer;
 	ComPtr<ID3D11Buffer> m_pVertexBuffer;
 	ComPtr<ID3D11Buffer> m_pIndexBuffer;
@@ -82,9 +67,8 @@ private:
 	ComPtr<ID3D11SamplerState> m_pTexSamplerState;
 	ComPtr<ID3D11InputLayout> m_pInputLayout;
 
-
-	int m_VertexCount;
-	int m_IndexCount;
+	int m_VertexCount = 0;
+	int m_IndexCount  = 0;
 
 	d3d::Shader WallShader;
 };

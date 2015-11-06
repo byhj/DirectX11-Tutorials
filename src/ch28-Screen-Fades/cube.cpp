@@ -35,6 +35,9 @@ void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const d3d::MatrixBuf
 	int lightSlot = 0;
 	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());
 
+	int bufferSlot = 1;
+	pD3D11DeviceContext->VSSetConstantBuffers(bufferSlot, 1, m_CameraBuffer.GetAddressOf());
+
 	// Set vertex buffer stride and offset
 	unsigned int stride;
 	unsigned int offset;
@@ -44,7 +47,7 @@ void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const d3d::MatrixBuf
 	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0); 
 	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	pD3D11DeviceContext->PSSetShaderResources(0, 2, m_pTextures);
+	pD3D11DeviceContext->PSSetShaderResources(0, 2, &m_pTextures[0]);
 	pD3D11DeviceContext->PSSetSamplers(0, 1, m_pTexSamplerState.GetAddressOf());
 
 	CubeShader.use(pD3D11DeviceContext);
@@ -55,14 +58,6 @@ void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext, const d3d::MatrixBuf
 
 void Cube::Shutdown()
 {
-	ReleaseCOM(m_pInputLayout)
-	ReleaseCOM(m_pMVPBuffer)
-	ReleaseCOM(m_pVertexBuffer)
-	ReleaseCOM(m_pIndexBuffer)
-	ReleaseCOM(pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());)
-	ReleaseCOM(m_CameraBuffer)
-	ReleaseCOM(m_pTexSamplerState)
-	//ReleaseCOM(m_pTexture)
 
 }
 
@@ -175,8 +170,6 @@ void Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	pD3D11DeviceContext->Unmap(m_pLightBuffer.Get(), 0);
 
 
-
-
 	D3D11_BUFFER_DESC cameraBufferDesc;
 	cameraBufferDesc.Usage               = D3D11_USAGE_DYNAMIC;
 	cameraBufferDesc.ByteWidth           = sizeof(CameraBuffer);
@@ -199,55 +192,57 @@ void Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 	dataPtr3->padding = 0.0f;
 	pD3D11DeviceContext->Unmap(m_CameraBuffer.Get(), 0);
 
-	int bufferSlot = 1;
-	pD3D11DeviceContext->VSSetConstantBuffers(bufferSlot, 1, m_CameraBuffer.GetAddressOf());
-
-
 }
 
 void Cube::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 {
-	D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc[5];
-	pInputLayoutDesc[0].SemanticName = "POSITION";
-	pInputLayoutDesc[0].SemanticIndex = 0;
-	pInputLayoutDesc[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	pInputLayoutDesc[0].InputSlot = 0;
-	pInputLayoutDesc[0].AlignedByteOffset = 0;
-	pInputLayoutDesc[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[0].InstanceDataStepRate = 0;
+	D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc;
+	std::vector<D3D11_INPUT_ELEMENT_DESC> vInputLayoutDesc;
 
-	pInputLayoutDesc[1].SemanticName = "TEXCOORD";
-	pInputLayoutDesc[1].SemanticIndex = 0;
-	pInputLayoutDesc[1].Format = DXGI_FORMAT_R32G32_FLOAT;
-	pInputLayoutDesc[1].InputSlot = 0;
-	pInputLayoutDesc[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	pInputLayoutDesc[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[1].InstanceDataStepRate = 0;
+	pInputLayoutDesc.SemanticName = "POSITION";
+	pInputLayoutDesc.SemanticIndex = 0;
+	pInputLayoutDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	pInputLayoutDesc.InputSlot = 0;
+	pInputLayoutDesc.AlignedByteOffset = 0;
+	pInputLayoutDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc.InstanceDataStepRate = 0;
+	vInputLayoutDesc.push_back(pInputLayoutDesc);
 
-	pInputLayoutDesc[2].SemanticName = "NORMAL";
-	pInputLayoutDesc[2].SemanticIndex = 0;
-	pInputLayoutDesc[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	pInputLayoutDesc[2].InputSlot = 0;
-	pInputLayoutDesc[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	pInputLayoutDesc[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[2].InstanceDataStepRate = 0;
+	pInputLayoutDesc.SemanticName = "TEXCOORD";
+	pInputLayoutDesc.SemanticIndex = 0;
+	pInputLayoutDesc.Format = DXGI_FORMAT_R32G32_FLOAT;
+	pInputLayoutDesc.InputSlot = 0;
+	pInputLayoutDesc.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	pInputLayoutDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc.InstanceDataStepRate = 0;
+	vInputLayoutDesc.push_back(pInputLayoutDesc);
 
-	pInputLayoutDesc[3].SemanticName = "TANGENT";
-	pInputLayoutDesc[3].SemanticIndex = 0;
-	pInputLayoutDesc[3].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	pInputLayoutDesc[3].InputSlot = 0;
-	pInputLayoutDesc[3].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	pInputLayoutDesc[3].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[3].InstanceDataStepRate = 0;
+	pInputLayoutDesc.SemanticName = "NORMAL";
+	pInputLayoutDesc.SemanticIndex = 0;
+	pInputLayoutDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	pInputLayoutDesc.InputSlot = 0;
+	pInputLayoutDesc.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	pInputLayoutDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc.InstanceDataStepRate = 0;
+	vInputLayoutDesc.push_back(pInputLayoutDesc);
 
-	pInputLayoutDesc[4].SemanticName = "BINORMAL";
-	pInputLayoutDesc[4].SemanticIndex = 0;
-	pInputLayoutDesc[4].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	pInputLayoutDesc[4].InputSlot = 0;
-	pInputLayoutDesc[4].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	pInputLayoutDesc[4].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	pInputLayoutDesc[4].InstanceDataStepRate = 0;
+	pInputLayoutDesc.SemanticName = "TANGENT";
+	pInputLayoutDesc.SemanticIndex = 0;
+	pInputLayoutDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	pInputLayoutDesc.InputSlot = 0;
+	pInputLayoutDesc.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	pInputLayoutDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc.InstanceDataStepRate = 0;
+	vInputLayoutDesc.push_back(pInputLayoutDesc);
 
+	pInputLayoutDesc.SemanticName = "BINORMAL";
+	pInputLayoutDesc.SemanticIndex = 0;
+	pInputLayoutDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	pInputLayoutDesc.InputSlot = 0;
+	pInputLayoutDesc.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	pInputLayoutDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	pInputLayoutDesc.InstanceDataStepRate = 0;
+	vInputLayoutDesc.push_back(pInputLayoutDesc);
 	
 
 	CubeShader.init(pD3D11Device, vInputLayoutDesc);
@@ -262,9 +257,9 @@ void Cube::init_texture(ID3D11Device *pD3D11Device)
 {
 
 	HRESULT hr;
-	hr = CreateDDSTextureFromFile(pD3D11Device, L"../../media/textures/stone01.dds", NULL, NULL, &m_pTextures[0], NULL);
+	hr = CreateDDSTextureFromFile(pD3D11Device, L"../../media/textures/stone01.dds", NULL, &m_pTextures[0]);
 	//DebugHR(hr);
-	hr = CreateDDSTextureFromFile(pD3D11Device, L"../../media/textures/bump01.dds", NULL, NULL, &m_pTextures[1], NULL);
+	hr = CreateDDSTextureFromFile(pD3D11Device, L"../../media/textures/bump01.dds", NULL, &m_pTextures[1]);
 	//DebugHR(hr);
 
 

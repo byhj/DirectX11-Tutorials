@@ -13,24 +13,13 @@ class Ground
 public:
 	Ground()
 	{
-		m_pInputLayout        = NULL;
-		m_pMVPBuffer          = NULL;
-		pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());        = NULL;
-		m_pVertexBuffer       = NULL;
-		m_pIndexBuffer        = NULL;
-		m_pTexture            = NULL;
 	}
 
 	void Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &Model,  
 		const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj);
 
-	void shutdown()
+	void Shutdown()
 	{
-		ReleaseCOM(m_pRenderTargetView  )
-			ReleaseCOM(m_pMVPBuffer         )
-			ReleaseCOM(pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());       )
-			ReleaseCOM(m_pVertexBuffer      )
-			ReleaseCOM(m_pIndexBuffer       )
 	}
 
 	bool load_model(char *modelFile);
@@ -73,7 +62,7 @@ private:
 
 	ComPtr<ID3D11RenderTargetView> m_pRenderTargetView;
 	ComPtr<ID3D11Buffer> m_pMVPBuffer;
-	ID3D11Buffer             *pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());;
+	ComPtr<ID3D11Buffer> m_pLightBuffer;
 	ComPtr<ID3D11Buffer> m_CameraBuffer;
 	ComPtr<ID3D11Buffer> m_pVertexBuffer;
 	ComPtr<ID3D11Buffer> m_pIndexBuffer;

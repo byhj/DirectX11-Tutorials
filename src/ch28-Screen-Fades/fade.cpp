@@ -8,10 +8,6 @@ namespace byhj
 
 	void Fade::Shutdown()
 	{
-		ReleaseCOM(m_pMVPBuffer)
-		ReleaseCOM(m_pVertexBuffer)
-		ReleaseCOM(m_pIndexBuffer)
-		ReleaseCOM(m_pInputLayout)
 	}
 
 
@@ -37,8 +33,8 @@ namespace byhj
 		cbFade.padding[0] = 0.0f;
 		cbFade.padding[1] = 0.0f;
 		cbFade.padding[2] = 0.0f;
-		pD3D11DeviceContext->UpdateSubresource(m_pFadeBuffer, 0, NULL, &cbFade, 0, 0);
-		pD3D11DeviceContext->PSSetConstantBuffers(0, 1, &m_pFadeBuffer);
+		pD3D11DeviceContext->UpdateSubresource(m_pFadeBuffer.Get(), 0, NULL, &cbFade, 0, 0);
+		pD3D11DeviceContext->PSSetConstantBuffers(0, 1, m_pFadeBuffer.GetAddressOf());
 
 		unsigned int stride;
 		unsigned int offset;
@@ -195,28 +191,31 @@ namespace byhj
 	{
 		HRESULT result;
 
-		D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc[2];
-		pInputLayoutDesc[0].SemanticName = "POSITION";
-		pInputLayoutDesc[0].SemanticIndex = 0;
-		pInputLayoutDesc[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-		pInputLayoutDesc[0].InputSlot = 0;
-		pInputLayoutDesc[0].AlignedByteOffset = 0;
-		pInputLayoutDesc[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-		pInputLayoutDesc[0].InstanceDataStepRate = 0;
+		D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc;
+		std::vector<D3D11_INPUT_ELEMENT_DESC> vInputLayoutDesc;
 
-		pInputLayoutDesc[1].SemanticName = "TEXCOORD";
-		pInputLayoutDesc[1].SemanticIndex = 0;
-		pInputLayoutDesc[1].Format = DXGI_FORMAT_R32G32_FLOAT;
-		pInputLayoutDesc[1].InputSlot = 0;
-		pInputLayoutDesc[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-		pInputLayoutDesc[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-		pInputLayoutDesc[1].InstanceDataStepRate = 0;
+		pInputLayoutDesc.SemanticName = "POSITION";
+		pInputLayoutDesc.SemanticIndex = 0;
+		pInputLayoutDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+		pInputLayoutDesc.InputSlot = 0;
+		pInputLayoutDesc.AlignedByteOffset = 0;
+		pInputLayoutDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+		pInputLayoutDesc.InstanceDataStepRate = 0;
+		vInputLayoutDesc.push_back(pInputLayoutDesc);
 
+		pInputLayoutDesc.SemanticName = "TEXCOORD";
+		pInputLayoutDesc.SemanticIndex = 0;
+		pInputLayoutDesc.Format = DXGI_FORMAT_R32G32_FLOAT;
+		pInputLayoutDesc.InputSlot = 0;
+		pInputLayoutDesc.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+		pInputLayoutDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+		pInputLayoutDesc.InstanceDataStepRate = 0;
+		vInputLayoutDesc.push_back(pInputLayoutDesc);
 		
 
 		FadeShader.init(pD3D11Device, vInputLayoutDesc);
 		FadeShader.attachVS(L"fade.vsh", "VS", "vs_5_0");
-		FadeShader.attachPS(L"fade.psh");
+		FadeShader.attachPS(L"fade.psh", "PS", "ps_5_0");
 		FadeShader.end();
 
 		return true;

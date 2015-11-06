@@ -28,7 +28,7 @@ void RenderSystem::v_Update()
 
 void RenderSystem::v_Render()
 {
-
+	//Render Scene to texture
 	float bgColor[4] ={ 0.5f, 0.5f, 0.5f, 1.0f };
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, m_pRttRenderTargetView.GetAddressOf(), m_pDepthStencilView.Get());
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRttRenderTargetView.Get(), bgColor);
