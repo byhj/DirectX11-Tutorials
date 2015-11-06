@@ -37,12 +37,12 @@ private:
 	};
    
 	d3d::MatrixBuffer cbMatrix;
-	ComPtr<ID3D11InputLayout> m_pInputLayout;
-	ComPtr<ID3D11Buffer> m_pMVPBuffer;
-	ComPtr<ID3D11Buffer> m_pVertexBuffer;
-	ComPtr<ID3D11Buffer> m_pVertexBuffer;
+	ComPtr<ID3D11InputLayout>        m_pInputLayout;
+	ComPtr<ID3D11Buffer>             m_pMVPBuffer;
+	ComPtr<ID3D11Buffer>             m_pVertexBuffer;
+	ComPtr<ID3D11Buffer>             m_pIndexBuffer;
 	ComPtr<ID3D11ShaderResourceView> m_pTexture;
-	ComPtr<ID3D11SamplerState> m_pTexSamplerState;
+	ComPtr<ID3D11SamplerState>       m_pTexSamplerState;
 	d3d::Shader CubeShader;
 
 	std::vector<Vertex> m_VertexData;

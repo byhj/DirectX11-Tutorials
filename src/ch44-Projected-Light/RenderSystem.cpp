@@ -39,13 +39,13 @@ void RenderSystem::v_Render()
 
 	XMMATRIX Model = XMMatrixTranslation(0.0f, 1.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	m_Plane.Render(m_pD3D11DeviceContext, m_Matrix.model, m_Matrix.view, m_Matrix.proj);
+	m_Plane.Render(m_pD3D11DeviceContext.Get(), m_Matrix.model, m_Matrix.view, m_Matrix.proj);
 
 
 	Model = XMMatrixTranslation(0.0f, 2.0f, 0.0f);
 	Model *= XMMatrixRotationY(rot);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	m_Cube.Render(m_pD3D11DeviceContext, m_Matrix.model, m_Matrix.view, m_Matrix.proj);
+	m_Cube.Render(m_pD3D11DeviceContext.Get(), m_Matrix.model, m_Matrix.view, m_Matrix.proj);
 
 	DrawInfo();
 
@@ -56,10 +56,6 @@ void RenderSystem::v_Render()
 void RenderSystem::v_Shutdown()
 {
 
-	ReleaseCOM(m_pSwapChain);
-	ReleaseCOM(m_pD3D11Device);
-	ReleaseCOM(m_pD3D11DeviceContext);
-	ReleaseCOM(m_pRenderTargetView);
 }
 
 
@@ -249,7 +245,7 @@ void RenderSystem::init_device()
 void RenderSystem::BeginScene()
 {
 	//Render 
-	float bgColor[4] ={ 0.0f, 0.0f, 0.0f, 1.0f };
+	float bgColor[4] ={ 0.2f, 0.3f, 0.4f, 1.0f };
 
 	m_pD3D11DeviceContext->RSSetState(m_pRasterState.Get());
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, m_pRenderTargetView.GetAddressOf(), m_pDepthStencilView.Get());
@@ -297,11 +293,11 @@ void RenderSystem::init_object()
 	m_Font.init(m_pD3D11Device.Get());
 	m_Camera.SetRadius(8.0f);
 
-	m_Cube.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-	m_Cube.init_shader(m_pD3D11Device, GetHwnd());
+	m_Cube.init_buffer(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get());
+	m_Cube.init_shader(m_pD3D11Device.Get(), GetHwnd());
 
-	m_Plane.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-	m_Plane.init_shader(m_pD3D11Device, GetHwnd());
+	m_Plane.init_buffer(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get());
+	m_Plane.init_shader(m_pD3D11Device.Get(), GetHwnd());
 
 
 

@@ -2,8 +2,10 @@
 #define Cube_H
 
 #include <windows.h>
-
 #include <vector>
+#include <DirectXMath.h>
+
+using namespace DirectX;
 
 #include "d3d/Shader.h"
 
@@ -28,8 +30,8 @@ private:
 	void load_model(char *modelFile);
 
 
-	ID3D11Buffer  *m_pVertexBuffer     = nullptr;
-	ID3D11Buffer  *m_pIndexBuffer      = nullptr;
+	ComPtr<ID3D11Buffer> m_pVertexBuffer;
+	ComPtr<ID3D11Buffer> m_pIndexBuffer ;
 
 	struct  Vertex
 	{

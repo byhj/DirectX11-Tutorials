@@ -22,8 +22,8 @@ void RenderSystem::v_Init()
 	m_Camera.SetRadius(5.0f);
 
 	m_Cube.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd() );
-	m_LightShader.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd());
-	m_AlphaShader.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd());
+	m_LightShader.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd());
+	m_AlphaShader.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd());
 }
 
 void RenderSystem::v_Update()
@@ -41,13 +41,13 @@ void RenderSystem::v_Render()
 	XMMATRIX Model     = XMMatrixTranslation(-1.5f, 0.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
 
-	m_LightShader.Render(m_pD3D11DeviceContext, m_Matrix);
-	m_Cube.Render(m_pD3D11DeviceContext);
+	m_LightShader.Render(m_pD3D11DeviceContext.Get(), m_Matrix);
+	m_Cube.Render(m_pD3D11DeviceContext.Get());
 
 	Model     = XMMatrixTranslation(1.5f, 0.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	m_AlphaShader.Render(m_pD3D11DeviceContext, m_Matrix);
-	m_Cube.Render(m_pD3D11DeviceContext);
+	m_AlphaShader.Render(m_pD3D11DeviceContext.Get(), m_Matrix);
+	m_Cube.Render(m_pD3D11DeviceContext.Get());
 
 	EndScene();
 }
@@ -57,10 +57,6 @@ void RenderSystem::v_Shutdown()
 	m_LightShader.Shutdown();
 	m_Cube.Shutdown();
 
-	ReleaseCOM(m_pSwapChain);
-	ReleaseCOM(m_pD3D11Device);
-	ReleaseCOM(m_pD3D11DeviceContext);
-	ReleaseCOM(m_pRenderTargetView);
 }
 
 void RenderSystem::UpdateScene()

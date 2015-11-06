@@ -36,8 +36,7 @@ void Cube::Render(ID3D11DeviceContext *pD3D11DeviceContext)
 
 void Cube::Shutdown()
 {
-	ReleaseCOM(m_pVertexBuffer)
-	ReleaseCOM(m_pIndexBuffer)
+
 }
 
 void Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext)

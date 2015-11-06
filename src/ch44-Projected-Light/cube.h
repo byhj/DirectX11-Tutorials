@@ -15,22 +15,13 @@ class Cube
 public:
 	Cube()
 	{
-		m_pInputLayout        = NULL;
-		m_pMVPBuffer          = NULL;
-
-		m_pVertexBuffer       = NULL;
-		m_pIndexBuffer        = NULL;
 	}
 
 	void Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &Model,  
 		const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj);
 
-	void shutdown()
+	void Shutdown()
 	{
-		ReleaseCOM(m_pRenderTargetView  )
-		ReleaseCOM(m_pMVPBuffer         )
-		ReleaseCOM(m_pVertexBuffer      )
-		ReleaseCOM(m_pIndexBuffer       )
 	}
 
 	bool LoadModel(char *modelFile);

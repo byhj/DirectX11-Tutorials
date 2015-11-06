@@ -37,7 +37,7 @@ void RenderSystem::v_Render()
 	m_Matrix.view = m_Camera.GetViewMatrix();
 
 	float bgColor[4] ={ 0.0f, 0.0f, 0.0f, 1.0f };
-	m_pD3D11DeviceContext->OMSetRenderTargets(2, m_pColorRTV, m_pDepthStencilView);
+	m_pD3D11DeviceContext->OMSetRenderTargets(2, m_pColorRTV, m_pDepthStencilView.Get());
 	for ( int i = 0; i!=2; ++i )
 	    m_pD3D11DeviceContext->ClearRenderTargetView(m_pColorRTV[i], bgColor);
 	
@@ -58,7 +58,7 @@ void RenderSystem::v_Render()
 	XMFLOAT4X4 orth;
 	XMStoreFloat4x4(&orth, XMMatrixTranspose(orthProj));
 
-	m_Deferred.Render(m_pD3D11DeviceContext, m_pColorSRV, m_Matrix.model, m_Matrix.view, orth);
+	m_Deferred.Render(m_pD3D11DeviceContext.Get(), m_pColorSRV, m_Matrix.model, m_Matrix.view, orth);
 
 	TurnZBufferOn();
 
@@ -72,11 +72,6 @@ void RenderSystem::v_Shutdown()
 {
 
 	m_Cube.Shutdown();
-
-	ReleaseCOM(m_pSwapChain);
-	ReleaseCOM(m_pD3D11Device);
-	ReleaseCOM(m_pD3D11DeviceContext);
-	ReleaseCOM(m_pRenderTargetView);
 }
 
 
@@ -316,8 +311,8 @@ void RenderSystem::init_object()
 	m_Font.init(m_pD3D11Device.Get());
 
 	m_Deferred.init_window(-1.0f, 1.0f, 2.0f, 2.0f, GetAspect());
-	m_Deferred.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-	m_Deferred.init_shader(m_pD3D11Device, GetHwnd());
+	m_Deferred.init_buffer(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get());
+	m_Deferred.init_shader(m_pD3D11Device.Get(), GetHwnd());
 
 	m_Camera.SetRadius(5.0f);
 }
