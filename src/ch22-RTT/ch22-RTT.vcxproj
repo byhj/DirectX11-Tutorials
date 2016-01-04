@@ -47,6 +47,14 @@
     <ClInclude Include="cube.h" />
     <ClInclude Include="RenderSystem.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="bitmap.psh">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="bitmap.vsh">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D033120D-38B6-4475-8E5F-24A9BC7B711C}</ProjectGuid>
     <RootNamespace>ch22RTT</RootNamespace>

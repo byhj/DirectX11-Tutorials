@@ -6,14 +6,20 @@ namespace byhj
 namespace d3d
 {
 
-
-void RTT::init_window(float posX, float posY, float width, float height, float aspect)
+void RTT::Init(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext, HWND hWnd)
 {
+	init_buffer(pD3D11Device, pD3D11DeviceContext);
+	init_shader(pD3D11Device, hWnd);
+}
+
+void RTT::SetPos(float sw, float sh, float posX, float posY, float width, float height)
+{
+	m_sw = sw;
+	m_sh = sh;
 	m_posX  = posX;
 	m_posY  = posY;
 	m_width = width; 
 	m_height = height;
-	m_aspect = aspect;
 }
 
 void RTT::Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView *pTexture, const XMFLOAT4X4 &Model,  
@@ -46,49 +52,48 @@ bool RTT::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11Dev
 {
 	HRESULT hr;
 
-	Vertex *VertexData;
-	unsigned long *IndexData;
 	m_VertexCount = 6;
 	m_IndexCount = 6;
 
-	VertexData = new Vertex[m_VertexCount];
-	if (!VertexData)
-	{
-		return false;
-	}
-
-	IndexData = new unsigned long[m_IndexCount];
-	if (!IndexData)
-	{
-		return false;
-	}
-
-	memset(VertexData, 0, sizeof(Vertex) * m_VertexCount);
+	std::vector<Vertex> VertexData(m_VertexCount);
+	std::vector<UINT> IndexData(m_IndexCount);
 
 	for (int i = 0; i != m_IndexCount; ++i)
 	{
 		IndexData[i] = i;
 	}
+	// Calculate the screen coordinates of the left side of the bitmap.
+	float left = (float)((m_sw / 2) * -1) + (float)m_posX;
+
+	// Calculate the screen coordinates of the right side of the bitmap.
+	float  right = left + (float)m_width;
+
+	// Calculate the screen coordinates of the top of the bitmap.
+	float  top = (float)(m_sh / 2) - (float)m_posY;
+
+	// Calculate the screen coordinates of the bottom of the bitmap.
+	float  bottom = top - (float)m_height;
 
 	// First triangle.
-	VertexData[0].Pos = XMFLOAT3(m_posX, m_posY, 0.0f);  // Top left.
+	VertexData[0].Pos = XMFLOAT3(left, top, 0.0f);  // Top left.
 	VertexData[0].Tex = XMFLOAT2(0.0f, 0.0f);
 
-	VertexData[1].Pos = XMFLOAT3(m_posX + m_width, m_posY, 0.0f);  
-	VertexData[1].Tex = XMFLOAT2(1.0f, 0.0f);
+	VertexData[1].Pos = XMFLOAT3(right, bottom, 0.0f);  // Bottom right.
+	VertexData[1].Tex = XMFLOAT2(1.0f, 1.0f);
 
-	VertexData[2].Pos = XMFLOAT3(m_posX + m_width, m_posY - m_height, 0.0f);   //Bottom right
-	VertexData[2].Tex = XMFLOAT2(1.0f, 1.0f);
+	VertexData[2].Pos = XMFLOAT3(left, bottom, 0.0f);  // Bottom left.
+	VertexData[2].Tex = XMFLOAT2(0.0f, 1.0f);
 
 	// Second triangle.
-	VertexData[3].Pos = XMFLOAT3(m_posX + m_width, m_posY - m_height, 0.0f);   
-	VertexData[3].Tex = XMFLOAT2(1.0f, 1.0f);
+	VertexData[3].Pos = XMFLOAT3(left, top, 0.0f);  // Bottom left.
+	VertexData[3].Tex = XMFLOAT2(0.0f, 0.0f);
 
-	VertexData[4].Pos = XMFLOAT3(m_posX, m_posY - m_height, 0.0f); 
+	VertexData[4].Pos = XMFLOAT3(right, top, 0.0f); // Top right.
 	VertexData[4].Tex = XMFLOAT2(0.0f, 1.0f);
 
-	VertexData[5].Pos = XMFLOAT3(m_posX, m_posY, 0.0f); 
-	VertexData[5].Tex = XMFLOAT2(0.0f, 0.0f);
+	VertexData[5].Pos = XMFLOAT3(right, bottom, 0.0f);  // Bottom right.
+	VertexData[5].Tex = XMFLOAT2(1.0f, 1.0f);
+
 
 
 	///////////////////////////Index Buffer ////////////////////////////////
@@ -104,7 +109,7 @@ bool RTT::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11Dev
 
 	// Give the subresource structure a pointer to the vertex data.
 	D3D11_SUBRESOURCE_DATA VBO;
-	VBO.pSysMem          = VertexData;
+	VBO.pSysMem          = &VertexData[0];
 	VBO.SysMemPitch      = 0;
 	VBO.SysMemSlicePitch = 0;
 
@@ -117,7 +122,7 @@ bool RTT::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11Dev
 	// Set up the description of the static index buffer.
 	D3D11_BUFFER_DESC IndexBufferDesc;
 	IndexBufferDesc.Usage               = D3D11_USAGE_DEFAULT;
-	IndexBufferDesc.ByteWidth           = sizeof(unsigned long) * m_IndexCount;
+	IndexBufferDesc.ByteWidth           = sizeof(UINT) * m_IndexCount;
 	IndexBufferDesc.BindFlags           = D3D11_BIND_INDEX_BUFFER;
 	IndexBufferDesc.CPUAccessFlags      = 0;
 	IndexBufferDesc.MiscFlags           = 0;
@@ -125,7 +130,7 @@ bool RTT::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11Dev
 
 	// Give the subresource structure a pointer to the index data.
 	D3D11_SUBRESOURCE_DATA IBO;
-	IBO.pSysMem          = IndexData;
+	IBO.pSysMem          = &IndexData[0];
 	IBO.SysMemPitch      = 0;
 	IBO.SysMemSlicePitch = 0;
 

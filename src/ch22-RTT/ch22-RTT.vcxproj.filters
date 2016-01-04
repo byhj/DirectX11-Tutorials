@@ -30,6 +30,12 @@
     <None Include="rtt.vsh">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="bitmap.vsh">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="bitmap.psh">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cube.h">

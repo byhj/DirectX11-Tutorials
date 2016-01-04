@@ -52,11 +52,10 @@ void RenderSystem::v_Render()
 	// Create an orthographic projection matrix for 2D rendering. 
 	Model = XMMatrixIdentity();
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	XMMATRIX orthProj = XMMatrixOrthographicLH(2.0f, 2.0f, 1.0f, 1000.0f);
+	XMMATRIX orthProj = XMMatrixOrthographicLH(m_ScreenWidth, m_ScreenHeight, 0.1f, 1000.0f);
 	XMFLOAT4X4 orth;
 	XMStoreFloat4x4(&orth, XMMatrixTranspose(orthProj));
-
-	m_Rtt.Render(m_pD3D11DeviceContext.Get(), m_pRttShaderResourceView.Get(), m_Matrix.model, m_Matrix.view, orth);
+	m_Rtt.Render(m_pD3D11DeviceContext.Get(), m_pRttShaderResourceView.Get(), m_Matrix.model, m_Matrix.model, orth);
 
 	TurnZBufferOn();
 
@@ -282,6 +281,8 @@ void RenderSystem::init_camera()
 	ZeroMemory(&vp, sizeof(D3D11_VIEWPORT));
 	vp.TopLeftX = 0;
 	vp.TopLeftY = 0;
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
 	vp.Width    = static_cast<FLOAT>(m_ScreenWidth);
 	vp.Height   = static_cast<FLOAT>(m_ScreenHeight);
 	m_pD3D11DeviceContext->RSSetViewports(1, &vp);
@@ -308,10 +309,8 @@ void RenderSystem::init_object()
 	m_Cube.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd());
 	m_Font.init(m_pD3D11Device.Get());
 
-	m_Rtt.init_window(500.0f / m_ScreenWidth, 500.0f / m_ScreenHeight,
-		              400.0f / m_ScreenWidth, 400.0f / m_ScreenHeight, GetAspect());
-	m_Rtt.init_buffer(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get());
-	m_Rtt.init_shader(m_pD3D11Device.Get(), GetHwnd());
+    m_Rtt.SetPos(m_ScreenWidth, m_ScreenHeight, m_ScreenWidth - 250, 10, 200, 200);
+	m_Rtt.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd());
 
 	m_Camera.SetRadius(5.0f);
 }

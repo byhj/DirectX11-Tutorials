@@ -18,19 +18,18 @@ class RTT
 public:
 	RTT() = default;
 
-	void Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView *pTexture,const XMFLOAT4X4 &Model,  
-		        const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj);
+	void Init(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext, HWND hWnd);
+	void Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourceView *pTexture, 
+		        const XMFLOAT4X4 &Model,const XMFLOAT4X4 &View, const XMFLOAT4X4 &Proj);
 
-	void Shutdown()
-	{
-	}
+	void Update();
+	void Shutdown();
+	void SetPos(float sw, float sh, float posX, float posY, float width, float height);
 
-	void init_window(float posX, float posY, float width, float height, float aspect);
-	bool init_buffer (ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext);
-	bool init_shader (ID3D11Device *pD3D11Device, HWND hWnd);
 
 private:
-
+	bool init_buffer (ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext);
+	bool init_shader (ID3D11Device *pD3D11Device, HWND hWnd);
 	d3d::MatrixBuffer cbMatrix;
 
 	struct  Vertex
@@ -50,11 +49,13 @@ private:
 	int m_VertexCount;
 	int m_IndexCount;
 
+	float m_sw;
+	float m_sh;
     float m_posX  ;
 	float m_posY  ; 
 	float m_width ; 
 	float m_height;
-	float m_aspect;
+
 	Shader RTTShader;
 };
 
