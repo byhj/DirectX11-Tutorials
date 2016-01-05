@@ -42,15 +42,16 @@ void RenderSystem::v_Render()
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRttRenderTargetView.Get(), bgColor);
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	cube.Render(m_pD3D11DeviceContext, m_Matrix);
+	cube.Render(m_pD3D11DeviceContext.Get(), m_Matrix);
 
 	BeginScene();
 
 	Model = XMMatrixIdentity();
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
 
-	m_PlaneShader.Use(m_pD3D11DeviceContext, m_Matrix);
-	m_FullPlane.Render(m_pD3D11DeviceContext, m_pRttShaderResourceView);
+	//m_PlaneShader.Use(m_pD3D11DeviceContext.Get(), m_Matrix);
+	m_VerticalShader.Use(m_pD3D11DeviceContext.Get(), m_Matrix);
+	m_FullPlane.Render(m_pD3D11DeviceContext.Get(), m_pRttShaderResourceView.Get());
 
 	DrawInfo();
 
@@ -60,10 +61,7 @@ void RenderSystem::v_Render()
 void RenderSystem::v_Shutdown()
 {
 
-	ReleaseCOM(m_pSwapChain);
-	ReleaseCOM(m_pD3D11Device);
-	ReleaseCOM(m_pD3D11DeviceContext);
-	ReleaseCOM(m_pRenderTargetView);
+
 }
 
 
@@ -301,19 +299,19 @@ void RenderSystem::init_object()
 	m_Font.init(m_pD3D11Device.Get());
 	m_Camera.SetRadius(5.0f);
 
-	cube.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd());
+	cube.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd());
 
 	m_SmallPlane.init_window(-1.0f, 1.0f, 1.0f, 1.0f, GetAspect());
-	m_SmallPlane.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-	m_SmallPlane.init_shader(m_pD3D11Device, GetHwnd());
+	m_SmallPlane.init_buffer(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get());
+	m_SmallPlane.init_shader(m_pD3D11Device.Get(), GetHwnd());
 
 	m_FullPlane.init_window(-1.0f, 1.0f, 2.0f, 2.0f, GetAspect());
-	m_FullPlane.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-	m_FullPlane.init_shader(m_pD3D11Device, GetHwnd());
+	m_FullPlane.init_buffer(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get());
+	m_FullPlane.init_shader(m_pD3D11Device.Get(), GetHwnd());
 
-	m_PlaneShader.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd());
-	m_HorizontalShader.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd());
-	m_VerticalShader.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd());
+	m_PlaneShader.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd());
+	m_HorizontalShader.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd());
+	m_VerticalShader.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd());
 }
 
 void RenderSystem::init_fbo()
@@ -345,7 +343,7 @@ void RenderSystem::init_fbo()
 	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 	renderTargetViewDesc.Texture2D.MipSlice = 0;
 
-	result = m_pD3D11Device->CreateRenderTargetView(m_pRttRenderTargetTexture.Get(), renderTargetViewDesc, m_pRttRenderTargetView.GetAddressOf() );
+	result = m_pD3D11Device->CreateRenderTargetView(m_pRttRenderTargetTexture.Get(), &renderTargetViewDesc, m_pRttRenderTargetView.GetAddressOf() );
 
 	shaderResourceViewDesc.Format = textureDesc.Format;
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;

@@ -61,15 +61,15 @@ private:
 	int m_videoCardMemory;
 	std::wstring m_videoCardInfo;
 
-	IDXGISwapChain           *m_pSwapChain          = nullptr;     
-	ID3D11Device             *m_pD3D11Device        = nullptr;
-	ID3D11DeviceContext      *m_pD3D11DeviceContext = nullptr;
-	ID3D11RenderTargetView   *m_pRenderTargetView   = nullptr;
-	ID3D11DepthStencilView   *m_pDepthStencilView   = nullptr;
-	ID3D11Texture2D          *m_pDepthStencilBuffer = nullptr;
-	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState.Get(), 1);
-	ID3D11DepthStencilState  *m_pDepthDisabledStencilState;
-	ID3D11RasterizerState    *m_pRasterState        = nullptr;
+	ComPtr<IDXGISwapChain         > m_pSwapChain          ;     
+	ComPtr<ID3D11Device           > m_pD3D11Device        ;
+	ComPtr<ID3D11DeviceContext    > m_pD3D11DeviceContext ;
+	ComPtr<ID3D11RenderTargetView > m_pRenderTargetView   ;
+	ComPtr<ID3D11DepthStencilView > m_pDepthStencilView   ;
+	ComPtr<ID3D11Texture2D        > m_pDepthStencilBuffer ;
+	ComPtr<ID3D11DepthStencilState> m_pDepthStencilState;
+	ComPtr<ID3D11DepthStencilState> m_pDepthDisabledStencilState;
+	ComPtr<ID3D11RasterizerState  > m_pRasterState   ;
 
 	ComPtr<ID3D11Texture2D> m_pRttRenderTargetTexture;
 	ComPtr<ID3D11RenderTargetView> m_pRttRenderTargetView;

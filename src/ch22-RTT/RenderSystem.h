@@ -62,9 +62,9 @@ private:
 	ComPtr<ID3D11DepthStencilState> m_pDepthDisabledStencilState;
 	ComPtr<ID3D11RasterizerState> m_pRasterState;
 
-	ComPtr<ID3D11Texture2D> m_pRttRenderTargetTexture;
-	ComPtr<ID3D11RenderTargetView> m_pRttRenderTargetView;
-	ComPtr<ID3D11ShaderResourceView> m_pRttShaderResourceView;
+	ComPtr<ID3D11Texture2D          > m_pRttRenderTargetTexture;
+	ComPtr<ID3D11RenderTargetView   > m_pRttRenderTargetView;
+	ComPtr<ID3D11ShaderResourceView > m_pRttShaderResourceView;
 
 	d3d::MatrixBuffer m_Matrix;
 };

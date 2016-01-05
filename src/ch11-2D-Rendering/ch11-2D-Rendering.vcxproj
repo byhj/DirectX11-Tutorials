@@ -33,6 +33,8 @@
   <ItemGroup>
     <ClCompile Include="..\..\include\d3d\App.cpp" />
     <ClCompile Include="..\..\include\d3d\Shader.cpp" />
+    <ClCompile Include="..\..\include\d3d\Utility.cpp" />
+    <ClCompile Include="..\..\include\dxerr.cpp" />
     <ClCompile Include="bitmap.cpp" />
     <ClCompile Include="ch11-2D-Rendering.cpp" />
     <ClCompile Include="cube.cpp" />
@@ -42,6 +44,7 @@
     <ClInclude Include="..\..\include\d3d\App.h" />
     <ClInclude Include="..\..\include\d3d\Shader.h" />
     <ClInclude Include="..\..\include\d3d\Utility.h" />
+    <ClInclude Include="..\..\include\dxerr.h" />
     <ClInclude Include="bitmap.h" />
     <ClInclude Include="cube.h" />
     <ClInclude Include="RenderSystem.h" />

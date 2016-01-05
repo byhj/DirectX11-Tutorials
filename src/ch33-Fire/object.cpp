@@ -13,7 +13,7 @@ void Object::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &
 	cbMatrix.view   = View;
 	cbMatrix.proj   = Proj;
 	pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer.Get(), 0, NULL, &cbMatrix, 0, 0 );
-	pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, &m_pMVPBuffer);
+	pD3D11DeviceContext->VSSetConstantBuffers( 0, 1, m_pMVPBuffer.GetAddressOf());
 
 
 	//////////////////////////////////////////////////////////////////////////////
@@ -29,10 +29,10 @@ void Object::Render(ID3D11DeviceContext *pD3D11DeviceContext, const XMFLOAT4X4 &
 	cbNoise.scales       = XMFLOAT3(1.0f, 2.0f, 3.0f);
 	cbNoise.padding = 0.0f;
 	pD3D11DeviceContext->UpdateSubresource(m_pNoiseBuffer.Get(), 0, NULL, &cbNoise, 0, 0 );
-	pD3D11DeviceContext->VSSetConstantBuffers(1, 1, &m_pNoiseBuffer);
+	pD3D11DeviceContext->VSSetConstantBuffers(1, 1, m_pNoiseBuffer.GetAddressOf());
 
 	int lightSlot = 0;
-	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, &m_pDistortBuffer);
+	pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pDistortBuffer.GetAddressOf());
 
 	///////////////////////////////////////////////////////////////////////////////
 	unsigned int stride;

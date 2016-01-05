@@ -29,19 +29,20 @@ void RenderSystem::v_Update()
 void RenderSystem::v_Render()
 {
 
-	static float rot = 0.0f;
-	rot +=  m_Timer.GetDeltaTime();
-	UpdateScene();
-	XMMATRIX Model = XMMatrixRotationY(rot);
-	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	m_Matrix.view = m_Camera.GetViewMatrix();
-
 	float bgColor[4] ={ 0.5f, 0.5f, 0.5f, 1.0f };
-	m_pD3D11DeviceContext->OMSetRenderTargets(1, &m_pRttRenderTargetView, m_pDepthStencilView.Get());
+	m_pD3D11DeviceContext->OMSetRenderTargets(1, m_pRttRenderTargetView.GetAddressOf(), m_pDepthStencilView.Get());
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRttRenderTargetView.Get(), bgColor);
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
+	static float rot = 0.0f;
+	rot +=  m_Timer.GetDeltaTime();
+	UpdateScene();
+	//XMMATRIX Model = XMMatrixRotationY(rot);
+	//XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
+	m_Matrix.view = m_Camera.GetViewMatrix();
+
 	m_Cube.Render(m_pD3D11DeviceContext.Get(), m_Matrix);
+
 
 	BeginScene();
 
@@ -49,12 +50,10 @@ void RenderSystem::v_Render()
 
 	TurnZBufferOff();
 
-	// Create an orthographic projection matrix for 2D rendering. 
-	Model = XMMatrixIdentity();
-	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	XMMATRIX orthProj = XMMatrixOrthographicLH(m_ScreenWidth, m_ScreenHeight, 0.1f, 1000.0f);
+	XMStoreFloat4x4(&m_Matrix.model, XMMatrixIdentity());
+	XMMATRIX orthProj = XMMatrixOrthographicLH(m_ScreenWidth, m_ScreenHeight, 10.0f, 1000.0f);
 	XMFLOAT4X4 orth;
-	XMStoreFloat4x4(&orth, XMMatrixTranspose(orthProj));
+	XMStoreFloat4x4(&orth, orthProj);
 	m_Rtt.Render(m_pD3D11DeviceContext.Get(), m_pRttShaderResourceView.Get(), m_Matrix.model, m_Matrix.model, orth);
 
 	TurnZBufferOn();
@@ -136,7 +135,7 @@ void RenderSystem::init_device()
 	hr = m_pD3D11Device->CreateRenderTargetView(pBackBuffer, NULL, &m_pRenderTargetView);
 	pBackBuffer->Release();
 	//DebugHR(hr);
-	
+
 	//////////////////////////// Initialize the description of the stencil state.///////////////////////////////////////////////
 	D3D11_TEXTURE2D_DESC depthBufferDesc;
 	ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
@@ -344,15 +343,16 @@ void RenderSystem::init_fbo()
 	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 	renderTargetViewDesc.Texture2D.MipSlice = 0;
 
-	result = m_pD3D11Device->CreateRenderTargetView(m_pRttRenderTargetTexture.Get(), &renderTargetViewDesc, m_pRttRenderTargetView.GetAddressOf() );
+	result = m_pD3D11Device->CreateRenderTargetView(m_pRttRenderTargetTexture.Get(), &renderTargetViewDesc, m_pRttRenderTargetView.GetAddressOf());
 
 	shaderResourceViewDesc.Format = textureDesc.Format;
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
-	result = m_pD3D11Device->CreateShaderResourceView(m_pRttRenderTargetTexture.Get(), &shaderResourceViewDesc, m_pRttShaderResourceView.GetAddressOf() );
+	result = m_pD3D11Device->CreateShaderResourceView(m_pRttRenderTargetTexture.Get(), &shaderResourceViewDesc, m_pRttShaderResourceView.GetAddressOf());
 
 }
+
 
 void RenderSystem::TurnZBufferOn()
 {

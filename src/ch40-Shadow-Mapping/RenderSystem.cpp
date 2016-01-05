@@ -34,16 +34,16 @@ void RenderSystem::v_Render()
 
 	XMMATRIX Model = XMMatrixIdentity();
 
-	float bgColor[4] = { 0.2f, 0.3f, 0.4f, 1.0f };
+	float bgColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, m_pRttRenderTargetView.GetAddressOf(), m_pDepthStencilView.Get());
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRttRenderTargetView.Get(), bgColor);
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 	float near_plane = 0.1f, far_plane = 1000.0f;
-	XMMATRIX LightProj = XMMatrixOrthographicLH(20.0f, 20.0f, near_plane, far_plane);
+	XMMATRIX LightProj = XMMatrixOrthographicLH(10.0f, 10.0f, near_plane, far_plane);
 	static float lightPositionX = -5.0f;
-	lightPositionX += 0.0005f;
+	lightPositionX += 0.005f;
 	if (lightPositionX > 5.0f)
 	{
 		lightPositionX = -5.0f;
@@ -78,30 +78,32 @@ void RenderSystem::v_Render()
 
 	////////////////////////////////////////////////////////////////////////////////
 	BeginScene();
+	XMFLOAT4 lightPos;
+	XMStoreFloat4(&lightPos, LightPos);
 
 	m_Matrix.view = m_Camera.GetViewMatrix();
 	XMMATRIX Proj = XMMatrixPerspectiveFovLH(0.4f*3.14f, GetAspect(), 1.0f, 1000.0f);
 	XMStoreFloat4x4(&m_Matrix.proj, XMMatrixTranspose(Proj));
 
 
-	m_pD3D11DeviceContext->PSSetShaderResources(1, 1, &m_pRttShaderResourceView);
+	m_pD3D11DeviceContext->PSSetShaderResources(1, 1, m_pRttShaderResourceView.GetAddressOf());
 
-	m_pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pWallTex);
+	m_pD3D11DeviceContext->PSSetShaderResources(0, 1, m_pWallTex.GetAddressOf());
 	Model = XMMatrixTranslation(-2.0f, 2.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	sceneShader.Use(m_pD3D11DeviceContext.Get(), m_Matrix, lightView, lightProj);
+	sceneShader.Use(m_pD3D11DeviceContext.Get(), m_Matrix, lightView, lightProj, lightPos);
 	m_CubeModel.Render(m_pD3D11DeviceContext.Get());
 
-	m_pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pIceTex);
+	m_pD3D11DeviceContext->PSSetShaderResources(0, 1, m_pIceTex.GetAddressOf());
 	Model = XMMatrixTranslation(2.0f, 2.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	sceneShader.Use(m_pD3D11DeviceContext.Get(), m_Matrix, lightView, lightProj);
+	sceneShader.Use(m_pD3D11DeviceContext.Get(), m_Matrix, lightView, lightProj, lightPos);
 	m_SphereModel.Render(m_pD3D11DeviceContext.Get());
 
-	m_pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pMetalTex);
+	m_pD3D11DeviceContext->PSSetShaderResources(0, 1, m_pMetalTex.GetAddressOf());
 	Model = XMMatrixTranslation(0.0f, 1.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	sceneShader.Use(m_pD3D11DeviceContext.Get(), m_Matrix, lightView, lightProj);
+	sceneShader.Use(m_pD3D11DeviceContext.Get(), m_Matrix, lightView, lightProj, lightPos);
 	m_PlaneModel.Render(m_pD3D11DeviceContext.Get());
 
 	DrawInfo();

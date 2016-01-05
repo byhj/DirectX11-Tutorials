@@ -58,7 +58,7 @@ private:
 	int m_videoCardMemory;
 	std::wstring m_videoCardInfo;
 						     
-	ComPtr< IDXGISwapChain        >  m_pSwapChain        ;
+	ComPtr<IDXGISwapChain         >  m_pSwapChain        ;
 	ComPtr<ID3D11Device           > m_pD3D11Device       ;
 	ComPtr<ID3D11DeviceContext    > m_pD3D11DeviceContext;
 	ComPtr<ID3D11RenderTargetView > m_pRenderTargetView  ;

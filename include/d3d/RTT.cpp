@@ -94,8 +94,6 @@ bool RTT::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11Dev
 	VertexData[5].Pos = XMFLOAT3(right, bottom, 0.0f);  // Bottom right.
 	VertexData[5].Tex = XMFLOAT2(1.0f, 1.0f);
 
-
-
 	///////////////////////////Index Buffer ////////////////////////////////
 
 	// Set up the description of the static vertex buffer.
@@ -193,7 +191,7 @@ bool RTT::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 	pInputLayoutDesc.SemanticIndex = 0;
 	pInputLayoutDesc.Format = DXGI_FORMAT_R32G32_FLOAT;
 	pInputLayoutDesc.InputSlot = 0;
-	pInputLayoutDesc.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	pInputLayoutDesc.AlignedByteOffset = 12;
 	pInputLayoutDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	pInputLayoutDesc.InstanceDataStepRate = 0;
 	vInputLayoutDesc.push_back(pInputLayoutDesc);

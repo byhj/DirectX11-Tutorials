@@ -47,12 +47,13 @@ void RenderSystem::v_Render()
 	///////////////////////Render Bitmap////////////////////////////////////
 
 	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthDisabledStencilState.Get(), 1);
+	
+	XMStoreFloat4x4(&m_Matrix.model, XMMatrixIdentity());
+	XMMATRIX orthProj = XMMatrixOrthographicLH(m_ScreenWidth, m_ScreenHeight, 0.1f, 1000.0f);
+	XMFLOAT4X4 orth;
+	XMStoreFloat4x4(&orth, orthProj);
+	m_Bitmap.Render(m_pD3D11DeviceContext.Get(), m_Matrix.model, m_Matrix.model, orth);
 
-	Model     = XMMatrixIdentity();
-	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	XMMATRIX orthMat =  XMMatrixOrthographicLH(1.0f, 1.0f, 0.1f, 1000.0f);
-	XMStoreFloat4x4(&m_Matrix.proj, XMMatrixTranspose(orthMat));
-	m_Bitmap.Render(m_pD3D11DeviceContext.Get(), m_Matrix);
 
 	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState.Get(), 1);
 
@@ -226,8 +227,8 @@ void RenderSystem::init_camera()
 void RenderSystem::init_object()
 {
 	m_Cube.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd());
-	m_Bitmap.init_window(m_ScreenWidth, m_ScreenHeight);
-	m_Bitmap.Init(m_pD3D11Device.Get(), GetHwnd()  );
+	m_Bitmap.SetPos(m_ScreenWidth, m_ScreenHeight, 10, 10, 200, 200);
+	m_Bitmap.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd(),  L"../../media/textures/stone.dds");
 }
 
 

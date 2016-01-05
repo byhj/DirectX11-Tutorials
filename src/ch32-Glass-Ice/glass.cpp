@@ -30,10 +30,10 @@ void Glass::Render(ID3D11DeviceContext *pD3D11DeviceContext, ID3D11ShaderResourc
 	pD3D11DeviceContext->IASetVertexBuffers(0, 1, m_pVertexBuffer.GetAddressOf(), &stride, &offset);
 	pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0); 
 	pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pColorSRV);  
-	pD3D11DeviceContext->PSSetShaderResources(1, 1, &m_pNormalSRV);  
-	pD3D11DeviceContext->PSSetShaderResources(2, 1, &pTexture);  
-	pD3D11DeviceContext->PSSetSamplers( 0, 1, &m_pTexSamplerState );
+	pD3D11DeviceContext->PSSetShaderResources(0, 1, m_pColorSRV.GetAddressOf());
+	pD3D11DeviceContext->PSSetShaderResources(1, 1, m_pNormalSRV.GetAddressOf());
+	pD3D11DeviceContext->PSSetShaderResources(2, 1, &pTexture);
+	pD3D11DeviceContext->PSSetSamplers( 0, 1, m_pTexSamplerState.GetAddressOf() );
 
 	GlassShader.use(pD3D11DeviceContext);
 	pD3D11DeviceContext->DrawIndexed(m_IndexCount, 0, 0);

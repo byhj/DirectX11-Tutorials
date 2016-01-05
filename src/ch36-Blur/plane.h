@@ -4,7 +4,9 @@
 #include "d3d/Shader.h"
 #include "DirectXTK/DDSTextureLoader.h"
 #include <d3d11.h>
+#include <DirectXMath.h>
 
+using namespace DirectX;
 
 namespace byhj
 {
@@ -18,8 +20,7 @@ public:
 
 	void Shutdown()
 	{
-		ReleaseCOM(m_pVertexBuffer      )
-		ReleaseCOM(m_pIndexBuffer       )
+
 	}
 
 	void init_window(float posX, float posY, float width, float height, float aspect);
@@ -36,9 +37,9 @@ private:
 		XMFLOAT2 Tex;
 	};
 
-	ID3D11Buffer             *m_pVertexBuffer    = nullptr;
-	ID3D11Buffer             *m_pIndexBuffer     = nullptr;
-	ID3D11SamplerState       *m_pTexSamplerState = nullptr;
+	ComPtr<ID3D11Buffer      > m_pVertexBuffer    ;
+	ComPtr<ID3D11Buffer      > m_pIndexBuffer     ;
+	ComPtr<ID3D11SamplerState> m_pTexSamplerState ;
 
 	int m_VertexCount;
 	int m_IndexCount;
