@@ -49,6 +49,14 @@
     <ClInclude Include="plane.h" />
     <ClInclude Include="RenderSystem.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="rtt.psh">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="rtt.vsh">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{710A140E-91CF-434C-BC59-A9FEC89C411A}</ProjectGuid>
     <RootNamespace>ch27Reflection</RootNamespace>

@@ -52,6 +52,7 @@ void RenderSystem::v_Render()
 
 	BeginScene();
 
+	
 	if (fadeDone)
 	{
 		m_Cube.Render(m_pD3D11DeviceContext.Get(), m_Matrix);
@@ -82,6 +83,8 @@ void RenderSystem::v_Render()
 			fadePercentage = 1.0f;
 		}
 	}
+
+
 	DrawInfo();
 
 	EndScene();

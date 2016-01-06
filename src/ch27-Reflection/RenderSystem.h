@@ -6,6 +6,7 @@
 #include "d3d/Font.h"
 #include "d3d/Timer.h"
 #include "d3d/Camera.h"
+#include "d3d/RTT.h"
 
 #include "Cube.h"
 #include "plane.h"
@@ -48,6 +49,7 @@ private:
 	d3d::Font m_Font;
 	d3d::Timer m_Timer;
 	d3d::Camera m_Camera;
+	d3d::RTT  rtt;
 
 	float fps = 0.0f;
 	int m_videoCardMemory;

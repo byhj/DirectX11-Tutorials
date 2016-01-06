@@ -30,6 +30,12 @@
     <None Include="plane.vsh">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="rtt.psh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="rtt.vsh">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RenderSystem.h">

@@ -7,6 +7,7 @@
 #include "d3d/Timer.h"
 #include "d3d/Camera.h"
 
+
 #include "Cube.h"
 #include "Fade.h"
 

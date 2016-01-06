@@ -62,38 +62,38 @@ bool RTT::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11Dev
 	{
 		IndexData[i] = i;
 	}
-	// Calculate the screen coordinates of the left side of the bitmap.
-	float left = (float)((m_sw / 2) * -1) + (float)m_posX;
-
-	// Calculate the screen coordinates of the right side of the bitmap.
-	float  right = left + (float)m_width;
-
-	// Calculate the screen coordinates of the top of the bitmap.
-	float  top = (float)(m_sh / 2) - (float)m_posY;
-
-	// Calculate the screen coordinates of the bottom of the bitmap.
-	float  bottom = top - (float)m_height;
-
-	// First triangle.
-	VertexData[0].Pos = XMFLOAT3(left, top, 0.0f);  // Top left.
-	VertexData[0].Tex = XMFLOAT2(0.0f, 0.0f);
-
-	VertexData[1].Pos = XMFLOAT3(right, bottom, 0.0f);  // Bottom right.
-	VertexData[1].Tex = XMFLOAT2(1.0f, 1.0f);
-
-	VertexData[2].Pos = XMFLOAT3(left, bottom, 0.0f);  // Bottom left.
-	VertexData[2].Tex = XMFLOAT2(0.0f, 1.0f);
-
-	// Second triangle.
-	VertexData[3].Pos = XMFLOAT3(left, top, 0.0f);  // Bottom left.
-	VertexData[3].Tex = XMFLOAT2(0.0f, 0.0f);
-
-	VertexData[4].Pos = XMFLOAT3(right, top, 0.0f); // Top right.
-	VertexData[4].Tex = XMFLOAT2(0.0f, 1.0f);
-
-	VertexData[5].Pos = XMFLOAT3(right, bottom, 0.0f);  // Bottom right.
-	VertexData[5].Tex = XMFLOAT2(1.0f, 1.0f);
-
+    // Calculate the screen coordinates of the left side of the bitmap.
+    float left = (float)((m_sw / 2) * -1) + (float)m_posX;
+    
+    // Calculate the screen coordinates of the right side of the bitmap.
+    float  right = left + (float)m_width;
+    
+    // Calculate the screen coordinates of the top of the bitmap.
+    float  top = (float)(m_sh / 2) - (float)m_posY;
+    
+    // Calculate the screen coordinates of the bottom of the bitmap.
+    float  bottom = top - (float)m_height;
+    
+    // First triangle.
+    VertexData[0].Pos = XMFLOAT3(left, top, 0.0f);  // Top left.
+    VertexData[0].Tex = XMFLOAT2(0.0f, 0.0f);
+    
+    VertexData[1].Pos = XMFLOAT3(right, bottom, 0.0f);  // Bottom right.
+    VertexData[1].Tex = XMFLOAT2(1.0f, 1.0f);
+    
+    VertexData[2].Pos = XMFLOAT3(left, bottom, 0.0f);  // Bottom left.
+    VertexData[2].Tex = XMFLOAT2(0.0f, 1.0f);
+    
+    // Second triangle.
+    VertexData[3].Pos = XMFLOAT3(left, top, 0.0f);  // Bottom left.
+    VertexData[3].Tex = XMFLOAT2(0.0f, 0.0f);
+    
+    VertexData[4].Pos = XMFLOAT3(right, top, 0.0f); // Top right.
+    VertexData[4].Tex = XMFLOAT2(1.0f, 0.0f);
+    
+    VertexData[5].Pos = XMFLOAT3(right, bottom, 0.0f);  // Bottom right.
+    VertexData[5].Tex = XMFLOAT2(1.0f, 1.0f);
+	
 	///////////////////////////Index Buffer ////////////////////////////////
 
 	// Set up the description of the static vertex buffer.
@@ -191,11 +191,10 @@ bool RTT::init_shader(ID3D11Device *pD3D11Device, HWND hWnd)
 	pInputLayoutDesc.SemanticIndex = 0;
 	pInputLayoutDesc.Format = DXGI_FORMAT_R32G32_FLOAT;
 	pInputLayoutDesc.InputSlot = 0;
-	pInputLayoutDesc.AlignedByteOffset = 12;
+	pInputLayoutDesc.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 	pInputLayoutDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	pInputLayoutDesc.InstanceDataStepRate = 0;
 	vInputLayoutDesc.push_back(pInputLayoutDesc);
-	
 
 	RTTShader.init(pD3D11Device, vInputLayoutDesc);
 	RTTShader.attachVS(L"rtt.vsh", "VS", "vs_5_0");

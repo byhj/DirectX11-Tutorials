@@ -65,6 +65,12 @@
     <ClInclude Include="..\..\include\d3d\Camera.h">
       <Filter>Framework</Filter>
     </ClInclude>
+    <ClInclude Include="bitmap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\dxerr.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ch22-RTT.cpp">
@@ -95,6 +101,12 @@
       <Filter>Framework</Filter>
     </ClCompile>
     <ClCompile Include="..\..\include\d3d\Camera.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="bitmap.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\include\dxerr.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
   </ItemGroup>
