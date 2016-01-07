@@ -21,7 +21,7 @@ Texture2D refractTex : register(t2);
 
 SamplerState texSample : register(s0);
 
-float4 PS(VS_OUT ps_in) : SV_TARGET
+float4 WaterPS(VS_OUT ps_in) : SV_TARGET
 {
   // Move the position the water normal is sampled from to simulate moving water.	
   ps_in.Tex.y += waterTranslation;
@@ -50,7 +50,7 @@ float4 PS(VS_OUT ps_in) : SV_TARGET
     float4 refractionColor = refractTex.Sample(texSample, refractTexCoord);
 
 	// Combine the reflection and refraction results for the final color.
-   float4 pixelColor = lerp(reflectionColor, refractionColor, 0.6f);
+   float4 pixelColor = reflectionColor;//lerp(reflectionColor, refractionColor, 0.6f);
 
    return pixelColor;
 }

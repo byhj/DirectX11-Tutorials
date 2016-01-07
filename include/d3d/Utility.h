@@ -6,6 +6,7 @@
 
 #include <dxerr.h>
 #include <DirectXMath.h>
+#include <DirectXTK/DDSTextureLoader.h>
 
 using namespace DirectX;
 namespace byhj

@@ -41,6 +41,14 @@ public:
 	{
 		return pos;
 	}
+	XMFLOAT3 GetTarget()
+	{
+		return target;
+	}
+	XMFLOAT3 GetUp()
+	{
+		return up;
+	}
 	void SetRadius(float r)
 	{
 		m_Radius = r;
@@ -62,6 +70,7 @@ private:
 	XMFLOAT4X4 m_Proj;
 	XMFLOAT3 pos;
 	XMFLOAT3 target;
+	XMFLOAT3 up;
 	float m_aspect;
 };
 

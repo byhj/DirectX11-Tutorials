@@ -36,7 +36,7 @@ namespace byhj
 		void Shutdown();
 
 	private:
-		d3d::Shader m_waterShader;
+		d3d::Shader m_WaterShader;
 		d3d::MatrixBuffer m_cbMatrix;
 
 		ComPtr<ID3D11Buffer> m_pMVPBuffer;

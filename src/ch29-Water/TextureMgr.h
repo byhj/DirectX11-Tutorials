@@ -1,11 +1,12 @@
-#ifndef TextureMgr_H
-#define TextureMgr_H
+#ifndef Textur_H
+#define Textur_H
 
 #include <unordered_map>
 #include <d3d11.h>
 #include <string>
 #include <vector>
 #include <wrl.h>
+#include "d3d/Utility.h"
 
 using namespace Microsoft::WRL;
 

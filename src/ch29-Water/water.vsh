@@ -22,7 +22,7 @@ struct VS_OUT
 	float4 refractPos : TEXCOORD2;
 };
 
-VS_OUT VS(VS_IN vs_in)
+VS_OUT WaterVS(VS_IN vs_in)
 {	
  
    VS_OUT vs_out;

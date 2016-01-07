@@ -7,8 +7,46 @@ namespace byhj
 	{
 
 
-		////////////////////////////////MVP Buffer//////////////////////////////////////
 		HRESULT hr;
+
+		D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc;
+		std::vector<D3D11_INPUT_ELEMENT_DESC> vInputLayoutDesc;
+
+		pInputLayoutDesc.SemanticName         = "POSITION";
+		pInputLayoutDesc.SemanticIndex        = 0;
+		pInputLayoutDesc.Format               = DXGI_FORMAT_R32G32B32_FLOAT;
+		pInputLayoutDesc.InputSlot            = 0;
+		pInputLayoutDesc.AlignedByteOffset    = 0;
+		pInputLayoutDesc.InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
+		pInputLayoutDesc.InstanceDataStepRate = 0;
+		vInputLayoutDesc.push_back(pInputLayoutDesc);
+
+		pInputLayoutDesc.SemanticName         = "TEXCOORD";
+		pInputLayoutDesc.SemanticIndex        = 0;
+		pInputLayoutDesc.Format               = DXGI_FORMAT_R32G32_FLOAT;
+		pInputLayoutDesc.InputSlot            = 0;
+		pInputLayoutDesc.AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
+		pInputLayoutDesc.InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
+		pInputLayoutDesc.InstanceDataStepRate = 0;
+		vInputLayoutDesc.push_back(pInputLayoutDesc);
+
+		pInputLayoutDesc.SemanticName         = "NORMAL";
+		pInputLayoutDesc.SemanticIndex        = 0;
+		pInputLayoutDesc.Format               = DXGI_FORMAT_R32G32B32_FLOAT;
+		pInputLayoutDesc.InputSlot            = 0;
+		pInputLayoutDesc.AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
+		pInputLayoutDesc.InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
+		pInputLayoutDesc.InstanceDataStepRate = 0;
+		vInputLayoutDesc.push_back(pInputLayoutDesc);
+
+
+		m_WaterShader.init(pD3D11Device, vInputLayoutDesc);
+		m_WaterShader.attachVS(L"water.vsh", "WaterVS", "vs_5_0");
+		m_WaterShader.attachPS(L"water.psh", "WaterPS", "ps_5_0");
+		m_WaterShader.end();
+
+		////////////////////////////////MVP Buffer//////////////////////////////////////
+
 
 		D3D11_BUFFER_DESC mvpBufferDesc;
 		ZeroMemory(&mvpBufferDesc, sizeof(D3D11_BUFFER_DESC));
@@ -77,6 +115,7 @@ namespace byhj
 		}
 		water.reflectRefractScale = 0.01f;
 		water.waterTranslation = m_waterTranslation;
+		m_WaterShader.use(pD3D11DeviceContext);
 		pD3D11DeviceContext->UpdateSubresource(m_pWaterBuffer.Get(), 0, NULL, &water, 0, 0);
 		pD3D11DeviceContext->PSSetConstantBuffers(0, 1, m_pWaterBuffer.GetAddressOf());
 	}

@@ -21,7 +21,7 @@ struct VS_OUT
 	float3 Normal: NORMAL;
 };
 
-VS_OUT VS(VS_IN vs_in)
+VS_OUT LightVS(VS_IN vs_in)
 {	
  
    VS_OUT vs_out;

@@ -3,7 +3,10 @@
 
 namespace byhj
 {
-
+	void Water::Init(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext)
+	{
+		init_buffer(pD3D11Device, pD3D11DeviceContext);
+	}
 void Water::Render(ID3D11DeviceContext *pD3D11DeviceContext)
 {
 	unsigned int stride;

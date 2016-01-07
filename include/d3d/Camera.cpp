@@ -27,12 +27,13 @@ void Camera::update()
 
 	XMStoreFloat3(&this->pos, pos);
 	XMStoreFloat3(&this->target, target);
-
+	XMStoreFloat3(&this->up, up);
 	XMMATRIX View = XMMatrixLookAtLH(pos, target, up);
 	XMMATRIX Proj  = XMMatrixPerspectiveFovLH( XMConvertToRadians(45.0f), m_aspect, 1.0f, 1000.0f);
 
 	XMStoreFloat4x4(&m_View, XMMatrixTranspose(View) );
 	XMStoreFloat4x4(&m_Proj, XMMatrixTranspose(Proj) );
+
 }
 
 void Camera::OnMouseWheel(WPARAM btnState, int x, int y, float aspect)
