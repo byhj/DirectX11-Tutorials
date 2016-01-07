@@ -16,6 +16,9 @@
     <Filter Include="Framework">
       <UniqueIdentifier>{390e4504-30a9-4808-949b-81acc68cc6c5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{c7e32811-4393-4a53-9941-6f43bca3bb3a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="wall.h">
@@ -53,6 +56,18 @@
     </ClInclude>
     <ClInclude Include="..\..\include\d3d\Camera.h">
       <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="waterShader.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="lightShader.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="refractShader.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureMgr.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -95,6 +110,18 @@
     <ClCompile Include="..\..\include\d3d\Camera.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="waterShader.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="lightShader.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="refractShader.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureMgr.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="light.vsh">
@@ -109,13 +136,11 @@
     <None Include="refraction.psh">
       <Filter>Resource Files</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="water.psh">
+    <None Include="water.psh">
       <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="water.vsh">
+    </None>
+    <None Include="water.vsh">
       <Filter>Resource Files</Filter>
-    </FxCompile>
+    </None>
   </ItemGroup>
 </Project>

@@ -42,7 +42,7 @@ float4 PS(VS_OUT ps_in) : SV_TARGET
    float3 normal = (normalMap.xyz * 2.0f) - 1.0f;
 
 	// Re-position the texture coordinate sampling position by the normal map value to simulate the rippling wave effect.
-	//reflectTexCoord = reflectTexCoord + (normal.xy * reflectRefractScale);
+	reflectTexCoord = reflectTexCoord + (normal.xy * reflectRefractScale);
 	refractTexCoord = refractTexCoord + (normal.xy * reflectRefractScale);
 
 	// Sample the texture pixels from the textures using the updated texture coordinates.
@@ -50,7 +50,7 @@ float4 PS(VS_OUT ps_in) : SV_TARGET
     float4 refractionColor = refractTex.Sample(texSample, refractTexCoord);
 
 	// Combine the reflection and refraction results for the final color.
-   float4 pixelColor = reflectionColor; //lerp(reflectionColor, refractionColor, 0.6f);
+   float4 pixelColor = lerp(reflectionColor, refractionColor, 0.6f);
 
    return pixelColor;
 }

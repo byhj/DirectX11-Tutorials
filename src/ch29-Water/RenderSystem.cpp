@@ -43,7 +43,9 @@ void RenderSystem::v_Render()
 
 	XMMATRIX World = XMMatrixTranslation(0.0f, 2.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(World));
-	bathModel.Render(m_pD3D11DeviceContext.Get(), m_Matrix.model, m_Matrix.view, m_Matrix.proj);
+    m_RefracShader.Use(m_pD3D11DeviceContext.Get(), m_Matrix);
+	m_pD3D11DeviceContext->PSSetShaderResources(0, 1, m_TextureMgr.GetTexture(L"marble01.dds").GetAddressOf());
+	bathModel.Render(m_pD3D11DeviceContext.Get());
 
 
 	//////////////////////Render Reflection To Texture////////////////////////////////
@@ -66,7 +68,10 @@ void RenderSystem::v_Render()
 	XMFLOAT4X4 Reflect;
 	XMStoreFloat4x4(&Reflect, XMMatrixTranspose(reflectMat));
 	m_Matrix.view = Reflect;
-	wallModel.Render(m_pD3D11DeviceContext.Get(), m_Matrix.model, m_Matrix.view, m_Matrix.proj);
+
+	m_LightShader.Use(m_pD3D11DeviceContext.Get(), m_Matrix);
+	m_pD3D11DeviceContext->PSSetShaderResources(0, 1, m_TextureMgr.GetTexture(L"wall01.dds").GetAddressOf());
+	wallModel.Render(m_pD3D11DeviceContext.Get());
 
 	///////////////////////////////Render Scene///////////////////////////////////////
 
@@ -74,27 +79,35 @@ void RenderSystem::v_Render()
 
 	m_Matrix.view = m_Camera.GetViewMatrix();
 
+	m_LightShader.Use(m_pD3D11DeviceContext.Get(), m_Matrix);
+
+		
 	/////////////////////Render the scene Model//////////////////////////////
 	XMMATRIX Model = XMMatrixTranslation(0.0f, 1.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	groundModel.Render(m_pD3D11DeviceContext.Get(), m_Matrix.model, m_Matrix.view, m_Matrix.proj);
+	m_pD3D11DeviceContext->PSSetShaderResources(0, 1, m_TextureMgr.GetTexture(L"ground01.dds").GetAddressOf());
+	groundModel.Render(m_pD3D11DeviceContext.Get());
 	
 	Model = XMMatrixTranslation(0.0f, 6.0f, 8.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	wallModel.Render(m_pD3D11DeviceContext.Get(), m_Matrix.model, m_Matrix.view, m_Matrix.proj);
+		m_pD3D11DeviceContext->PSSetShaderResources(0, 1, m_TextureMgr.GetTexture(L"wall01.dds").GetAddressOf());
+	wallModel.Render(m_pD3D11DeviceContext.Get());
 
 	Model = XMMatrixTranslation(0.0f, 2.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	bathModel.Render(m_pD3D11DeviceContext.Get(), m_Matrix.model, m_Matrix.view, m_Matrix.proj);
+	m_pD3D11DeviceContext->PSSetShaderResources(0, 1, m_TextureMgr.GetTexture(L"marble01.dds").GetAddressOf());
+	bathModel.Render(m_pD3D11DeviceContext.Get());
 
 	/////////////////////////////////////////////////////////////////////////////
 
 
 	Model = XMMatrixTranslation(0.0f, 2.75f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
+	m_WaterShader.Use(m_pD3D11DeviceContext.Get(), m_Matrix, Reflect);
+	m_pD3D11DeviceContext->PSSetShaderResources(0, 1, m_TextureMgr.GetTexture(L"water01.dds").GetAddressOf());
 	m_pD3D11DeviceContext->PSSetShaderResources(1, 1, m_pReflectSRV.GetAddressOf());
 	m_pD3D11DeviceContext->PSSetShaderResources(2, 1, m_pRefractSRV.GetAddressOf());
-	waterModel.Render(m_pD3D11DeviceContext.Get(), m_Matrix.model, m_Matrix.view, m_Matrix.proj, Reflect);
+	waterModel.Render(m_pD3D11DeviceContext.Get());
 
 	DrawInfo();
 
@@ -311,21 +324,20 @@ void RenderSystem::init_camera()
 
 void RenderSystem::init_object()
 {
+	bathModel.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get());
+	groundModel.Init( m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get());
+	wallModel.Init( m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get());
+	waterModel.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get());
 
-	bathModel.init_buffer(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get());
-	bathModel.init_shader(m_pD3D11Device.Get(), GetHwnd());
-	bathModel.init_texture(m_pD3D11Device.Get(), L"../../media/textures/marble01.dds");
+	
+	m_LightShader.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd());
 
-	groundModel.init_buffer( m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get());
-	groundModel.init_shader( m_pD3D11Device.Get(), GetHwnd());
-	groundModel.init_texture(m_pD3D11Device.Get(), L"../../media/textures/ground01.dds");
-
-	wallModel.init_buffer( m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get());
-	wallModel.init_shader( m_pD3D11Device.Get(), GetHwnd());
-	wallModel.init_texture(m_pD3D11Device.Get(), L"../../media/textures/wall01.dds");
-
-	waterModel.init_buffer(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get());
-	waterModel.init_shader(m_pD3D11Device.Get(), GetHwnd());
+	m_TextureMgr.LoadTexture(m_pD3D11Device.Get(), L"mable01.dds");
+	m_TextureMgr.LoadTexture(m_pD3D11Device.Get(), L"ground01.dds");
+	m_TextureMgr.LoadTexture(m_pD3D11Device.Get(), L"wall01.dds");
+	m_TextureMgr.LoadTexture(m_pD3D11Device.Get(), L"water01.dds");
+	m_WaterShader.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd());
+	m_RefracShader.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd());
 
 	m_Timer.Reset();
 	m_Font.init(m_pD3D11Device.Get());

@@ -263,7 +263,7 @@ void RenderSystem::init_device()
 	// Create the rasterizer state from the description we just filled out.
 	hr = m_pD3D11Device->CreateRasterizerState(&rasterDesc, &m_pRasterState);
 	//DebugHR(hr);
-	m_pD3D11DeviceContext->RSSetState(m_pRasterState.Get());
+
 
 	///////////////////////////////////////////////////////////////////////////////
 
@@ -289,6 +289,7 @@ void RenderSystem::BeginScene()
 {
 	//Render 
 	float bgColor[4] ={ 0.2f, 0.3f, 0.4f, 1.0f };
+	m_pD3D11DeviceContext->RSSetState(m_pRasterState.Get());
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, m_pRenderTargetView.GetAddressOf(), m_pDepthStencilView.Get());
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView.Get(), bgColor);
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
@@ -307,6 +308,8 @@ void RenderSystem::init_camera()
 	ZeroMemory(&vp, sizeof(D3D11_VIEWPORT));
 	vp.TopLeftX = 0;
 	vp.TopLeftY = 0;
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
 	vp.Width    = static_cast<FLOAT>(m_ScreenWidth);
 	vp.Height   = static_cast<FLOAT>(m_ScreenHeight);
 	m_pD3D11DeviceContext->RSSetViewports(1, &vp);

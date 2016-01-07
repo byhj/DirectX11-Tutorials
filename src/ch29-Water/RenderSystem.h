@@ -12,6 +12,10 @@
 #include "ground.h"
 #include "wall.h"
 #include "water.h"
+#include "lightShader.h"
+#include "waterShader.h"
+#include "refractShader.h"
+#include "TextureMgr.h"
 
 namespace byhj
 {
@@ -51,6 +55,11 @@ private:
 	byhj::Wall   wallModel;
 	byhj::Water  waterModel;
 
+	byhj::LightShader m_LightShader;
+	byhj::WaterShader m_WaterShader;
+	byhj::RefractShader m_RefracShader;
+
+	byhj::TextureMgr m_TextureMgr;
 
 	d3d::Font m_Font;
 	d3d::Timer m_Timer;

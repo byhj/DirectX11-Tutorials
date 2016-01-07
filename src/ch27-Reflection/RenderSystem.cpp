@@ -310,8 +310,6 @@ void RenderSystem::init_object()
 
 	m_Plane.init_buffer(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get());
 	m_Plane.init_shader(m_pD3D11Device.Get(), GetHwnd());
-	rtt.SetPos(m_ScreenWidth, m_ScreenHeight, 0, 0, m_ScreenWidth, m_ScreenHeight);
-	rtt.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd());
 
 	m_Camera.SetRadius(5.0f);
 }

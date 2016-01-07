@@ -36,6 +36,7 @@ VS_OUT VS( VS_IN vs_in)
 	vs_out.Pos = mul(vs_out.Pos, proj);
 
 	vs_out.Tex = vs_in.Tex;
+	vs_out.Normal = mul(vs_in.Normal, (float3x3)model);
 	vs_out.Normal = normalize(vs_in.Normal);
     vs_out.clipDis = dot( mul(vs_in.Pos, model), clipPlane);
 

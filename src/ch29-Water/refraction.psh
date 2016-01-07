@@ -25,7 +25,7 @@ float4 PS(VS_OUT ps_in) : SV_TARGET
     float4 pixelColor  = ambientColor;
     float3 lightDir = -lightDirection;
 	float intensity = saturate( dot(ps_in.Normal, lightDir) );
-	pixelColor  += intensity * diffuseColor;
+	pixelColor  += max(0.0f, intensity) * diffuseColor;
 
     pixelColor  = saturate(color);
 	pixelColor  *= texColor;

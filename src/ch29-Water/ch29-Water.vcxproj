@@ -29,9 +29,13 @@
     <ClCompile Include="bath.cpp" />
     <ClCompile Include="ch29-Water.cpp" />
     <ClCompile Include="ground.cpp" />
+    <ClCompile Include="lightShader.cpp" />
+    <ClCompile Include="refractShader.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
+    <ClCompile Include="TextureMgr.cpp" />
     <ClCompile Include="wall.cpp" />
     <ClCompile Include="water.cpp" />
+    <ClCompile Include="waterShader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\d3d\App.h" />
@@ -43,23 +47,27 @@
     <ClInclude Include="..\..\include\d3d\Utility.h" />
     <ClInclude Include="bath.h" />
     <ClInclude Include="ground.h" />
+    <ClInclude Include="lightShader.h" />
+    <ClInclude Include="refractShader.h" />
     <ClInclude Include="RenderSystem.h" />
+    <ClInclude Include="TextureMgr.h" />
     <ClInclude Include="wall.h" />
     <ClInclude Include="water.h" />
+    <ClInclude Include="waterShader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="light.psh" />
     <None Include="light.vsh" />
     <None Include="refraction.psh" />
     <None Include="refraction.vsh" />
-    <FxCompile Include="water.psh">
+    <None Include="water.psh">
       <FileType>Document</FileType>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="water.vsh">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </None>
+    <None Include="water.vsh">
       <FileType>Document</FileType>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </FxCompile>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </None>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A7FCD5BC-F4EF-43C6-8AD8-D378CE38E41F}</ProjectGuid>
