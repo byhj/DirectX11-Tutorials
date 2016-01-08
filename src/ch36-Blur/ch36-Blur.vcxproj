@@ -94,6 +94,8 @@
     <ClInclude Include="..\..\include\d3d\Shader.h" />
     <ClInclude Include="..\..\include\d3d\Timer.h" />
     <ClInclude Include="..\..\include\d3d\Utility.h" />
+    <ClInclude Include="..\..\include\dxerr.h" />
+    <ClInclude Include="bitmap.h" />
     <ClInclude Include="cube.h" />
     <ClInclude Include="HorizontalShader.h" />
     <ClInclude Include="plane.h" />
@@ -109,6 +111,8 @@
     <ClCompile Include="..\..\include\d3d\Shader.cpp" />
     <ClCompile Include="..\..\include\d3d\Timer.cpp" />
     <ClCompile Include="..\..\include\d3d\Utility.cpp" />
+    <ClCompile Include="..\..\include\dxerr.cpp" />
+    <ClCompile Include="bitmap.cpp" />
     <ClCompile Include="ch36-Blur.cpp" />
     <ClCompile Include="cube.cpp" />
     <ClCompile Include="HorizontalShader.cpp" />
@@ -116,6 +120,14 @@
     <ClCompile Include="PlaneShader.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="VerticalShader.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bitmap.psh">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="bitmap.vsh">
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

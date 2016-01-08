@@ -12,6 +12,7 @@
 #include "PlaneShader.h"
 #include "VerticalShader.h"
 #include "HorizontalShader.h"
+#include "bitmap.h"
 
 namespace byhj
 {
@@ -47,8 +48,8 @@ private:
 	void DrawInfo(); 
 
 	byhj::Cube cube;
-	byhj::Plane m_SmallPlane;
-	byhj::Plane m_FullPlane;
+	byhj::Plane m_DownPlane, m_HorizontalPlane, m_VerticalPlane, m_UpPlane;
+	byhj::Bitmap m_Bitmap;
 	byhj::PlaneShader m_PlaneShader;
 	byhj::HorizontalShader m_HorizontalShader;
 	byhj::VerticalShader m_VerticalShader;

@@ -46,13 +46,15 @@ namespace byhj
 
 	}
 
-	void PlaneShader::Use(ID3D11DeviceContext *pD3D11DeviceContext, const byhj::d3d::MatrixBuffer &matrix)
+	void PlaneShader::Use(ID3D11DeviceContext *pD3D11DeviceContext, const byhj::d3d::MatrixBuffer &matrix, ID3D11ShaderResourceView *pTexture)
 	{
 		planeShader.use(pD3D11DeviceContext);
 
 		cbMatrix = matrix;
 		pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer.Get(), 0, NULL, &cbMatrix, 0, 0);
 		pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.GetAddressOf() );
+
+		pD3D11DeviceContext->PSSetShaderResources(0, 1, &pTexture);
 	}
 
 	void PlaneShader::Shutdown()

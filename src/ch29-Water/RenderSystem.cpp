@@ -33,7 +33,7 @@ void RenderSystem::v_Render()
 	rot +=  m_Timer.GetDeltaTime();
 	UpdateScene();
 	m_pD3D11DeviceContext->RSSetState(m_pRasterState.Get());
-
+	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState.Get(), 1);
 	//////////////////////Render Refraction To Texture/////////////////////////////
 	float blackColor[] ={ 0.0f, 0.0f, 0.0f, 0.0f};
 	// Setup a clipping plane based on the height of the water to clip everything above it.
@@ -50,7 +50,8 @@ void RenderSystem::v_Render()
 
 
 	//////////////////////Render Reflection To Texture////////////////////////////////
-	
+	m_pD3D11DeviceContext->RSSetState(m_pRasterState.Get());
+	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState.Get(), 1);
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, m_pReflectRTV.GetAddressOf(), m_pDepthStencilView.Get());
 	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView.Get(), blackColor);
@@ -259,6 +260,9 @@ void RenderSystem::init_device()
 	rasterDesc.MultisampleEnable = false;
 	rasterDesc.ScissorEnable = false;
 	rasterDesc.SlopeScaledDepthBias = 0.0f;
+	// Create the rasterizer state from the description we just filled out.
+	hr = m_pD3D11Device->CreateRasterizerState(&rasterDesc, &m_pRasterState);
+	DebugHR(hr);
 
 	///////////////////////////////////////////////////////////////////////////////
 
@@ -309,7 +313,7 @@ void RenderSystem::init_camera()
 	vp.MaxDepth = 1.0f;
 	vp.Width    = static_cast<FLOAT>(m_ScreenWidth);
 	vp.Height   = static_cast<FLOAT>(m_ScreenHeight);
-	m_pD3D11DeviceContext.Get()->RSSetViewports(1, &vp);
+	m_pD3D11DeviceContext->RSSetViewports(1, &vp);
 
 	//MVP Matrix
 	XMVECTOR camPos    = XMVectorSet(0.0f, 0.0f, -5.0f, 0.0f);
@@ -390,14 +394,14 @@ void RenderSystem::init_fbo()
 
 void RenderSystem::TurnZBufferOn()
 {
-	m_pD3D11DeviceContext.Get()->OMSetDepthStencilState(m_pDepthStencilState.Get(), 1);
+	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState.Get(), 1);
 	return;
 }
 
 
 void RenderSystem::TurnZBufferOff()
 {
-	m_pD3D11DeviceContext.Get()->OMSetDepthStencilState(m_pDepthDisabledStencilState.Get(), 1);
+	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthDisabledStencilState.Get(), 1);
 	return;
 }
 void RenderSystem::DrawFps()

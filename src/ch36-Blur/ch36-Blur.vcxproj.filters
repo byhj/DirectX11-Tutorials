@@ -42,6 +42,12 @@
     <None Include="Plane.psh">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="bitmap.vsh">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="bitmap.psh">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RenderSystem.h">
@@ -82,6 +88,12 @@
     </ClInclude>
     <ClInclude Include="VerticalShader.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="bitmap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\dxerr.h">
+      <Filter>Framework</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -126,6 +138,12 @@
     </ClCompile>
     <ClCompile Include="VerticalShader.cpp">
       <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="bitmap.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\include\dxerr.cpp">
+      <Filter>Framework</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

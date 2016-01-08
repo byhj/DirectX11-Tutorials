@@ -44,14 +44,21 @@ void RenderSystem::v_Render()
 
 	cube.Render(m_pD3D11DeviceContext.Get(), m_Matrix);
 
+	m_PlaneShader.Use(m_pD3D11DeviceContext.Get(), m_Matrix, m_pRttShaderResourceView.Get() );
+	m_DownPlane.Render(m_pD3D11DeviceContext.Get());
+
+	m_HorizontalShader.Use(m_pD3D11DeviceContext.Get(), m_Matrix);
+	m_HorizontalPlane.Render(m_pD3D11DeviceContext.Get());
+
+	m_VerticalShader.Use(m_pD3D11DeviceContext.Get(), m_Matrix);
+	m_VerticalPlane.Render(m_pD3D11DeviceContext.Get());
+
+	m_PlaneShader.Use(m_pD3D11DeviceContext.Get(), m_Matrix, m_VerticalPlane.GetSRV());
+	m_UpPlane.Render(m_pD3D11DeviceContext.Get());
+
 	BeginScene();
 
-	Model = XMMatrixIdentity();
-	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-
-	//m_PlaneShader.Use(m_pD3D11DeviceContext.Get(), m_Matrix);
-	m_VerticalShader.Use(m_pD3D11DeviceContext.Get(), m_Matrix);
-	m_FullPlane.Render(m_pD3D11DeviceContext.Get(), m_pRttShaderResourceView.Get());
+	m_Bitmap.Render(m_pD3D11DeviceContext.Get(), m_Matrix, m_UpPlane.GetSRV());
 
 	DrawInfo();
 
@@ -300,14 +307,13 @@ void RenderSystem::init_object()
 	m_Camera.SetRadius(5.0f);
 
 	cube.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd());
+	m_Bitmap.SetPos(m_ScreenWidth, m_ScreenHeight, 0, 0, m_ScreenWidth, m_ScreenHeight);
+	m_Bitmap.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd());
 
-	m_SmallPlane.init_window(-1.0f, 1.0f, 1.0f, 1.0f, GetAspect());
-	m_SmallPlane.init_buffer(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get());
-	m_SmallPlane.init_shader(m_pD3D11Device.Get(), GetHwnd());
-
-	m_FullPlane.init_window(-1.0f, 1.0f, 2.0f, 2.0f, GetAspect());
-	m_FullPlane.init_buffer(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get());
-	m_FullPlane.init_shader(m_pD3D11Device.Get(), GetHwnd());
+	m_DownPlane.Init(m_pD3D11Device.Get(), m_ScreenWidth / 2.0f, m_ScreenHeight / 2.0f);
+	m_HorizontalPlane.Init(m_pD3D11Device.Get(), m_ScreenWidth / 2.0f, m_ScreenHeight / 2.0f);
+	m_VerticalPlane.Init(m_pD3D11Device.Get(), m_ScreenWidth / 2.0f, m_ScreenHeight / 2.0f);
+	m_UpPlane.Init(m_pD3D11Device.Get(), m_ScreenWidth, m_ScreenHeight);
 
 	m_PlaneShader.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd());
 	m_HorizontalShader.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd());

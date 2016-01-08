@@ -11,7 +11,7 @@ namespace byhj
 	{
 	public:
 		void Init(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext, HWND hWnd);
-		void Use(ID3D11DeviceContext *pD3D11DeviceContext, const byhj::d3d::MatrixBuffer &matrix);
+		void Use(ID3D11DeviceContext *pD3D11DeviceContext, const byhj::d3d::MatrixBuffer &matrix, ID3D11ShaderResourceView *pTexture);
 		void Shutdown();
 
 	private:
