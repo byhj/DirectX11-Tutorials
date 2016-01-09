@@ -28,8 +28,10 @@ namespace byhj
 		void BeginScene();
 		void EndScene();
 
-		void BeginRTT();
-		void EndRTT();
+		void BeginRTT1();
+		void BeginRTT2();
+		ID3D11ShaderResourceView ** Device::GetSRV1();
+		ID3D11ShaderResourceView ** Device::GetSRV2();
 
 		float GetDeltaTime();
 		void EnableZBuffer();
@@ -39,7 +41,6 @@ namespace byhj
 
 		ID3D11Device* GetDevice();
 		ID3D11DeviceContext* GetDeviceContext();
-		ID3D11ShaderResourceView ** GetSRV();
 	private:
 
 		void init_device(HWND hWnd);
@@ -59,9 +60,9 @@ namespace byhj
 		ComPtr<ID3D11DepthStencilState> m_pDepthDisabledStencilState;
 		ComPtr<ID3D11RasterizerState  > m_pRasterState;
 
-		ComPtr<ID3D11Texture2D> m_pRttRenderTargetTexture;
-		ComPtr<ID3D11RenderTargetView> m_pRttRenderTargetView;
-		ComPtr<ID3D11ShaderResourceView> m_pRttShaderResourceView;
+		ComPtr<ID3D11Texture2D> m_pRttRenderTargetTextures[2];
+		ComPtr<ID3D11RenderTargetView> m_pRttRenderTargetViews[2];
+		ComPtr<ID3D11ShaderResourceView> m_pRttShaderResourceViews[2];
 
 		float fps = 0.0f;
 		int m_videoCardMemory;

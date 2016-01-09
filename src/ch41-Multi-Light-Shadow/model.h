@@ -13,16 +13,13 @@ class Model
 public:
 	Model()
 	{
-		m_pVertexBuffer       = NULL;
-		m_pIndexBuffer        = NULL;
+
 	}
 
 	void Render(ID3D11DeviceContext *pD3D11DeviceContext);
 
-	void shutdown()
+	void Shutdown()
 	{
-		ReleaseCOM(m_pVertexBuffer)
-		ReleaseCOM(m_pIndexBuffer)
 	}
 
 	bool load_model(char *modelFile);

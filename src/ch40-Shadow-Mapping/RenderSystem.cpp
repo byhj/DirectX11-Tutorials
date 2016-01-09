@@ -50,23 +50,20 @@ void RenderSystem::v_Render()
 	m_pDevice.BeginRTT();
 
 	XMMATRIX Model = XMMatrixIdentity();
-	float near_plane = 0.1f, far_plane = 1000.0f;
-	XMMATRIX LightProj = XMMatrixOrthographicLH(10.0f, 10.0f, near_plane, far_plane);
 	static float lightPositionX = -5.0f;
-	lightPositionX += 0.005f;
+
+	lightPositionX += m_pDevice.GetDeltaTime();
 	if (lightPositionX > 5.0f)
 	{
 		lightPositionX = -5.0f;
 	}
-	XMFLOAT4X4 lightProj;
+
 	XMFLOAT4X4 lightView;
 	XMVECTOR LightPos = XMVectorSet(lightPositionX, 8.0f, -5.0f, 1.0f);
 	XMMATRIX LightView = XMMatrixLookAtLH(LightPos, XMVectorSet(0.0, 0.0, 0.0, 1.0), XMVectorSet(0.0f, 1.0, 0.0, 1.0));
-	XMStoreFloat4x4(&lightProj, XMMatrixTranspose(LightProj));
 	XMStoreFloat4x4(&lightView, XMMatrixTranspose(LightView));
 
 	m_Matrix.view = lightView;
-	m_Matrix.proj = lightProj;
 
 	Model = XMMatrixTranslation(-2.0f, 2.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
@@ -105,19 +102,19 @@ void RenderSystem::v_Render()
 
 	Model = XMMatrixTranslation(-2.0f, 2.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	sceneShader.Use(pD3D11DeviceContext, m_Matrix, lightView, lightProj, lightPos);
+	sceneShader.Use(pD3D11DeviceContext, m_Matrix, lightView, m_Matrix.proj, lightPos);
 	m_CubeModel.Render(pD3D11DeviceContext);
 
 	pD3D11DeviceContext->PSSetShaderResources(0, 1, m_pIceTex.GetAddressOf());
 	Model = XMMatrixTranslation(2.0f, 2.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	sceneShader.Use(pD3D11DeviceContext, m_Matrix, lightView, lightProj, lightPos);
+	sceneShader.Use(pD3D11DeviceContext, m_Matrix, lightView, m_Matrix.proj, lightPos);
 	m_SphereModel.Render(pD3D11DeviceContext);
 
 	pD3D11DeviceContext->PSSetShaderResources(0, 1, m_pMetalTex.GetAddressOf());
 	Model = XMMatrixTranslation(0.0f, 1.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	sceneShader.Use(pD3D11DeviceContext, m_Matrix, lightView, lightProj, lightPos);
+	sceneShader.Use(pD3D11DeviceContext, m_Matrix, lightView, m_Matrix.proj, lightPos);
 	m_PlaneModel.Render(pD3D11DeviceContext);
 
 	m_pDevice.DrawInfo();
