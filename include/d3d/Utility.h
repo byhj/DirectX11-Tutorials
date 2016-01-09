@@ -7,8 +7,11 @@
 #include <dxerr.h>
 #include <DirectXMath.h>
 #include <DirectXTK/DDSTextureLoader.h>
+#include <wrl.h>
 
 using namespace DirectX;
+using namespace Microsoft::WRL;
+
 namespace byhj
 {
 

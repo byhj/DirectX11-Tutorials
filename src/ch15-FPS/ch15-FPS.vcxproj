@@ -31,6 +31,7 @@
     <ClCompile Include="..\..\include\d3d\Utility.cpp" />
     <ClCompile Include="ch15-FPS.cpp" />
     <ClCompile Include="cube.cpp" />
+    <ClCompile Include="Device.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -41,6 +42,7 @@
     <ClInclude Include="..\..\include\d3d\Timer.h" />
     <ClInclude Include="..\..\include\d3d\Utility.h" />
     <ClInclude Include="cube.h" />
+    <ClInclude Include="Device.h" />
     <ClInclude Include="RenderSystem.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
