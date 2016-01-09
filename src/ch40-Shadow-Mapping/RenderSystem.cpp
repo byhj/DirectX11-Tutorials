@@ -46,13 +46,14 @@ void RenderSystem::v_Update()
 
 void RenderSystem::v_Render()
 {
+	m_Matrix = m_pDevice.GetMatrix();
 
 	m_pDevice.BeginRTT();
 
 	XMMATRIX Model = XMMatrixIdentity();
 	static float lightPositionX = -5.0f;
 
-	lightPositionX += m_pDevice.GetDeltaTime();
+	//lightPositionX += m_pDevice.GetDeltaTime();
 	if (lightPositionX > 5.0f)
 	{
 		lightPositionX = -5.0f;

@@ -7,36 +7,39 @@ namespace byhj
 	void SceneShader::Init(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext, HWND hWnd)
 	{
 
-		D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc[3];
-		pInputLayoutDesc[0].SemanticName = "POSITION";
-		pInputLayoutDesc[0].SemanticIndex = 0;
-		pInputLayoutDesc[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-		pInputLayoutDesc[0].InputSlot = 0;
-		pInputLayoutDesc[0].AlignedByteOffset = 0;
-		pInputLayoutDesc[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-		pInputLayoutDesc[0].InstanceDataStepRate = 0;
+		D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc;
+		std::vector<D3D11_INPUT_ELEMENT_DESC> vInputLayoutDesc;
 
-		pInputLayoutDesc[1].SemanticName         = "TEXCOORD";
-		pInputLayoutDesc[1].SemanticIndex        = 0;
-		pInputLayoutDesc[1].Format               = DXGI_FORMAT_R32G32_FLOAT;
-		pInputLayoutDesc[1].InputSlot            = 0;
-		pInputLayoutDesc[1].AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
-		pInputLayoutDesc[1].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
-		pInputLayoutDesc[1].InstanceDataStepRate = 0;
+		pInputLayoutDesc.SemanticName = "POSITION";
+		pInputLayoutDesc.SemanticIndex = 0;
+		pInputLayoutDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+		pInputLayoutDesc.InputSlot = 0;
+		pInputLayoutDesc.AlignedByteOffset = 0;
+		pInputLayoutDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+		pInputLayoutDesc.InstanceDataStepRate = 0;
+		vInputLayoutDesc.push_back(pInputLayoutDesc);
 
-		pInputLayoutDesc[2].SemanticName         = "NORMAL";
-		pInputLayoutDesc[2].SemanticIndex        = 0;
-		pInputLayoutDesc[2].Format               = DXGI_FORMAT_R32G32B32_FLOAT;
-		pInputLayoutDesc[2].InputSlot            = 0;
-		pInputLayoutDesc[2].AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
-		pInputLayoutDesc[2].InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
-		pInputLayoutDesc[2].InstanceDataStepRate = 0;
+		pInputLayoutDesc.SemanticName         = "TEXCOORD";
+		pInputLayoutDesc.SemanticIndex        = 0;
+		pInputLayoutDesc.Format               = DXGI_FORMAT_R32G32_FLOAT;
+		pInputLayoutDesc.InputSlot            = 0;
+		pInputLayoutDesc.AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
+		pInputLayoutDesc.InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
+		pInputLayoutDesc.InstanceDataStepRate = 0;
+		vInputLayoutDesc.push_back(pInputLayoutDesc);
 
-		
+		pInputLayoutDesc.SemanticName         = "NORMAL";
+		pInputLayoutDesc.SemanticIndex        = 0;
+		pInputLayoutDesc.Format               = DXGI_FORMAT_R32G32B32_FLOAT;
+		pInputLayoutDesc.InputSlot            = 0;
+		pInputLayoutDesc.AlignedByteOffset    = D3D11_APPEND_ALIGNED_ELEMENT;
+		pInputLayoutDesc.InputSlotClass       = D3D11_INPUT_PER_VERTEX_DATA;
+		pInputLayoutDesc.InstanceDataStepRate = 0;
+		vInputLayoutDesc.push_back(pInputLayoutDesc);
 
 		sceneShader.init(pD3D11Device, vInputLayoutDesc);
 		sceneShader.attachVS(L"scene.vsh", "VS", "vs_5_0");
-		sceneShader.attachPS(L"scene.psh");
+		sceneShader.attachPS(L"scene.psh", "PS", "ps_5_0");
 		sceneShader.end();
 
 		D3D11_SAMPLER_DESC samplerDesc;
@@ -95,14 +98,12 @@ namespace byhj
 		 hr = pD3D11DeviceContext->Map(m_pLightBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		 
 		 LightBufferType *dataPtr1 = (LightBufferType*)mappedResource.pData;
-		 dataPtr1->ambientColor = XMFLOAT4(0.15f, 0.15f, 0.15f, 0.15f);
+		 dataPtr1->ambientColor = XMFLOAT4(0.25f, 0.25f, 0.25f, 0.15f);
 		 dataPtr1->diffuseColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-
 		 pD3D11DeviceContext->Unmap(m_pLightBuffer.Get(), 0);
 
 		 int lightSlot = 0;
 		 pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());
-
 
 		 D3D11_BUFFER_DESC lightBufferDesc2;
 		 // Setup the description of the light dynamic constant buffer that is in the vertex shader.
@@ -114,11 +115,12 @@ namespace byhj
 		 lightBufferDesc2.StructureByteStride = 0;
 
 		 // Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-		 pD3D11Device->CreateBuffer(&lightBufferDesc2, NULL, &pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());2);
+		 pD3D11Device->CreateBuffer(&lightBufferDesc2, NULL, &m_pLightBuffer2);
 
 	}
 
-	void SceneShader::Use(ID3D11DeviceContext *pD3D11DeviceContext, const byhj::d3d::MatrixBuffer &matrix, const XMFLOAT4X4 &LightView, const XMFLOAT4X4 &LightProj)
+	void SceneShader::Use(ID3D11DeviceContext *pD3D11DeviceContext, const byhj::d3d::MatrixBuffer &matrix,
+		                  const XMFLOAT4X4 &LightView, const XMFLOAT4X4 &LightProj, const XMFLOAT4 &LightDir)
 	{
 		sceneShader.use(pD3D11DeviceContext);
 
@@ -131,24 +133,17 @@ namespace byhj
 		pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer.Get(), 0, NULL, &cbMatrix, 0, 0);
 		pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.GetAddressOf() );
 
-		static float lightPositionX = -5.0f;
-		lightPositionX += 0.0005f;
-		if (lightPositionX > 5.0f)
-		{
-			lightPositionX = -5.0f;
-		}
-		XMFLOAT3 lightPos = XMFLOAT3(lightPositionX, 8.0f, -5.0f);
-		pD3D11DeviceContext->UpdateSubresource(pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());2, 0, NULL, &lightPos, 0, 0);
-		pD3D11DeviceContext->VSSetConstantBuffers(1, 1, &pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());2);
+		pD3D11DeviceContext->UpdateSubresource(m_pLightBuffer2.Get(), 0, NULL, &LightDir, 0, 0);
+		pD3D11DeviceContext->PSSetConstantBuffers(1, 1, m_pLightBuffer2.GetAddressOf());
 
-		pD3D11DeviceContext->PSSetSamplers(0, 1, &m_sampleStateClamp);
-		pD3D11DeviceContext->PSSetSamplers(1, 1, &m_sampleStateWrap);
+		pD3D11DeviceContext->PSSetSamplers(0, 1, m_sampleStateClamp.GetAddressOf());
+		pD3D11DeviceContext->PSSetSamplers(1, 1, m_sampleStateWrap.GetAddressOf());
 	
 	}
 
 	void SceneShader::Shutdown()
 	{
-		sceneShader.end();
+
 	}
 
 }

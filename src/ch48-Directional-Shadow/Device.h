@@ -30,6 +30,7 @@ namespace byhj
 
 		void BeginRTT();
 		void EndRTT();
+
 		d3d::MatrixBuffer GetMatrix()
 		{
 			return m_Matrix;

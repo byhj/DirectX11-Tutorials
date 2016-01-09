@@ -20,7 +20,7 @@ private:
 
 	byhj::d3d::MatrixBuffer cbMatrix;
 	d3d::Shader depthShader;
-	ID3D11Buffer *m_pMVPBuffer;
+	ComPtr<ID3D11Buffer> m_pMVPBuffer;
 };
 
 }

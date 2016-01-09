@@ -24,7 +24,7 @@ float4 PS(VS_OUTPUT ps_in) : SV_TARGET
 {
    ps_in.Normal = normalize(ps_in.Normal);
 
-  float bias = 0.001f;
+  float bias = 0.01f;
   float4 color = ambientColor;
 
   float2 projTexCoord;
@@ -47,16 +47,13 @@ float4 PS(VS_OUTPUT ps_in) : SV_TARGET
 
 		    if(lightIntensity > 0.0f)
 			{
-				color += (diffuseColor * lightIntensity);
-				color = saturate(color);
+               color = float4(1.0f, 1.0f, 1.0f, 1.0f);
 			}
 		}
 		else
 		  color = float4(0.0f, 0.0f, 0.0f, 1.0f);
    }
+   color = saturate(color);
 
-   float4 texColor = colorTex.Sample(texSampleWrap, ps_in.Tex);
-   float4 pixelColor =  color * texColor;
-
-   return pixelColor ;
+   return color ;
 }

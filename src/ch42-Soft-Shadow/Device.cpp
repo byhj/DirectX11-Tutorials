@@ -210,15 +210,23 @@ namespace byhj
 		m_pSwapChain->Present(0, 0);
 	}
 
-	void Device::BeginRTT()
+	void Device::BeginRTT1()
 	{
 		float bgColor[4] ={ 0.0f, 0.0f, 0.0f, 1.0f };
 
-		m_pD3D11DeviceContext->OMSetRenderTargets(1, m_pRttRenderTargetView.GetAddressOf(), m_pDepthStencilView.Get());
-		m_pD3D11DeviceContext->ClearRenderTargetView(m_pRttRenderTargetView.Get(), bgColor);
+		m_pD3D11DeviceContext->OMSetRenderTargets(1, m_pRttRenderTargetViews[0].GetAddressOf(), m_pDepthStencilView.Get());
+		m_pD3D11DeviceContext->ClearRenderTargetView(m_pRttRenderTargetViews[0].Get(), bgColor);
 		m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 	}
 
+	void Device::BeginRTT2()
+	{
+		float bgColor[4] ={ 0.0f, 0.0f, 0.0f, 1.0f };
+
+		m_pD3D11DeviceContext->OMSetRenderTargets(1, m_pRttRenderTargetViews[1].GetAddressOf(), m_pDepthStencilView.Get());
+		m_pD3D11DeviceContext->ClearRenderTargetView(m_pRttRenderTargetViews[1].Get(), bgColor);
+		m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+	}
 	void Device::EndRTT()
 	{
 	}
@@ -231,9 +239,13 @@ namespace byhj
 	{
 		return m_pD3D11DeviceContext.Get();
 	}
-	ID3D11ShaderResourceView ** Device::GetSRV() 
+	ID3D11ShaderResourceView ** Device::GetSRV1() 
 	{
-		return m_pRttShaderResourceView.GetAddressOf();
+		return m_pRttShaderResourceViews[0].GetAddressOf();
+	}
+	ID3D11ShaderResourceView ** Device::GetSRV2()
+	{
+		return m_pRttShaderResourceViews[1].GetAddressOf();
 	}
 	void Device::EnableZBuffer()
 	{
@@ -294,7 +306,8 @@ namespace byhj
 		textureDesc.MiscFlags = 0;
 
 		//Create the render target texture
-		result = m_pD3D11Device->CreateTexture2D(&textureDesc, NULL, &m_pRttRenderTargetTexture);
+		result = m_pD3D11Device->CreateTexture2D(&textureDesc, NULL, &m_pRttRenderTargetTextures[0]);
+		result = m_pD3D11Device->CreateTexture2D(&textureDesc, NULL, &m_pRttRenderTargetTextures[1]);
 
 
 		//Setup the description of the render target view
@@ -302,13 +315,15 @@ namespace byhj
 		renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 		renderTargetViewDesc.Texture2D.MipSlice = 0;
 
-		result = m_pD3D11Device->CreateRenderTargetView(m_pRttRenderTargetTexture.Get(), &renderTargetViewDesc, m_pRttRenderTargetView.GetAddressOf());
+		result = m_pD3D11Device->CreateRenderTargetView(m_pRttRenderTargetTextures[0].Get(), &renderTargetViewDesc, m_pRttRenderTargetViews[0].GetAddressOf());
+		result = m_pD3D11Device->CreateRenderTargetView(m_pRttRenderTargetTextures[1].Get(), &renderTargetViewDesc, m_pRttRenderTargetViews[1].GetAddressOf());
 
 		shaderResourceViewDesc.Format = textureDesc.Format;
 		shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 		shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 		shaderResourceViewDesc.Texture2D.MipLevels = 1;
-		result = m_pD3D11Device->CreateShaderResourceView(m_pRttRenderTargetTexture.Get(), &shaderResourceViewDesc, m_pRttShaderResourceView.GetAddressOf());
+		result = m_pD3D11Device->CreateShaderResourceView(m_pRttRenderTargetTextures[0].Get(), &shaderResourceViewDesc, m_pRttShaderResourceViews[0].GetAddressOf());
+		result = m_pD3D11Device->CreateShaderResourceView(m_pRttRenderTargetTextures[1].Get(), &shaderResourceViewDesc, m_pRttShaderResourceViews[1].GetAddressOf());
 
 	}
 

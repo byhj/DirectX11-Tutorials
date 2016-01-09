@@ -1,7 +1,6 @@
 #include "d3d/Shader.h"
 #include "d3d/Utility.h"
 
-
 namespace byhj
 {
 
@@ -10,7 +9,8 @@ namespace byhj
 	{
 	public:
 		void Init(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext, HWND hWnd);
-		void Use(ID3D11DeviceContext *pD3D11DeviceContext, const byhj::d3d::MatrixBuffer &matrix, const XMFLOAT4X4 &LightView, const XMFLOAT4X4 &LightProj);
+		void Use(ID3D11DeviceContext *pD3D11DeviceContext, const byhj::d3d::MatrixBuffer &matrix, 
+			      const XMFLOAT4X4 &LightView, const XMFLOAT4X4 &LightProj, const XMFLOAT4 &LightDir);
 		void Shutdown();
 
 	private:
@@ -22,10 +22,8 @@ namespace byhj
 
 		struct LightBufferType2
 		{
-			XMFLOAT3 lightPosition;
-			float padding;
+			XMFLOAT4 lightDir;
 		};
-
 		struct MatrixLight
 		{
 			XMFLOAT4X4 model;
@@ -36,13 +34,11 @@ namespace byhj
 		};
 		MatrixLight cbMatrix;
 
-		ID3D11Buffer *m_pMVPBuffer;
-		ID3D11SamplerState* m_sampleStateWrap;
-		ID3D11SamplerState* m_sampleStateClamp;
-		ID3D11Buffer* pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());;
-		ID3D11Buffer* pD3D11DeviceContext->PSSetConstantBuffers(lightSlot, 1, m_pLightBuffer.GetAddressOf());2;
-
-
+		ComPtr < ID3D11Buffer      > m_pMVPBuffer;
+		ComPtr < ID3D11SamplerState> m_sampleStateWrap;
+		ComPtr < ID3D11SamplerState> m_sampleStateClamp;
+		ComPtr < ID3D11Buffer	   > m_pLightBuffer;
+		ComPtr < ID3D11Buffer	   > m_pLightBuffer2;
 		d3d::Shader sceneShader;
 	};
 

@@ -21,13 +21,14 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E6FFC1FF-3FC8-42E2-802E-D09E20B0EF60}</ProjectGuid>
     <RootNamespace>ch48DirectionalShadow</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -86,9 +87,11 @@
     <ClCompile Include="..\..\include\d3d\Utility.cpp" />
     <ClCompile Include="ch48-Directional-Shadow.cpp" />
     <ClCompile Include="depthShader.cpp" />
+    <ClCompile Include="Device.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="SceneShader.cpp" />
+    <ClCompile Include="TextureMgr.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\d3d\App.h" />
@@ -99,9 +102,11 @@
     <ClInclude Include="..\..\include\d3d\Timer.h" />
     <ClInclude Include="..\..\include\d3d\Utility.h" />
     <ClInclude Include="depthShader.h" />
+    <ClInclude Include="Device.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="sceneShader.h" />
+    <ClInclude Include="TextureMgr.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="depth.psh" />

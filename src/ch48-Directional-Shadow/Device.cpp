@@ -339,7 +339,7 @@ namespace byhj
 	void Device::DrawInfo()
 	{
 		WCHAR WinInfo[255];
-		swprintf(WinInfo, L"Window Size: %d x %d", (int)m_ScreenWidth, (int)m_ScreenHeight);
+		swprintf(WinInfo, L"Window Size: %d x %d", m_ScreenWidth, m_ScreenHeight);
 		DrawFps();
 		m_Font.drawText(m_pD3D11DeviceContext.Get(), WinInfo, 22.0f, 10.0f, 40.0f);
 		m_Font.drawText(m_pD3D11DeviceContext.Get(), m_videoCardInfo.c_str(), 22.0f, 10.0f, 70.0f);

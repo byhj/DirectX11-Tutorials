@@ -84,16 +84,19 @@
     <ClInclude Include="..\..\include\d3d\Shader.h" />
     <ClInclude Include="..\..\include\d3d\Timer.h" />
     <ClInclude Include="..\..\include\d3d\Utility.h" />
+    <ClInclude Include="..\..\include\dxerr.h" />
+    <ClInclude Include="bitmap.h" />
     <ClInclude Include="depthShader.h" />
+    <ClInclude Include="Device.h" />
+    <ClInclude Include="HorizontalShader.h" />
     <ClInclude Include="model.h" />
+    <ClInclude Include="plane.h" />
+    <ClInclude Include="PlaneShader.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="sceneShader.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="depth.psh" />
-    <None Include="depth.vsh" />
-    <None Include="scene.psh" />
-    <None Include="scene.vsh" />
+    <ClInclude Include="SoftShader.h" />
+    <ClInclude Include="TextureMgr.h" />
+    <ClInclude Include="VerticalShader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\include\d3d\App.cpp" />
@@ -103,11 +106,71 @@
     <ClCompile Include="..\..\include\d3d\Shader.cpp" />
     <ClCompile Include="..\..\include\d3d\Timer.cpp" />
     <ClCompile Include="..\..\include\d3d\Utility.cpp" />
+    <ClCompile Include="..\..\include\dxerr.cpp" />
+    <ClCompile Include="bitmap.cpp" />
     <ClCompile Include="ch42-Soft-Shadow.cpp" />
     <ClCompile Include="depthShader.cpp" />
+    <ClCompile Include="Device.cpp" />
+    <ClCompile Include="HorizontalShader.cpp" />
     <ClCompile Include="model.cpp" />
+    <ClCompile Include="plane.cpp" />
+    <ClCompile Include="PlaneShader.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="SceneShader.cpp" />
+    <ClCompile Include="SoftShader.cpp" />
+    <ClCompile Include="TextureMgr.cpp" />
+    <ClCompile Include="VerticalShader.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="depth.psh">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="depth.vsh">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="scene.psh">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="scene.vsh">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="horizontalblur.psh">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="horizontalblur.vsh">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Plane.psh">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Plane.vsh">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="verticalblur.psh">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="verticalblur.vsh">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="soft.psh">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="soft.vsh">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bitmap.psh">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="bitmap.vsh">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</DeploymentContent>
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

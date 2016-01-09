@@ -1,4 +1,5 @@
 #include "RenderSystem.h"
+#include "DirectXTK/DDSTextureLoader.h"
 
 namespace byhj
 {
@@ -15,112 +16,164 @@ RenderSystem::~RenderSystem()
 
 void RenderSystem::v_Init()
 {
-	init_device();
-	init_camera();
-	init_object();
-	init_fbo();
+	m_pDevice.Init(m_ScreenWidth, m_ScreenHeight, GetHwnd());
+
+	ID3D11Device *pD3D11Device = m_pDevice.GetDevice();
+	ID3D11DeviceContext *pD3D11DeviceContext  = m_pDevice.GetDeviceContext();
+	m_Camera.SetRadius(7.0f);
+	m_Bitmap.SetPos(m_ScreenWidth, m_ScreenHeight, 0, 0, m_ScreenWidth, m_ScreenHeight);
+	m_Bitmap.Init(pD3D11Device, pD3D11DeviceContext, GetHwnd());
+
+	depthShader.Init(pD3D11Device, pD3D11DeviceContext, GetHwnd());
+	sceneShader.Init(pD3D11Device, pD3D11DeviceContext, GetHwnd());
+	softShader.Init(pD3D11Device, pD3D11DeviceContext, GetHwnd());
+	m_CubeModel.load_model("../../media/objects/cube.txt");
+	m_CubeModel.init_buffer(pD3D11Device, pD3D11DeviceContext);
+
+	m_SphereModel.load_model("../../media/objects/sphere.txt");
+	m_SphereModel.init_buffer(pD3D11Device, pD3D11DeviceContext);
+
+	m_PlaneModel.load_model("../../media/objects/plane01.txt");
+	m_PlaneModel.init_buffer(pD3D11Device, pD3D11DeviceContext);
+
+	CreateDDSTextureFromFile(pD3D11Device, L"../../media/textures/wall01.dds", NULL, &m_pWallTex);
+	CreateDDSTextureFromFile(pD3D11Device, L"../../media/textures/ice.dds", NULL, &m_pIceTex);
+	CreateDDSTextureFromFile(pD3D11Device, L"../../media/textures/metal001.dds", NULL, &m_pMetalTex);
+
+	m_DownPlane.Init(pD3D11Device, m_ScreenWidth / 2.0f, m_ScreenHeight / 2.0f);
+	m_HorizontalPlane.Init(pD3D11Device, m_ScreenWidth / 2.0f, m_ScreenHeight / 2.0f);
+	m_VerticalPlane.Init(pD3D11Device, m_ScreenWidth / 2.0f, m_ScreenHeight / 2.0f);
+	m_UpPlane.Init(pD3D11Device, m_ScreenWidth, m_ScreenHeight);
+
+	m_PlaneShader.Init(pD3D11Device, pD3D11DeviceContext, GetHwnd());
+	m_HorizontalShader.Init(pD3D11Device, pD3D11DeviceContext, GetHwnd());
+	m_VerticalShader.Init(pD3D11Device, pD3D11DeviceContext, GetHwnd());
 }
 
 void RenderSystem::v_Update()
 {
-
+	m_Camera.update();
 }
 
 void RenderSystem::v_Render()
 {
+	m_Matrix = m_pDevice.GetMatrix();
 
-	UpdateScene();
+	m_pDevice.BeginRTT1();
 
 	XMMATRIX Model = XMMatrixIdentity();
-
-	float bgColor[4] = { 0.2f, 0.3f, 0.4f, 1.0f };
-
-	m_pD3D11DeviceContext->OMSetRenderTargets(1, m_pRttRenderTargetView.GetAddressOf(), m_pDepthStencilView.Get());
-	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRttRenderTargetView.Get(), bgColor);
-	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-
-	float near_plane = 0.1f, far_plane = 1000.0f;
-	XMMATRIX LightProj = XMMatrixOrthographicLH(20.0f, 20.0f, near_plane, far_plane);
 	static float lightPositionX = -5.0f;
-	lightPositionX += 0.0005f;
+
+//	lightPositionX += m_pDevice.GetDeltaTime();
 	if (lightPositionX > 5.0f)
 	{
 		lightPositionX = -5.0f;
 	}
-	XMFLOAT4X4 lightProj;
+
 	XMFLOAT4X4 lightView;
 	XMVECTOR LightPos = XMVectorSet(lightPositionX, 8.0f, -5.0f, 1.0f);
 	XMMATRIX LightView = XMMatrixLookAtLH(LightPos, XMVectorSet(0.0, 0.0, 0.0, 1.0), XMVectorSet(0.0f, 1.0, 0.0, 1.0));
-	XMStoreFloat4x4(&lightProj, XMMatrixTranspose(LightProj));
 	XMStoreFloat4x4(&lightView, XMMatrixTranspose(LightView));
 
 	m_Matrix.view = lightView;
-	m_Matrix.proj = lightProj;
 
 	Model = XMMatrixTranslation(-2.0f, 2.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
 
-	depthShader.Use(m_pD3D11DeviceContext, m_Matrix);
-	m_CubeModel.Render(m_pD3D11DeviceContext);
+	ID3D11DeviceContext *pD3D11DeviceContext  = m_pDevice.GetDeviceContext();
+
+	depthShader.Use(pD3D11DeviceContext , m_Matrix);
+	m_CubeModel.Render(pD3D11DeviceContext );
 
 	Model = XMMatrixTranslation(2.0f, 2.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
 
-	depthShader.Use(m_pD3D11DeviceContext, m_Matrix);
-	m_SphereModel.Render(m_pD3D11DeviceContext);
+	depthShader.Use(pD3D11DeviceContext , m_Matrix);
+	m_SphereModel.Render(pD3D11DeviceContext);
 
 	Model = XMMatrixTranslation(0.0f, 1.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
 
-	depthShader.Use(m_pD3D11DeviceContext, m_Matrix);
-	m_PlaneModel.Render(m_pD3D11DeviceContext);
+	depthShader.Use(pD3D11DeviceContext , m_Matrix);
+	m_PlaneModel.Render(pD3D11DeviceContext );
 
 	////////////////////////////////////////////////////////////////////////////////
-	BeginScene();
 
+	m_pDevice.BeginRTT2();
+
+	XMFLOAT4 lightPos;
+	XMStoreFloat4(&lightPos, LightPos);
+
+	m_Matrix = m_pDevice.GetMatrix();
 	m_Matrix.view = m_Camera.GetViewMatrix();
-	XMMATRIX Proj = XMMatrixPerspectiveFovLH(0.4f*3.14f, GetAspect(), 1.0f, 1000.0f);
-	XMStoreFloat4x4(&m_Matrix.proj, XMMatrixTranspose(Proj));
 
+	pD3D11DeviceContext->PSSetShaderResources(1, 1, m_pDevice.GetSRV1());
+	pD3D11DeviceContext->PSSetShaderResources(0, 1, m_pWallTex.GetAddressOf());
 
-	m_pD3D11DeviceContext->PSSetShaderResources(1, 1, &m_pRttShaderResourceView);
-
-	m_pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pWallTex);
 	Model = XMMatrixTranslation(-2.0f, 2.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	sceneShader.Use(m_pD3D11DeviceContext, m_Matrix, lightView, lightProj);
-	m_CubeModel.Render(m_pD3D11DeviceContext);
+	sceneShader.Use(pD3D11DeviceContext, m_Matrix, lightView, m_Matrix.proj, lightPos);
+	m_CubeModel.Render(pD3D11DeviceContext);
 
-	m_pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pIceTex);
+	pD3D11DeviceContext->PSSetShaderResources(0, 1, m_pIceTex.GetAddressOf());
 	Model = XMMatrixTranslation(2.0f, 2.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	sceneShader.Use(m_pD3D11DeviceContext, m_Matrix, lightView, lightProj);
-	m_SphereModel.Render(m_pD3D11DeviceContext);
+	sceneShader.Use(pD3D11DeviceContext, m_Matrix, lightView, m_Matrix.proj, lightPos);
+	m_SphereModel.Render(pD3D11DeviceContext);
 
-	m_pD3D11DeviceContext->PSSetShaderResources(0, 1, &m_pMetalTex);
+	pD3D11DeviceContext->PSSetShaderResources(0, 1, m_pMetalTex.GetAddressOf());
 	Model = XMMatrixTranslation(0.0f, 1.0f, 0.0f);
 	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
-	sceneShader.Use(m_pD3D11DeviceContext, m_Matrix, lightView, lightProj);
-	m_PlaneModel.Render(m_pD3D11DeviceContext);
+	sceneShader.Use(pD3D11DeviceContext, m_Matrix, lightView, m_Matrix.proj, lightPos);
+	m_PlaneModel.Render(pD3D11DeviceContext);
 
-	DrawInfo();
-	EndScene();
+
+	d3d::MatrixBuffer matrix;
+	matrix.model = m_Matrix.model;
+	matrix.view  = m_Matrix.model;
+	XMMATRIX orthProj = XMMatrixOrthographicLH(m_ScreenWidth / 2, m_ScreenHeight / 2, 0.1f, 1000.0f);
+	XMStoreFloat4x4(&matrix.proj, orthProj);
+
+	//Your should clear first!
+
+	m_DownPlane.Clear( pD3D11DeviceContext);
+	m_PlaneShader.Use( pD3D11DeviceContext, matrix, m_pDevice.GetSRV2());
+	m_DownPlane.Render(pD3D11DeviceContext);
+
+
+	m_HorizontalPlane.Clear(pD3D11DeviceContext);
+	m_HorizontalShader.Use( pD3D11DeviceContext, matrix, m_DownPlane.GetSRV());
+	m_HorizontalPlane.Render(pD3D11DeviceContext);
+
+	m_VerticalPlane.Clear(pD3D11DeviceContext);
+	m_VerticalShader.Use(pD3D11DeviceContext, matrix, m_HorizontalPlane.GetSRV());
+	m_VerticalPlane.Render(pD3D11DeviceContext);
+
+	orthProj = XMMatrixOrthographicLH(m_ScreenWidth, m_ScreenHeight, 0.1f, 1000.0f);
+	XMStoreFloat4x4(&matrix.proj, orthProj);
+
+	m_UpPlane.Clear(pD3D11DeviceContext);
+	m_PlaneShader.Use(pD3D11DeviceContext, matrix, m_VerticalPlane.GetSRV());
+	m_UpPlane.Render(pD3D11DeviceContext);
+
+
+	m_pDevice.BeginScene();
+
+
+
+	m_Bitmap.Render(pD3D11DeviceContext, matrix, m_UpPlane.GetSRV());
+
+	m_pDevice.DrawInfo();
+
+	m_pDevice.EndScene();
+
 }
 
 void RenderSystem::v_Shutdown()
 {
 
-	ReleaseCOM(m_pSwapChain);
-	ReleaseCOM(m_pD3D11Device);
-	ReleaseCOM(m_pD3D11DeviceContext);
-	ReleaseCOM(m_pRenderTargetView);
 }
 
-
-void RenderSystem::UpdateScene()
-{
-	m_Camera.update();
-}
 void  RenderSystem::v_OnMouseDown(WPARAM btnState, int x, int y)
 {
 	m_Camera.OnMouseDown(btnState, x, y, GetHwnd());
@@ -139,318 +192,6 @@ void  RenderSystem::v_OnMouseWheel(WPARAM btnState, int x, int y)
 {
 	m_Camera.OnMouseWheel(btnState, x, y, GetAspect());
 }
-void RenderSystem::init_device()
-{
 
-	////////////////////////Create buffer desc////////////////////////////
-	DXGI_MODE_DESC bufferDesc;
-	ZeroMemory(&bufferDesc, sizeof(DXGI_MODE_DESC));
-	bufferDesc.Width                   = m_ScreenWidth;
-	bufferDesc.Height                  = m_ScreenHeight;
-	bufferDesc.RefreshRate.Numerator   = 60;
-	bufferDesc.RefreshRate.Denominator = 1;
-	bufferDesc.Format                  = DXGI_FORMAT_R8G8B8A8_UNORM;
-	bufferDesc.ScanlineOrdering        = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-	bufferDesc.Scaling                 = DXGI_MODE_SCALING_UNSPECIFIED;
-
-	//Create swapChain Desc
-	DXGI_SWAP_CHAIN_DESC swapChainDesc;
-	ZeroMemory(&swapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
-	swapChainDesc.BufferDesc         = bufferDesc;
-	swapChainDesc.SampleDesc.Count   = 1;
-	swapChainDesc.SampleDesc.Quality = 0;
-	swapChainDesc.BufferUsage        = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	swapChainDesc.BufferCount        = 1;
-	swapChainDesc.OutputWindow       = GetHwnd();
-	swapChainDesc.Windowed           = TRUE;
-	swapChainDesc.SwapEffect         = DXGI_SWAP_EFFECT_DISCARD;
-
-
-	///////////////////////////////////////////////////////////////////////////
-	HRESULT hr;
-	//Create the double buffer chain
-	hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE,
-		NULL, NULL, NULL, NULL, D3D11_SDK_VERSION,
-		&swapChainDesc, &m_pSwapChain, &m_pD3D11Device,
-		NULL, &m_pD3D11DeviceContext);
-	//DebugHR(hr);
-
-	//Create back buffer, buffer also is a texture
-	ID3D11Texture2D *pBackBuffer;
-	hr = m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBuffer);
-	hr = m_pD3D11Device->CreateRenderTargetView(pBackBuffer, NULL, &m_pRenderTargetView);
-	pBackBuffer->Release();
-	//DebugHR(hr);
-	
-	//////////////////////////// Initialize the description of the stencil state.///////////////////////////////////////////////
-	D3D11_TEXTURE2D_DESC depthBufferDesc;
-	ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
-	depthBufferDesc.Width = m_ScreenWidth;
-	depthBufferDesc.Height = m_ScreenHeight;
-	depthBufferDesc.MipLevels = 1;
-	depthBufferDesc.ArraySize = 1;
-	depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthBufferDesc.SampleDesc.Count = 1;
-	depthBufferDesc.SampleDesc.Quality = 0;
-	depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	depthBufferDesc.CPUAccessFlags = 0;
-	depthBufferDesc.MiscFlags = 0;
-	// Create the texture for the depth buffer using the filled out description.
-	hr = m_pD3D11Device->CreateTexture2D(&depthBufferDesc, NULL, &m_pDepthStencilBuffer);
-
-
-	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
-	ZeroMemory(&depthStencilDesc, sizeof(depthStencilDesc));
-
-	// Set up the description of the stencil state.
-	depthStencilDesc.DepthEnable = true;
-	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
-	depthStencilDesc.StencilEnable = true;
-	depthStencilDesc.StencilReadMask = 0xFF;
-	depthStencilDesc.StencilWriteMask = 0xFF;
-
-	// Stencil operations if pixel is front-facing.
-	depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	depthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
-	depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-	depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-
-	// Stencil operations if pixel is back-facing.
-	depthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	depthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
-	depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-	depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-
-	// Create the depth stencil state.
-	hr = m_pD3D11Device->CreateDepthStencilState(&depthStencilDesc, &m_pDepthStencilState);
-	// Set the depth stencil state.
-
-	//DebugHR(hr);
-
-	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
-	// Initialize the depth stencil view.
-	ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
-
-	// Set up the depth stencil view description.
-	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-	depthStencilViewDesc.Texture2D.MipSlice = 0;
-
-	// Create the depth stencil view.
-	hr = m_pD3D11Device->CreateDepthStencilView(m_pDepthStencilBuffer.Get(), &depthStencilViewDesc, &m_pDepthStencilView);
-	//DebugHR(hr);
-
-	// ////////////Clear the second depth stencil state before setting the parameters.//////////////////////
-	D3D11_DEPTH_STENCIL_DESC depthDisabledStencilDesc;
-	ZeroMemory(&depthDisabledStencilDesc, sizeof(depthDisabledStencilDesc));
-	// Now create a second depth stencil state which turns off the Z buffer for 2D rendering.  The only difference is 
-	// that DepthEnable is set to false, all other parameters are the same as the other depth stencil state.
-	depthDisabledStencilDesc.DepthEnable = false;
-	depthDisabledStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	depthDisabledStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
-	depthDisabledStencilDesc.StencilEnable = true;
-	depthDisabledStencilDesc.StencilReadMask = 0xFF;
-	depthDisabledStencilDesc.StencilWriteMask = 0xFF;
-	depthDisabledStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	depthDisabledStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
-	depthDisabledStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-	depthDisabledStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-	depthDisabledStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	depthDisabledStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
-	depthDisabledStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-	depthDisabledStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-
-	// Create the state using the device.
-	hr = m_pD3D11Device->CreateDepthStencilState(&depthDisabledStencilDesc, &m_pDepthDisabledStencilState);
-	//DebugHR(hr);
-
-	// Setup the raster description which will determine how and what polygons will be drawn.
-	D3D11_RASTERIZER_DESC rasterDesc;
-	rasterDesc.AntialiasedLineEnable = false;
-	rasterDesc.CullMode              = D3D11_CULL_BACK;
-	rasterDesc.DepthBias             = 0;
-	rasterDesc.DepthBiasClamp        = 0.0f;
-	rasterDesc.DepthClipEnable       = true;
-	rasterDesc.FillMode              = D3D11_FILL_SOLID;
-	rasterDesc.FrontCounterClockwise = false;
-	rasterDesc.MultisampleEnable     = false;
-	rasterDesc.ScissorEnable         = false;
-	rasterDesc.SlopeScaledDepthBias  = 0.0f;
-	// Create the rasterizer state from the description we just filled out.
-	hr = m_pD3D11Device->CreateRasterizerState(&rasterDesc, &m_pRasterState);
-	//DebugHR(hr);
-
-	///////////////////////////////////////////////////////////////////////////////
-
-	unsigned int numModes, i, numerator, denominator, stringLength;
-	IDXGIFactory* factory;
-	IDXGIAdapter* adapter;
-	IDXGISurface *surface;
-	DXGI_ADAPTER_DESC adapterDesc;
-
-	// Create a DirectX graphics interface factory.
-	CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
-	// Use the factory to create an adapter for the primary graphics interface (video card).
-	factory->EnumAdapters(0, &adapter);
-	adapter->GetDesc(&adapterDesc);
-	m_videoCardMemory = (int)(adapterDesc.DedicatedVideoMemory / 1024 / 1024);
-
-	// Convert the name of the video card to a character array and store it.
-	m_videoCardInfo = std::wstring(L"Video Card  :") + adapterDesc.Description;
-
-}
-
-void RenderSystem::BeginScene()
-{
-	//Render 
-	float bgColor[4] ={ 0.0f, 0.0f, 0.0f, 1.0f };
-
-	m_pD3D11DeviceContext->RSSetState(m_pRasterState.Get());
-	m_pD3D11DeviceContext->OMSetRenderTargets(1, m_pRenderTargetView.GetAddressOf(), m_pDepthStencilView.Get());
-	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState.Get(), 1);
-	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRenderTargetView.Get(), bgColor);
-	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH ,  1.0f, 0);
-
-}
-
-void RenderSystem::EndScene()
-{
-	m_pSwapChain->Present(0, 0);
-}
-
-void RenderSystem::init_camera()
-{
-	//Viewport Infomation
-	D3D11_VIEWPORT vp;
-	ZeroMemory(&vp, sizeof(D3D11_VIEWPORT));
-	vp.TopLeftX = 0;
-	vp.TopLeftY = 0;
-	vp.MinDepth = 0.0f;
-	vp.MaxDepth = 1.0f;
-	vp.Width    = static_cast<FLOAT>(m_ScreenWidth);
-	vp.Height   = static_cast<FLOAT>(m_ScreenHeight);
-	m_pD3D11DeviceContext->RSSetViewports(1, &vp);
-
-	//MVP Matrix
-	XMVECTOR camPos    = XMVectorSet(0.0f, 0.0f, -5.0f, 0.0f);
-	XMVECTOR camTarget = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-	XMVECTOR camUp     = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	XMMATRIX View      = XMMatrixLookAtLH(camPos, camTarget, camUp);
-	XMMATRIX Proj      = XMMatrixPerspectiveFovLH(0.4f*3.14f, GetAspect(), 1.0f, 1000.0f);
-	XMMATRIX Model     = XMMatrixIdentity();
-
-	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model) );
-	XMStoreFloat4x4(&m_Matrix.view,  XMMatrixTranspose(View) );
-	XMStoreFloat4x4(&m_Matrix.proj,  XMMatrixTranspose(Proj) );
-}
-
-void RenderSystem::init_object()
-{
-
-	m_Timer.Reset();
-	m_Font.init(m_pD3D11Device.Get());
-	m_Camera.SetRadius(7.0f);
-
-	depthShader.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd());
-	sceneShader.Init(m_pD3D11Device, m_pD3D11DeviceContext, GetHwnd());
-
-	m_CubeModel.load_model("../../media/objects/cube.txt");
-	m_CubeModel.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-
-	m_SphereModel.load_model("../../media/objects/sphere.txt");
-	m_SphereModel.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-
-	m_PlaneModel.load_model("../../media/objects/plane01.txt");
-	m_PlaneModel.init_buffer(m_pD3D11Device, m_pD3D11DeviceContext);
-
-	CreateDDSTextureFromFile(m_pD3D11Device, L"../../media/textures/wall01.dds",   NULL, NULL, &m_pWallTex, NULL);
-	CreateDDSTextureFromFile(m_pD3D11Device, L"../../media/textures/ice.dds",      NULL, NULL, &m_pIceTex,  NULL);
-	CreateDDSTextureFromFile(m_pD3D11Device, L"../../media/textures/metal001.dds", NULL, NULL, &m_pMetalTex, NULL);
-}
-
-void RenderSystem::init_fbo()
-{
-
-	D3D11_TEXTURE2D_DESC textureDesc;
-	HRESULT result;
-	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
-	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
-
-	ZeroMemory(&textureDesc, sizeof(textureDesc));
-	textureDesc.Width = m_ScreenWidth;
-	textureDesc.Height = m_ScreenHeight;
-	textureDesc.MipLevels = 1;
-	textureDesc.ArraySize = 1;
-	textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	textureDesc.SampleDesc.Count = 1;
-	textureDesc.Usage = D3D11_USAGE_DEFAULT;
-	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-	textureDesc.CPUAccessFlags = 0;
-	textureDesc.MiscFlags = 0;
-
-	//Create the render target texture
-	result = m_pD3D11Device->CreateTexture2D(&textureDesc, NULL, &m_pRttRenderTargetTexture);
-
-
-	//Setup the description of the render target view
-	renderTargetViewDesc.Format = textureDesc.Format;
-	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-	renderTargetViewDesc.Texture2D.MipSlice = 0;
-
-	result = m_pD3D11Device->CreateRenderTargetView(m_pRttRenderTargetTexture.Get(), renderTargetViewDesc, m_pRttRenderTargetView.GetAddressOf() );
-
-	shaderResourceViewDesc.Format = textureDesc.Format;
-	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
-	shaderResourceViewDesc.Texture2D.MipLevels = 1;
-	result = m_pD3D11Device->CreateShaderResourceView(m_pRttRenderTargetTexture.Get(), &shaderResourceViewDesc, m_pRttShaderResourceView.GetAddressOf() );
-
-}
-
-void RenderSystem::TurnZBufferOn()
-{
-	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthStencilState.Get(), 1);
-	return;
-}
-
-
-void RenderSystem::TurnZBufferOff()
-{
-	m_pD3D11DeviceContext->OMSetDepthStencilState(m_pDepthDisabledStencilState.Get(), 1);
-	return;
-}
-void RenderSystem::DrawFps()
-{
-	static bool flag = true;
-	if (flag)
-	{
-		m_Timer.Start();
-		flag = false;
-	}
-
-	m_Timer.Count();
-	static int frameCnt = 0;
-	static float timeElapsed = 0.0f;
-	frameCnt++;
-	if (m_Timer.GetTotalTime() - timeElapsed >= 1.0f)
-	{
-		fps = frameCnt;
-		frameCnt = 0;
-		timeElapsed += 1.0f;
-	}
-
-	m_Font.drawFps(m_pD3D11DeviceContext.Get(), (UINT)fps);
-}
-
-void RenderSystem::DrawInfo()
-{
-	WCHAR WinInfo[255];
-	swprintf(WinInfo, L"Window Size: %d x %d", m_ScreenWidth, m_ScreenHeight);
-	DrawFps();
-	m_Font.drawText(m_pD3D11DeviceContext.Get(), WinInfo, 22.0f, 10.0f, 40.0f);
-	m_Font.drawText(m_pD3D11DeviceContext.Get(), m_videoCardInfo.c_str(), 22.0f, 10.0f, 70.0f);
-}
 
 }

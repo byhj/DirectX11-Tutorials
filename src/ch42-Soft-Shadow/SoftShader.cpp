@@ -1,10 +1,10 @@
-#include "SceneShader.h"
+#include "SoftShader.h"
 
 namespace byhj
 {
 
 
-	void SceneShader::Init(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext, HWND hWnd)
+	void SoftShader::Init(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11DeviceContext, HWND hWnd)
 	{
 
 		D3D11_INPUT_ELEMENT_DESC pInputLayoutDesc;
@@ -37,10 +37,10 @@ namespace byhj
 		pInputLayoutDesc.InstanceDataStepRate = 0;
 		vInputLayoutDesc.push_back(pInputLayoutDesc);
 
-		sceneShader.init(pD3D11Device, vInputLayoutDesc);
-		sceneShader.attachVS(L"scene.vsh", "VS", "vs_5_0");
-		sceneShader.attachPS(L"scene.psh", "PS", "ps_5_0");
-		sceneShader.end();
+		softShader.init(pD3D11Device, vInputLayoutDesc);
+		softShader.attachVS(L"soft.vsh", "VS", "vs_5_0");
+		softShader.attachPS(L"soft.psh", "PS", "ps_5_0");
+		softShader.end();
 
 		D3D11_SAMPLER_DESC samplerDesc;
 		// Create a wrap texture sampler state description.
@@ -121,15 +121,14 @@ namespace byhj
 
 	}
 
-	void SceneShader::Use(ID3D11DeviceContext *pD3D11DeviceContext, const byhj::d3d::MatrixBuffer &matrix, const XMFLOAT4X4 &LightView, const XMFLOAT4X4 &LightProj, const XMFLOAT4 &LightPos )
+	void SoftShader::Use(ID3D11DeviceContext *pD3D11DeviceContext, const byhj::d3d::MatrixBuffer &matrix, const XMFLOAT4 &LightPos )
 	{
-		sceneShader.use(pD3D11DeviceContext);
+		softShader.use(pD3D11DeviceContext);
 
 		cbMatrix.model = matrix.model;
 		cbMatrix.view = matrix.view;
 		cbMatrix.proj = matrix.proj;
-		cbMatrix.lightView = LightView;
-		cbMatrix.lightPorj = LightProj;
+
 
 		pD3D11DeviceContext->UpdateSubresource(m_pMVPBuffer.Get(), 0, NULL, &cbMatrix, 0, 0);
 		pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.GetAddressOf() );
@@ -143,7 +142,7 @@ namespace byhj
 	
 	}
 
-	void SceneShader::Shutdown()
+	void SoftShader::Shutdown()
 	{
 
 	}

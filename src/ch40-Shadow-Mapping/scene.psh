@@ -54,9 +54,9 @@ float4 PS(VS_OUTPUT ps_in) : SV_TARGET
 		else
 		  color = float4(0.0f, 0.0f, 0.0f, 1.0f);
    }
-
+   color = saturate(color);
    float4 texColor = colorTex.Sample(texSampleWrap, ps_in.Tex);
-   float4 pixelColor =  color * texColor * float4(2.0f, 2.0f, 2.0f, 1.0f);
+   float4 pixelColor =  color * texColor;
 
    return pixelColor ;
 }

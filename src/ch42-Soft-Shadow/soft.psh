@@ -1,0 +1,50 @@
+
+cbuffer LightBuffer	 : register(b0)
+{
+  float4 ambientColor;
+  float4 diffuseColor;
+};
+
+struct VS_OUTPUT 
+{
+    float4 Pos         : SV_POSITION;
+   	float2 Tex         : TEXCOORD0;
+	float3 Normal      : NORMAL;
+	float4 LightViewPos: TEXCOORD1;
+	float3 LightPos    : TEXCOORD2;
+};
+
+Texture2D colorTex     : register(t0);
+Texture2D depthMapTex  : register(t1);
+
+SamplerState texSampleClamp : register(s0);
+SamplerState texSampleWrap  : register(s1);
+
+float4 PS(VS_OUTPUT ps_in) : SV_TARGET
+{
+   ps_in.Normal = normalize(ps_in.Normal);
+
+  float4 color = ambientColor;
+  float lightIntensity = saturate(dot(ps_in.Normal, ps_in.LightPos));
+   if(lightIntensity > 0.0f)
+   {
+        color += (diffuseColor * lightIntensity);
+        color = saturate(color);
+    }
+
+    // Sampl
+  float2 projTexCoord;
+  projTexCoord.x =  ps_in.LightViewPos.x / ps_in.LightViewPos.w / 2.0f + 0.5f;
+  projTexCoord.y = -ps_in.LightViewPos.y / ps_in.LightViewPos.w / 2.0f + 0.5f;
+
+     // Sample the pixel color from the texture using the sampler at this texture coordinate location.
+    float4 textureColor = colorTex.Sample(texSampleWrap, ps_in.Tex);
+ // Combine the light and texture color.
+    color = color * textureColor;
+    // Sample the shadow value from the shadow texture using the sampler at the projected texture coordinate location.
+    float shadowValue = depthMapTex.Sample(texSampleClamp , projTexCoord).r;
+
+   color *= shadowValue;
+
+   return color ;
+}
