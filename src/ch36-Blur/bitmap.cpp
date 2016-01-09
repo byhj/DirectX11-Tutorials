@@ -89,7 +89,7 @@ namespace byhj
 			VertexData[3].Tex = XMFLOAT2(0.0f, 0.0f);
 
 			VertexData[4].Pos = XMFLOAT3(right, top, 0.0f); // Top right.
-			VertexData[4].Tex = XMFLOAT2(0.0f, 1.0f);
+			VertexData[4].Tex = XMFLOAT2(1.0f, 0.0f);
 
 			VertexData[5].Pos = XMFLOAT3(right, bottom, 0.0f);  // Bottom right.
 			VertexData[5].Tex = XMFLOAT2(1.0f, 1.0f);

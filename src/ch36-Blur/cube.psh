@@ -25,7 +25,7 @@ float4 PS(VS_OUT ps_in) : SV_TARGET
   float4 diffuse = saturate(diffuseColor * intensity);
 
   float4 ambient = ambientColor;
-  float4 result = saturate(ambient + diffuse);
+  float4 result = saturate(ambient+ diffuse);
    
   float4 texColor = tex.Sample(texSample, ps_in.Tex);
   float4 pixelColor = result * texColor;

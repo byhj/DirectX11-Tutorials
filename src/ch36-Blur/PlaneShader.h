@@ -16,10 +16,10 @@ namespace byhj
 
 	private:
 
-
 		d3d::MatrixBuffer cbMatrix;
 		d3d::Shader planeShader;
 		ComPtr<ID3D11Buffer> m_pMVPBuffer;
+		ComPtr<ID3D11SamplerState> m_pTexSamplerState;
 	};
 
 }

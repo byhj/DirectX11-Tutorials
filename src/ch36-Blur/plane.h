@@ -24,6 +24,8 @@ namespace byhj
 		void Render(ID3D11DeviceContext *pD3D11DeviceContext);
 		void Update();
 		void Shutdown();
+		void Clear(ID3D11DeviceContext *pD3D11DeviceContext);
+
 		ID3D11ShaderResourceView* GetSRV()
 		{
 			return m_shaderResourceView;
@@ -54,8 +56,6 @@ namespace byhj
 		ID3D11Texture2D* m_depthStencilBuffer;
 		ID3D11DepthStencilView* m_depthStencilView;
 		D3D11_VIEWPORT m_viewport;
-
-		d3d::Shader D3DRTTShader;
 	};
 
 }

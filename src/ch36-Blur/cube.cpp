@@ -141,8 +141,7 @@ void Cube::init_buffer(ID3D11Device *pD3D11Device, ID3D11DeviceContext *pD3D11De
 
 	dataPtr2->ambientColor   = XMFLOAT4(0.15f, 0.15f, 0.15f, 0.15f);
 	dataPtr2->diffuseColor   = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	dataPtr2->lightDirection = XMFLOAT3(1.0f, 0.0f, 0.0f);
-	dataPtr2->padding = 0.0f;
+	dataPtr2->lightDirection = XMFLOAT3(1.0f, -2.0f, 3.0f);
 
 	pD3D11DeviceContext->Unmap(m_pLightBuffer.Get(), 0);
 

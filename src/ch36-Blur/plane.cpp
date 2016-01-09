@@ -18,19 +18,26 @@ namespace byhj
 		stride = sizeof(Vertex);
 		offset = 0;
 
-		float color[4] = {0.0f, 0.0f, 0.0f, 1.0f};
-		pD3D11DeviceContext->ClearRenderTargetView(m_renderTargetView, color);
-		pD3D11DeviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-		pD3D11DeviceContext->OMSetRenderTargets(1, &m_renderTargetView, m_depthStencilView);
-		pD3D11DeviceContext->RSSetViewports(1, &m_viewport);
 
 		pD3D11DeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
 		pD3D11DeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 		pD3D11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		D3DRTTShader.use(pD3D11DeviceContext);
 		pD3D11DeviceContext->DrawIndexed(m_IndexCount, 0, 0);
 	}
+
+	void Plane::Clear(ID3D11DeviceContext *pD3D11DeviceContext)
+	{
+		pD3D11DeviceContext->OMSetRenderTargets(1, &m_renderTargetView, m_depthStencilView);
+
+		float color[4] ={ 0.5, 0.5f, 0.5f, 1.0f };
+		pD3D11DeviceContext->ClearRenderTargetView(m_renderTargetView, color);
+		pD3D11DeviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	    pD3D11DeviceContext->RSSetViewports(1, &m_viewport);
+	}
+
+
 
 	void Plane::Shutdown()
 	{
@@ -48,6 +55,9 @@ namespace byhj
 
 		std::vector<Vertex> VertexData(6);
 		std::vector<UINT> IndexData(6);
+
+		for (int i = 0; i != m_IndexCount; ++i)
+			IndexData[i] = i;
 
 		float left, right, top, bottom;
 		// Calculate the screen coordinates of the left side of the window.
@@ -77,7 +87,7 @@ namespace byhj
 		VertexData[3].Tex = XMFLOAT2(0.0f, 0.0f);
 
 		VertexData[4].Pos = XMFLOAT3(right, top, 0.0f); // Top right.
-		VertexData[4].Tex = XMFLOAT2(0.0f, 1.0f);
+		VertexData[4].Tex = XMFLOAT2(1.0f, 0.0f);
 
 		VertexData[5].Pos = XMFLOAT3(right, bottom, 0.0f);  // Bottom right.
 		VertexData[5].Tex = XMFLOAT2(1.0f, 1.0f);
@@ -122,6 +132,8 @@ namespace byhj
 
 		hr = pD3D11Device->CreateBuffer(&IndexBufferDesc, &IBO, &m_pIndexBuffer);
 		DebugHR(hr);
+
+
 
 		D3D11_TEXTURE2D_DESC textureDesc;
 		HRESULT result;
@@ -203,6 +215,13 @@ namespace byhj
 
 		// Create the depth stencil view.
 		result = pD3D11Device->CreateDepthStencilView(m_depthStencilBuffer, &depthStencilViewDesc, &m_depthStencilView);
+		
+		//Viewport Infomation
+		ZeroMemory(& m_viewport, sizeof(D3D11_VIEWPORT));
+		m_viewport.TopLeftX = 0;
+		m_viewport.TopLeftY = 0;
+		m_viewport.Width    = static_cast<FLOAT>(m_width);
+		m_viewport.Height   = static_cast<FLOAT>(m_height);
 
 
 	}

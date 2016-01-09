@@ -1,4 +1,5 @@
 #include "RenderSystem.h"
+#include "DirectXTK/DDSTextureLoader.h"
 
 namespace byhj
 {
@@ -28,37 +29,52 @@ void RenderSystem::v_Update()
 void RenderSystem::v_Render()
 {
 
-	static float rot = 0.0f;
-	rot += m_Timer.GetDeltaTime();
 	UpdateScene();
-
-	XMMATRIX Model = XMMatrixRotationY(rot);
-	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
 	m_Matrix.view = m_Camera.GetViewMatrix();
 
-	float bgColor[4] = { 0.2f, 0.3f, 0.4f, 1.0f };
+	float bgColor[4] ={ 0.2f, 0.3f, 0.4f, 1.0f };
 
 	m_pD3D11DeviceContext->OMSetRenderTargets(1, m_pRttRenderTargetView.GetAddressOf(), m_pDepthStencilView.Get());
 	m_pD3D11DeviceContext->ClearRenderTargetView(m_pRttRenderTargetView.Get(), bgColor);
-	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
+	m_pD3D11DeviceContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	cube.Render(m_pD3D11DeviceContext.Get(), m_Matrix);
 
-	m_PlaneShader.Use(m_pD3D11DeviceContext.Get(), m_Matrix, m_pRttShaderResourceView.Get() );
+
+	d3d::MatrixBuffer matrix;
+	matrix.model = m_Matrix.model;
+	matrix.view  = m_Matrix.model;
+	XMMATRIX orthProj = XMMatrixOrthographicLH(m_ScreenWidth / 2, m_ScreenHeight/2, 0.1f, 1000.0f);
+	XMStoreFloat4x4(&matrix.proj, orthProj);
+
+	ID3D11ShaderResourceView *pTexture;
+	CreateDDSTextureFromFile(m_pD3D11Device.Get(), L"../../media/textures/stone.dds", NULL, &pTexture);
+
+	//Your should clear first!
+
+	m_DownPlane.Clear(m_pD3D11DeviceContext.Get());
+	m_PlaneShader.Use(m_pD3D11DeviceContext.Get(), matrix, m_pRttShaderResourceView.Get());
 	m_DownPlane.Render(m_pD3D11DeviceContext.Get());
 
-	m_HorizontalShader.Use(m_pD3D11DeviceContext.Get(), m_Matrix);
+
+	m_HorizontalPlane.Clear(m_pD3D11DeviceContext.Get());
+	m_HorizontalShader.Use(m_pD3D11DeviceContext.Get(), matrix, m_DownPlane.GetSRV());
 	m_HorizontalPlane.Render(m_pD3D11DeviceContext.Get());
 
-	m_VerticalShader.Use(m_pD3D11DeviceContext.Get(), m_Matrix);
+	m_VerticalPlane.Clear(m_pD3D11DeviceContext.Get());
+	m_VerticalShader.Use(m_pD3D11DeviceContext.Get(), matrix, m_HorizontalPlane.GetSRV());
 	m_VerticalPlane.Render(m_pD3D11DeviceContext.Get());
 
-	m_PlaneShader.Use(m_pD3D11DeviceContext.Get(), m_Matrix, m_VerticalPlane.GetSRV());
+	orthProj = XMMatrixOrthographicLH(m_ScreenWidth, m_ScreenHeight, 0.1f, 1000.0f);
+	XMStoreFloat4x4(&matrix.proj, orthProj);
+
+	m_UpPlane.Clear(m_pD3D11DeviceContext.Get());
+	m_PlaneShader.Use(m_pD3D11DeviceContext.Get(), matrix, m_VerticalPlane.GetSRV());
 	m_UpPlane.Render(m_pD3D11DeviceContext.Get());
 
 	BeginScene();
 
-	m_Bitmap.Render(m_pD3D11DeviceContext.Get(), m_Matrix, m_UpPlane.GetSRV());
+	m_Bitmap.Render(m_pD3D11DeviceContext.Get(), matrix, m_UpPlane.GetSRV());
 
 	DrawInfo();
 
