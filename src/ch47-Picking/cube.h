@@ -35,16 +35,9 @@ private:
 		XMFLOAT4 ambientColor;
 		XMFLOAT4 diffuseColor;
 		XMFLOAT3 lightDirection;
-		float specularPower;
-		XMFLOAT4 specularColor;
-	};
-	LightBuffer cbLight;
-
-	struct CameraBuffer
-	{
-		XMFLOAT3 camPos;
 		float padding;
 	};
+	LightBuffer cbLight;
 
 	struct  Vertex
 	{
@@ -57,9 +50,8 @@ private:
 	ComPtr<ID3D11InputLayout> m_pInputLayout;
 	ComPtr<ID3D11Buffer> m_pMVPBuffer;
 	ComPtr<ID3D11Buffer> m_pVertexBuffer;
-	ComPtr<ID3D11Buffer> m_pVertexBuffer;
-	ComPtr<ID3D11Buffer> m_pLightBuffer
-	ComPtr<ID3D11Buffer> m_CameraBuffer;
+	ComPtr<ID3D11Buffer> m_pIndexBuffer;
+	ComPtr<ID3D11Buffer> m_pLightBuffer;
 	ComPtr<ID3D11ShaderResourceView> m_pTexture;
 	ComPtr<ID3D11SamplerState> m_pTexSamplerState;
 	d3d::Shader CubeShader;

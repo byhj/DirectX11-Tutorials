@@ -17,9 +17,8 @@ void RenderSystem::v_Init()
 {
 	init_device();
 	init_camera();
-
 	m_Cube.Init(m_pD3D11Device.Get(), m_pD3D11DeviceContext.Get(), GetHwnd() );
-	m_Font.init(m_pD3D11Device.Get());
+
 }
 
 void RenderSystem::v_Update()
@@ -33,7 +32,6 @@ void RenderSystem::v_Render()
 
 	m_Cube.Render(m_pD3D11DeviceContext.Get(), m_Matrix);
 
-	m_Font.drawText(m_pD3D11DeviceContext, L"Pick:", 30.0f, 20.0f, 20.0f);
 	EndScene();
 }
 
@@ -41,13 +39,80 @@ void RenderSystem::v_Shutdown()
 {
 
 	m_Cube.Shutdown();
-
-	ReleaseCOM(m_pSwapChain);
-	ReleaseCOM(m_pD3D11Device);
-	ReleaseCOM(m_pD3D11DeviceContext);
-	ReleaseCOM(m_pRenderTargetView);
 }
 
+void RenderSystem::TestIntersection(int mouseX, int mouseY)
+{
+	float pointX, pointY;
+	XMFLOAT4X4 projectionMatrix, viewMatrix, inverseViewMatrix, worldMatrix, translateMatrix, inverseWorldMatrix;
+	XMFLOAT3 direction, origin, rayOrigin, rayDirection;
+	bool intersect, result;
+
+
+	// Move the mouse cursor coordinates into the -1 to +1 range.
+	pointX = ((2.0f * (float)mouseX) / (float)m_ScreenWidth) - 1.0f;
+	pointY = (((2.0f * (float)mouseY) / (float)m_ScreenHeight) - 1.0f) * -1.0f;
+
+	// Adjust the points using the projection matrix to account for the aspect ratio of the viewport.
+	projectionMatrix = m_Matrix.proj;
+	pointX = pointX / projectionMatrix._11;
+	pointY = pointY / projectionMatrix._22;
+	viewMatrix = m_Matrix.view;
+	// Get the inverse of the view matrix.
+	 XMStoreFloat4x4(&inverseViewMatrix, XMMatrixInverse(nullptr, XMLoadFloat4x4(&viewMatrix)) );
+
+	// Calculate the direction of the picking ray in view space.
+	direction.x = (pointX * inverseViewMatrix._11) + (pointY * inverseViewMatrix._21) + inverseViewMatrix._31;
+	direction.y = (pointX * inverseViewMatrix._12) + (pointY * inverseViewMatrix._22) + inverseViewMatrix._32;
+	direction.z = (pointX * inverseViewMatrix._13) + (pointY * inverseViewMatrix._23) + inverseViewMatrix._33;
+
+	// Get the origin of the picking ray which is the position of the camera.
+	origin = XMFLOAT3(0.0f, 0.0f, -5.0f);
+
+	// Get the world matrix and translate to the location of the sphere.
+	worldMatrix = m_Matrix.model;
+	D3DXMatrixTranslation(&translateMatrix, -5.0f, 1.0f, 5.0f);
+	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &translateMatrix);
+
+	// Now get the inverse of the translated world matrix.
+	D3DXMatrixInverse(&inverseWorldMatrix, NULL, &worldMatrix);
+
+	// Now transform the ray origin and the ray direction from view space to world space.
+	D3DXVec3TransformCoord(&rayOrigin, &origin, &inverseWorldMatrix);
+	D3DXVec3TransformNormal(&rayDirection, &direction, &inverseWorldMatrix);
+
+	// Normalize the ray direction.
+	XMVE&rayDirection, &rayDirection);
+
+	// Now perform the ray-sphere intersection test.
+	intersect = RaySphereIntersect(rayOrigin, rayDirection, 1.0f);
+
+	if (intersect == true);
+
+	return;
+}
+
+bool RenderSystem::RaySphereIntersect(XMFLOAT3 rayOrigin, XMFLOAT3 rayDirection, float radius)
+{
+	float a, b, c, discriminant;
+
+
+	// Calculate the a, b, and c coefficients.
+	a = (rayDirection.x * rayDirection.x) + (rayDirection.y * rayDirection.y) + (rayDirection.z * rayDirection.z);
+	b = ((rayDirection.x * rayOrigin.x) + (rayDirection.y * rayOrigin.y) + (rayDirection.z * rayOrigin.z)) * 2.0f;
+	c = ((rayOrigin.x * rayOrigin.x) + (rayOrigin.y * rayOrigin.y) + (rayOrigin.z * rayOrigin.z)) - (radius * radius);
+
+	// Find the discriminant.
+	discriminant = (b * b) - (4 * a * c);
+
+	// if discriminant is negative the picking ray missed the sphere, otherwise it intersected the sphere.
+	if (discriminant < 0.0f)
+	{
+		return false;
+	}
+
+	return true;
+}
 void RenderSystem::init_device()
 {
 

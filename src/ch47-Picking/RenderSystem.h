@@ -3,7 +3,6 @@
 
 #include "d3d/App.h"
 #include "d3d/Utility.h"
-#include "d3d/Font.h"
 #include "Cube.h"
 
 namespace byhj
@@ -25,10 +24,11 @@ private:
 	void init_camera();
 	void BeginScene();
 	void EndScene();
-
+	
+	void TestIntersection(int mouseX, int mouseY);
+	bool RaySphereIntersect(XMFLOAT3 rayOrigin, XMFLOAT3 rayDirection, float radius);
 
 	byhj::Cube m_Cube;
-	d3d::Font m_Font;
 
 	ComPtr<IDXGISwapChain> m_pSwapChain ;    
 	ComPtr<ID3D11Device>   m_pD3D11Device;
@@ -36,7 +36,8 @@ private:
 	ComPtr<ID3D11RenderTargetView> m_pRenderTargetView;
 	ComPtr<ID3D11DepthStencilView> m_pDepthStencilView;
 	ComPtr<ID3D11Texture2D> m_pDepthStencilBuffer;
-	ComPtr<ID3D11RasterizerState> m_pRasterState;
+	ComPtr<ID3D11RasterizerState> m_pRasterState ;
+
 	d3d::MatrixBuffer m_Matrix;
 };
 }

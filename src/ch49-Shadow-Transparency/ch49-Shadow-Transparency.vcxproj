@@ -77,6 +77,29 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ch40-Shadow-Mapping.cpp" />
+    <ClCompile Include="depthShader.cpp" />
+    <ClCompile Include="Device.cpp" />
+    <ClCompile Include="model.cpp" />
+    <ClCompile Include="RenderSystem.cpp" />
+    <ClCompile Include="SceneShader.cpp" />
+    <ClCompile Include="shadowShader.cpp" />
+    <ClCompile Include="TextureMgr.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="depthShader.h" />
+    <ClInclude Include="Device.h" />
+    <ClInclude Include="model.h" />
+    <ClInclude Include="RenderSystem.h" />
+    <ClInclude Include="sceneShader.h" />
+    <ClInclude Include="shadowShader.h" />
+    <ClInclude Include="TextureMgr.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="depth.psh" />
+    <FxCompile Include="depth.vsh" />
+    <FxCompile Include="scene.psh" />
+    <FxCompile Include="scene.vsh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
