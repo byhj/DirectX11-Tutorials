@@ -45,6 +45,13 @@ namespace byhj
 		mvpBufferDesc.MiscFlags = 0;
 		hr = pD3D11Device->CreateBuffer(&mvpBufferDesc, NULL, &m_pMVPBuffer);
 
+		D3D11_BUFFER_DESC screenBufferDesc;
+		ZeroMemory(&screenBufferDesc, sizeof(D3D11_BUFFER_DESC));
+		screenBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+		screenBufferDesc.ByteWidth = sizeof(ScreenSize);
+		screenBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		hr = pD3D11Device->CreateBuffer(&screenBufferDesc, NULL, &m_pScreenBuffer);
+
 		// Create a texture sampler state description.
 		D3D11_SAMPLER_DESC samplerDesc;
 		samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -65,8 +72,10 @@ namespace byhj
 		hr = pD3D11Device->CreateSamplerState(&samplerDesc, &m_pTexSamplerState);
 	}
 
-	void VerticalShader::Use(ID3D11DeviceContext *pD3D11DeviceContext, const byhj::d3d::MatrixBuffer &matrix, ID3D11ShaderResourceView *pTexture)
+	void VerticalShader::Use(ID3D11DeviceContext *pD3D11DeviceContext, const byhj::d3d::MatrixBuffer &matrix,
+		                     ID3D11ShaderResourceView *pTexture, const XMFLOAT4 &screenHeight)
 	{
+	
 		verticalShader.use(pD3D11DeviceContext);
 
 		cbMatrix = matrix;
@@ -74,7 +83,10 @@ namespace byhj
 		pD3D11DeviceContext->VSSetConstantBuffers(0, 1, m_pMVPBuffer.GetAddressOf() );
 		pD3D11DeviceContext->PSSetShaderResources(0, 1,&pTexture);
 
-				pD3D11DeviceContext->PSSetSamplers(0, 1, m_pTexSamplerState.GetAddressOf());
+		pD3D11DeviceContext->UpdateSubresource(m_pScreenBuffer.Get(), 0, NULL, &screenHeight, 0, 0);
+		pD3D11DeviceContext->VSSetConstantBuffers(1, 1, m_pScreenBuffer.GetAddressOf());
+
+		pD3D11DeviceContext->PSSetSamplers(0, 1, m_pTexSamplerState.GetAddressOf());
 	}
 
 	void VerticalShader::Shutdown()

@@ -56,13 +56,14 @@ void RenderSystem::v_Render()
 	m_PlaneShader.Use(m_pD3D11DeviceContext.Get(), matrix, m_pRttShaderResourceView.Get());
 	m_DownPlane.Render(m_pD3D11DeviceContext.Get());
 
-
+	XMFLOAT4 sw = XMFLOAT4(m_ScreenWidth / 2.0f, 0.0f, 0.0f, 1.0f);
 	m_HorizontalPlane.Clear(m_pD3D11DeviceContext.Get());
-	m_HorizontalShader.Use(m_pD3D11DeviceContext.Get(), matrix, m_DownPlane.GetSRV());
+	m_HorizontalShader.Use(m_pD3D11DeviceContext.Get(), matrix, m_DownPlane.GetSRV(), sw);
 	m_HorizontalPlane.Render(m_pD3D11DeviceContext.Get());
 
+	XMFLOAT4 sh = XMFLOAT4(m_ScreenHeight / 2.0f, 0.0f, 0.0f, 1.0f);
 	m_VerticalPlane.Clear(m_pD3D11DeviceContext.Get());
-	m_VerticalShader.Use(m_pD3D11DeviceContext.Get(), matrix, m_HorizontalPlane.GetSRV());
+	m_VerticalShader.Use(m_pD3D11DeviceContext.Get(), matrix, m_HorizontalPlane.GetSRV(), sh);
 	m_VerticalPlane.Render(m_pD3D11DeviceContext.Get());
 
 	orthProj = XMMatrixOrthographicLH(m_ScreenWidth, m_ScreenHeight, 0.1f, 1000.0f);

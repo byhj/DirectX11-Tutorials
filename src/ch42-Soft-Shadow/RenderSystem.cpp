@@ -64,7 +64,7 @@ void RenderSystem::v_Render()
 	XMMATRIX Model = XMMatrixIdentity();
 	static float lightPositionX = -5.0f;
 
-//	lightPositionX += m_pDevice.GetDeltaTime();
+	lightPositionX += m_pDevice.GetDeltaTime();
 	if (lightPositionX > 5.0f)
 	{
 		lightPositionX = -5.0f;
@@ -140,13 +140,14 @@ void RenderSystem::v_Render()
 	m_PlaneShader.Use( pD3D11DeviceContext, matrix, m_pDevice.GetSRV2());
 	m_DownPlane.Render(pD3D11DeviceContext);
 
-
+	XMFLOAT4 sw = XMFLOAT4(m_ScreenWidth / 2.0f, 0.0f, 0.0f, 1.0f);
 	m_HorizontalPlane.Clear(pD3D11DeviceContext);
-	m_HorizontalShader.Use( pD3D11DeviceContext, matrix, m_DownPlane.GetSRV());
+	m_HorizontalShader.Use( pD3D11DeviceContext, matrix, m_DownPlane.GetSRV(), sw);
 	m_HorizontalPlane.Render(pD3D11DeviceContext);
 
+	XMFLOAT4 sh = XMFLOAT4(m_ScreenHeight / 2.0f, 0.0f, 0.0f, 1.0f);
 	m_VerticalPlane.Clear(pD3D11DeviceContext);
-	m_VerticalShader.Use(pD3D11DeviceContext, matrix, m_HorizontalPlane.GetSRV());
+	m_VerticalShader.Use(pD3D11DeviceContext, matrix, m_HorizontalPlane.GetSRV(), sh);
 	m_VerticalPlane.Render(pD3D11DeviceContext);
 
 	orthProj = XMMatrixOrthographicLH(m_ScreenWidth, m_ScreenHeight, 0.1f, 1000.0f);
@@ -159,9 +160,31 @@ void RenderSystem::v_Render()
 
 	m_pDevice.BeginScene();
 
+	m_Matrix = m_pDevice.GetMatrix();
+	m_Matrix.view = m_Camera.GetViewMatrix();
+
+	pD3D11DeviceContext->PSSetShaderResources(1, 1, m_UpPlane.GetSRV());
+	pD3D11DeviceContext->PSSetShaderResources(0, 1, m_pWallTex.GetAddressOf());
+
+	Model = XMMatrixTranslation(-2.0f, 2.0f, 0.0f);
+	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
+	softShader.Use(pD3D11DeviceContext, m_Matrix,  lightPos);
+	m_CubeModel.Render(pD3D11DeviceContext);
+
+	pD3D11DeviceContext->PSSetShaderResources(0, 1, m_pIceTex.GetAddressOf());
+	Model = XMMatrixTranslation(2.0f, 2.0f, 0.0f);
+	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
+	softShader.Use(pD3D11DeviceContext, m_Matrix,  lightPos);
+	m_SphereModel.Render(pD3D11DeviceContext);
+
+	pD3D11DeviceContext->PSSetShaderResources(0, 1, m_pMetalTex.GetAddressOf());
+	Model = XMMatrixTranslation(0.0f, 1.0f, 0.0f);
+	XMStoreFloat4x4(&m_Matrix.model, XMMatrixTranspose(Model));
+	softShader.Use(pD3D11DeviceContext, m_Matrix, lightPos);
+	m_PlaneModel.Render(pD3D11DeviceContext);
 
 
-	m_Bitmap.Render(pD3D11DeviceContext, matrix, m_UpPlane.GetSRV());
+	//m_Bitmap.Render(pD3D11DeviceContext, matrix, m_UpPlane.GetSRV());
 
 	m_pDevice.DrawInfo();
 

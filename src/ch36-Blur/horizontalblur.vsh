@@ -8,8 +8,7 @@ cbuffer d3d::MatrixBuffer
 
 cbuffer ScreenSizeBuffer
 {
-	float screenWidth = 500.0;
-	float3 padding;
+	float4 screenWidth;
 };
 
 
@@ -48,7 +47,7 @@ VS_OUT VS(VS_IN vs_in)
     vs_out.Tex = vs_in.Tex;
 
 	// Determine the floating point size of a texel for a screen with this specific height.
-	texelSize = 1.0f / screenWidth;
+	texelSize = 1.0f / screenWidth.x;
 
 	// Create UV coordinates for the pixel and its four vertical neighbors on either side.
 	vs_out.texCoord1 = vs_in.Tex + float2(texelSize * -4.0f,  0.0f);

@@ -9,8 +9,7 @@ cbuffer MatrixBuffer
 
 cbuffer ScreenSizeBuffer
 {
-	float screenHeight = 324.0f;
-	float3 padding;
+	float4 screenHeight;
 };
 
 struct VS_IN
@@ -49,7 +48,7 @@ VS_OUT VS(VS_IN vs_in)
     vs_out.Tex = vs_in.Tex;
 
 	// Determine the floating point size of a texel for a screen with this specific height.
-	texelSize = 1.0f / screenHeight;
+	texelSize = 1.0f / screenHeight.x;
 
 	// Create UV coordinates for the pixel and its four vertical neighbors on either side.
 	vs_out.texCoord1 = vs_in.Tex + float2(0.0f, texelSize * -4.0f);
