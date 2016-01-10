@@ -21,13 +21,14 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D6B09897-74E4-48B0-8E0F-0BC154C10459}</ProjectGuid>
     <RootNamespace>ch46Glow</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -77,6 +78,79 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="bitmap.psh">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="bitmap.vsh">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="glow.psh">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="glow.vsh">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="glowMap.psh">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="glowMap.vsh">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="horizontalblur.psh">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="horizontalblur.vsh">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Plane.psh">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Plane.vsh">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="verticalblur.psh">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="verticalblur.vsh">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\d3d\App.h" />
+    <ClInclude Include="..\..\include\d3d\Camera.h" />
+    <ClInclude Include="..\..\include\d3d\Font.h" />
+    <ClInclude Include="..\..\include\d3d\RTT.h" />
+    <ClInclude Include="..\..\include\d3d\Shader.h" />
+    <ClInclude Include="..\..\include\d3d\Timer.h" />
+    <ClInclude Include="..\..\include\d3d\Utility.h" />
+    <ClInclude Include="..\..\include\dxerr.h" />
+    <ClInclude Include="bitmap.h" />
+    <ClInclude Include="GlowMapShader.h" />
+    <ClInclude Include="GlowShader.h" />
+    <ClInclude Include="HorizontalShader.h" />
+    <ClInclude Include="plane.h" />
+    <ClInclude Include="PlaneShader.h" />
+    <ClInclude Include="RenderSystem.h" />
+    <ClInclude Include="VerticalShader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\include\d3d\App.cpp" />
+    <ClCompile Include="..\..\include\d3d\Camera.cpp" />
+    <ClCompile Include="..\..\include\d3d\Font.cpp" />
+    <ClCompile Include="..\..\include\d3d\RTT.cpp" />
+    <ClCompile Include="..\..\include\d3d\Shader.cpp" />
+    <ClCompile Include="..\..\include\d3d\Timer.cpp" />
+    <ClCompile Include="..\..\include\d3d\Utility.cpp" />
+    <ClCompile Include="..\..\include\dxerr.cpp" />
+    <ClCompile Include="bitmap.cpp" />
+    <ClCompile Include="ch43-Glow.cpp" />
+    <ClCompile Include="GlowMapShader.cpp" />
+    <ClCompile Include="GlowShader.cpp" />
+    <ClCompile Include="HorizontalShader.cpp" />
+    <ClCompile Include="plane.cpp" />
+    <ClCompile Include="PlaneShader.cpp" />
+    <ClCompile Include="RenderSystem.cpp" />
+    <ClCompile Include="VerticalShader.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
